@@ -32,9 +32,23 @@
         previousText: '前一页',
         nextText: '下一页',
         crossChapter: true
-      }
+      },
+      plugins: [
+           EditOnGithubPlugin.create(
+              'https://github.com/denganliang/blog/blob/master/docs/',
+              null,
+              function(file) {
+                if (file.indexOf('en') === -1) {
+                  return '编辑'
+                } else {
+                  return 'edit on git'
+                }
+              }
+            )
+      ]
     }
   </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/docsify-copy-code"></script>
   <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
