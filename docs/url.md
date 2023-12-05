@@ -55,6 +55,7 @@
 - mobaxtermActiveCode: [https://inused.github.io/pages/file/tool/MobaXtermKeygen.html](https://inused.github.io/pages/file/tool/MobaXtermKeygen.html)
 - oracle账号：[http://bugmenot.com/view/oracle.com](http://bugmenot.com/view/oracle.com)
 - jetbrain神key网站：[https://3.jetbra.in/](https://3.jetbra.in/)
+- JetBrains IntelliJ 系列全家桶激活服务器: [https://rushb.pro/article/JetBrains-license-server.html](https://rushb.pro/article/JetBrains-license-server.html)
 
 ## 书籍
 
