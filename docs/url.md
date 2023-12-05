@@ -1,5 +1,11 @@
 # 常用网址导航
 
+## ai
+
+### chatgpt
+
+- chatgpt镜像站：[https://c.aalib.net/tool/chatgpt/](https://c.aalib.net/tool/chatgpt/)
+
 ## 各种常用计算和转换
 
 ### 时间戳
