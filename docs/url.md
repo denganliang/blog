@@ -1,5 +1,9 @@
 # 常用网址导航
 
+## 软件架构
+
+- 凤凰架构: [http://icyfenix.cn/](http://icyfenix.cn/)
+
 ## ai
 
 ### chatgpt
