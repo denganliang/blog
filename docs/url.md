@@ -3,6 +3,7 @@
 ## 软件架构
 
 - 凤凰架构: [http://icyfenix.cn/](http://icyfenix.cn/)
+- 深入架构原理与实践: [https://www.thebyte.com.cn/](https://www.thebyte.com.cn/)
 
 ## ai
 
