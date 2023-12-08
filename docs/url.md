@@ -8,6 +8,7 @@
 - Golang源码剖析系列：[https://www.cyhone.com/go_internal/](https://www.cyhone.com/go_internal/)
 - Go语言中文文档: [https://www.topgoer.com/](https://www.topgoer.com/)
 - 高并发系统设计 40 问: [https://zq99299.github.io/note-architect/hc/](https://zq99299.github.io/note-architect/hc/)
+- JAVA 架构师直通车: [https://zq99299.github.io/note-architect/ztc/](https://zq99299.github.io/note-architect/ztc/)
 
 ## ai
 
