@@ -9,6 +9,7 @@
 - Go语言中文文档: [https://www.topgoer.com/](https://www.topgoer.com/)
 - 高并发系统设计 40 问: [https://zq99299.github.io/note-architect/hc/](https://zq99299.github.io/note-architect/hc/)
 - JAVA 架构师直通车: [https://zq99299.github.io/note-architect/ztc/](https://zq99299.github.io/note-architect/ztc/)
+- 前端知识点汇总: [https://www.yuque.com/baiyueguang-rfnbu/tr4d0i](https://www.yuque.com/baiyueguang-rfnbu/tr4d0i)
 - 准备1: [https://javaguide.cn/high-quality-technical-articles/interview/technical-preliminary-preparation.html#%E8%80%83%E5%AF%9F%E7%9B%AE%E6%A0%87%E5%92%8C%E6%80%9D%E8%B7%AF](https://javaguide.cn/high-quality-technical-articles/interview/technical-preliminary-preparation.html#%E8%80%83%E5%AF%9F%E7%9B%AE%E6%A0%87%E5%92%8C%E6%80%9D%E8%B7%AF)
 - 准备2: [https://eddycjy.com/](https://eddycjy.com/)
 - 准备3: [https://github.com/practical-tutorials/project-based-learning](https://github.com/practical-tutorials/project-based-learning)
