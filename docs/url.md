@@ -20,6 +20,7 @@
 ### chatgpt
 
 - chatgpt镜像站：[https://c.aalib.net/tool/chatgpt/](https://c.aalib.net/tool/chatgpt/)
+- 面向开发者的ai搜索引擎: [https://devv.ai/zh](https://devv.ai/zh)
 
 ## 各种常用计算和转换
 
