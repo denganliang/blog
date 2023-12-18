@@ -110,3 +110,7 @@
 - 面向信仰编程(为什么XXX要这样设计)：[https://draveness.me/](https://draveness.me/)
 - 云原生书籍：[https://jimmysong.io/](https://jimmysong.io/)
 - Pure Life: [https://chunlife.top/](https://chunlife.top/)
+
+## 赚钱
+
+- AI副业赚钱大合集: [https://github.com/bleedline/aimoneyhunter](https://github.com/bleedline/aimoneyhunter)
