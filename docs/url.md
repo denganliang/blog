@@ -84,6 +84,7 @@
 
 - 《Personal Development for Smart People》中文版：[《Personal Development for Smart People》中文版](https://wtsnwei.github.io/pdsp/)
 - 各类电子书下载： [zlibrary](https://flowus.cn/share/f9562bdf-d274-44a6-990f-c6d5a4d20a62)
+- zlibray最新地址: [https://www.tboxn.com/sites/320.html][https://www.tboxn.com/sites/320.html]
 - 计算机相关电子书下载： [https://study.10086.fund:23350/](https://study.10086.fund:23350/)
 - Linux工具快速教程: [https://linuxtools-rst.readthedocs.io/zh_CN/latest/index.html](https://linuxtools-rst.readthedocs.io/zh_CN/latest/index.html)
 - helm中文文档：[https://whmzsu.github.io/helm-doc-zh-cn/](https://whmzsu.github.io/helm-doc-zh-cn/)
