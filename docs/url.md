@@ -4,6 +4,7 @@
 
 - 凤凰架构: [http://icyfenix.cn/](http://icyfenix.cn/)
 - 深入架构原理与实践: [https://www.thebyte.com.cn/](https://www.thebyte.com.cn/)
+- 深入k8s: [https://www.luozhiyun.com/archives/tag/%e6%b7%b1%e5%85%a5k8s](https://www.luozhiyun.com/archives/tag/%e6%b7%b1%e5%85%a5k8s)
 - 通过动画可视化算法: [https://visualgo.net/zh](https://visualgo.net/zh)
 - Golang源码剖析系列：[https://www.cyhone.com/go_internal/](https://www.cyhone.com/go_internal/)
 - Go语言中文文档: [https://www.topgoer.com/](https://www.topgoer.com/)
