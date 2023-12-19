@@ -92,6 +92,7 @@
 ## 网络社区、媒体
 
 - V2EX: [https://www.v2ex.com/](https://www.v2ex.com/)
+- 水木社区: [https://www.newsmth.net/](https://www.newsmth.net/)
 - 电鸭社区：一个远程工作/外包相关的论坛 [https://eleduck.com/](https://eleduck.com/)
 - Readhub: 资讯类网站 [https://readhub.cn/topics](https://readhub.cn/topics)
 - NGA游戏社区： [https://bbs.nga.cn/](https://bbs.nga.cn/)
