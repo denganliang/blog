@@ -105,6 +105,7 @@
 - 可以自己搭建的服务：[https://github.com/awesome-selfhosted/awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted)
 - 开源软件、OS镜像站查询： [https://mirrorz.org/list](https://mirrorz.org/list)
 - docker镜像站: [https://sci.nju.edu.cn/9e/05/c30384a564741/page.htm](https://sci.nju.edu.cn/9e/05/c30384a564741/page.htm)
+- 两个在线版vscode: [https://viva.gitbook.io/project/kai-fa/ide/vscode](https://viva.gitbook.io/project/kai-fa/ide/vscode)
 
 
 ## 博客
