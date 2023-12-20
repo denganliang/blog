@@ -1,5 +1,10 @@
 # 常用网址导航
 
+## 导航站
+
+- 趣站研究所: [https://share.hsmy.fun/](https://share.hsmy.fun/)
+- docHub分享优质文档: [https://www.dochub.wiki/](https://www.dochub.wiki/)
+
 ## 软件架构
 
 - 凤凰架构: [http://icyfenix.cn/](http://icyfenix.cn/)
