@@ -4,6 +4,7 @@
 
 ## Redis
 HyperLogLog: [https://www.cnblogs.com/54chensongxia/p/13803465.html](https://www.cnblogs.com/54chensongxia/p/13803465.html)
+热key问题解决: [https://dongzl.github.io/2021/01/14/03-Redis-Hot-Key/index.html](https://dongzl.github.io/2021/01/14/03-Redis-Hot-Key/index.html)
 
 ## 数据库
 数据库应该放到k8s吗:
