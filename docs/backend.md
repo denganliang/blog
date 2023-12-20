@@ -11,5 +11,8 @@
 * 反方：[https://mp.weixin.qq.com/s/4a8Qy4O80xqsnytC4l9lRg](https://mp.weixin.qq.com/s/4a8Qy4O80xqsnytC4l9lRg)
 * 正方: [https://mp.weixin.qq.com/s/IDsF_f7ZnB19jEu8ZtO-Nw](https://mp.weixin.qq.com/s/IDsF_f7ZnB19jEu8ZtO-Nw)
 
-## 在线文档
+## 业务原理
 * 在线文档技术原理：[https://juejin.cn/column/6983235868597665805](https://juejin.cn/column/6983235868597665805)
+
+## 跨平台
+* x86上qemu编译其他平台：[https://zhangguanzhang.github.io/2023/03/07/qemu-binfmt_misc/#/%E7%94%B1%E6%9D%A5](https://zhangguanzhang.github.io/2023/03/07/qemu-binfmt_misc/#/%E7%94%B1%E6%9D%A5)
