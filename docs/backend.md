@@ -13,6 +13,7 @@
 
 ## 业务原理
 * 在线文档技术原理：[https://juejin.cn/column/6983235868597665805](https://juejin.cn/column/6983235868597665805)
+* ELK构建MySQL慢日志收集平台详解：[https://blog.ops-coffee.cn/s/umH7ImZZVhdfgMdZ3Hz5fA](https://blog.ops-coffee.cn/s/umH7ImZZVhdfgMdZ3Hz5fA)
 
 ## 跨平台
 * x86上qemu编译其他平台：[https://zhangguanzhang.github.io/2023/03/07/qemu-binfmt_misc/#/%E7%94%B1%E6%9D%A5](https://zhangguanzhang.github.io/2023/03/07/qemu-binfmt_misc/#/%E7%94%B1%E6%9D%A5)
