@@ -30,6 +30,7 @@
 - [Deeplearning.ai深度学习教程中文笔记](https://github.com/fengdu78/deeplearning_ai_books)
 - [自动驾驶笔记 Autopilot Notes](https://github.com/gotonote/Autopilot-Notes)
 - [动手学大模型应用开发](https://datawhalechina.github.io/llm-universe/#/)
+- [LLM 应用开发实践笔记](https://aitutor.liduos.com/)
 
 ## 各种常用计算和转换
 
