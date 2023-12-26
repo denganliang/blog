@@ -29,6 +29,7 @@
 - 面向开发者的ai搜索引擎: [https://devv.ai/zh](https://devv.ai/zh)
 - [Deeplearning.ai深度学习教程中文笔记](https://github.com/fengdu78/deeplearning_ai_books)
 - [自动驾驶笔记 Autopilot Notes](https://github.com/gotonote/Autopilot-Notes)
+- [动手学大模型应用开发](https://datawhalechina.github.io/llm-universe/#/)
 
 ## 各种常用计算和转换
 
