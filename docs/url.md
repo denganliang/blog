@@ -68,6 +68,7 @@
 - [草料二维码生成](https://cli.im/text)
 - [网络空间测绘工具](https://mrxn.net/hacktools/706.html)
 - [腾讯qq浏览器在线工具箱](https://tool.browser.qq.com/)
+- [简历撰写](https://github.com/AmruthPillai/Reactive-Resume)
 
 ## 各种编程语言、程序文档
 
