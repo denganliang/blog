@@ -34,6 +34,22 @@
         nextText: '下一页',
         crossChapter: true
       },
+      markdown: {
+        renderer: {
+          code: function (code, lang) {
+            if (lang === 'drawio') {
+              if (window.drawioConverter) {
+                console.log('drawio 转化中')
+                return window.drawioConverter(code)
+              } else {
+                return `<div class='drawio-code'>${code}</div>`
+              }
+            } else {
+              return this.origin.code.apply(this, arguments);
+            }
+          }
+        }
+      },
       plugins: [
            EditOnGithubPlugin.create(
               'https://github.com/denganliang/blog/blob/master/docs/',
@@ -61,6 +77,8 @@
   <!-- <script src="//unpkg.com/prismjs/components/prism-powershell.min.js"></script> -->
   <!-- <script src="//unpkg.com/prismjs/components/prism-sass.min.js"></script> -->
   <script src="//unpkg.com/prismjs/components/prism-scss.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-drawio/viewer.min.js"></script>
+  <script src='https://cdn.jsdelivr.net/npm/docsify-drawio/drawio.js'></script>
   
   <!--代码高亮主题 https://github.com/PrismJS/prism/tree/gh-pages/components -->
 </body>
