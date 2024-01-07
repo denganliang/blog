@@ -31,6 +31,7 @@
 - [自动驾驶笔记 Autopilot Notes](https://github.com/gotonote/Autopilot-Notes)
 - [动手学大模型应用开发](https://datawhalechina.github.io/llm-universe/#/)
 - [LLM 应用开发实践笔记](https://aitutor.liduos.com/)
+- [AIGC时代个人生存/摸鱼探索指南](https://gamma.app/docs/AIGC-Dev-9y7n4vslcp2bol2?mode=doc#card-vcx9m0t2vtbrnsn)
 
 ## 各种常用计算和转换
 
