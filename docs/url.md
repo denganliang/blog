@@ -34,32 +34,6 @@
 
 ## 各种常用计算和转换
 
-### 时间戳
-
-- 时间戳转换：[时间戳转换](https://tool.lu/timestamp/)
-
-### base64相关
-
-- 文本base64处理: [文本base64互转](https://tool.oschina.net/encrypt?type=3)
-- 图片base64处理：[图片与base64互转](https://www.toolnb.com/tools/base64ToImages.html)
-
-### hash
-
-- 文本hash值：[计算文本hash值](https://1024tools.com/hash)
-
-### 网页
-
-- url编解码/unicode编解码：[url编解码/unicode编解码](https://www.baidufe.com/fehelper/en-decode/index.html)
-
-### json相关
-
-- json格式化：[json格式化](https://www.baidufe.com/fehelper/json-format/index.html)
-
-### 正则表达式
-
-- 正则表达式：[正则表达式](https://tool.lu/regex/)
-- 正则表达式可视化:[正则表达式可视化](https://jex.im/regulex/)
-
 ### 工具网站合集
 
 - [https://tools.fun/](https://tools.fun/)
@@ -69,6 +43,7 @@
 - [网络空间测绘工具](https://mrxn.net/hacktools/706.html)
 - [腾讯qq浏览器在线工具箱](https://tool.browser.qq.com/)
 - [简历撰写](https://github.com/AmruthPillai/Reactive-Resume)
+- [简历站本地存储](https://www.elegantresume.pro/)
 
 ## 各种编程语言、程序文档
 
