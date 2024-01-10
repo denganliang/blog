@@ -1,12 +1,10 @@
 ![logo](/media/git.webp)
 
-# docsify
+# 大海
 
-> A magical documentation site generator.
+> 大海的网站
 
-* Simple and lightweight (~12kb gzipped)
-* Multiple themes
-* Not build static html files
+* hello world
 
-[GitHub](https://github.com/docsifyjs/docsify/)
-[Get Started](/quick-start)
+
+
