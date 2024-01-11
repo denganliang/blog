@@ -4,6 +4,7 @@
 
 - 趣站研究所: [https://share.hsmy.fun/](https://share.hsmy.fun/)
 - docHub分享优质文档: [https://www.dochub.wiki/](https://www.dochub.wiki/)
+- [中文博客榜](https://xyzrank.com/#/)
 
 ## 软件架构
 
