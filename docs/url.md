@@ -11,6 +11,7 @@
 - 凤凰架构: [http://icyfenix.cn/](http://icyfenix.cn/)
 - [微服务架构设计](https://gudaoxuri.gitbook.io/microservices-architecture/)
 - 深入架构原理与实践: [https://www.thebyte.com.cn/](https://www.thebyte.com.cn/)
+- [钝悟的博客：技术类知识汇总、极客时间课程总结等](https://dunwu.github.io/waterdrop/)
 - 深入k8s: [https://www.luozhiyun.com/archives/tag/%e6%b7%b1%e5%85%a5k8s](https://www.luozhiyun.com/archives/tag/%e6%b7%b1%e5%85%a5k8s)
 - 通过动画可视化算法: [https://visualgo.net/zh](https://visualgo.net/zh)
 - Golang源码剖析系列：[https://www.cyhone.com/go_internal/](https://www.cyhone.com/go_internal/)
@@ -19,10 +20,10 @@
 - JAVA 架构师直通车: [https://zq99299.github.io/note-architect/ztc/](https://zq99299.github.io/note-architect/ztc/)
 - [JAVA-TUTORIAL](https://dunwu.github.io/java-tutorial/)
 - 前端知识点汇总: [https://www.yuque.com/baiyueguang-rfnbu/tr4d0i](https://www.yuque.com/baiyueguang-rfnbu/tr4d0i)
-- 准备1: [https://javaguide.cn/high-quality-technical-articles/interview/technical-preliminary-preparation.html#%E8%80%83%E5%AF%9F%E7%9B%AE%E6%A0%87%E5%92%8C%E6%80%9D%E8%B7%AF](https://javaguide.cn/high-quality-technical-articles/interview/technical-preliminary-preparation.html#%E8%80%83%E5%AF%9F%E7%9B%AE%E6%A0%87%E5%92%8C%E6%80%9D%E8%B7%AF)
-- 准备2: [https://eddycjy.com/](https://eddycjy.com/)
-- 准备3: [https://github.com/practical-tutorials/project-based-learning](https://github.com/practical-tutorials/project-based-learning)
-- 准备4: [https://muyids.github.io/%E7%AE%97%E6%B3%95/](https://muyids.github.io/%E7%AE%97%E6%B3%95/)
+- 1: [https://javaguide.cn/high-quality-technical-articles/interview/technical-preliminary-preparation.html#%E8%80%83%E5%AF%9F%E7%9B%AE%E6%A0%87%E5%92%8C%E6%80%9D%E8%B7%AF](https://javaguide.cn/high-quality-technical-articles/interview/technical-preliminary-preparation.html#%E8%80%83%E5%AF%9F%E7%9B%AE%E6%A0%87%E5%92%8C%E6%80%9D%E8%B7%AF)
+- 2: [https://eddycjy.com/](https://eddycjy.com/)
+- 3: [https://github.com/practical-tutorials/project-based-learning](https://github.com/practical-tutorials/project-based-learning)
+- 4: [https://muyids.github.io/%E7%AE%97%E6%B3%95/](https://muyids.github.io/%E7%AE%97%E6%B3%95/)
 
 ## ai
 
