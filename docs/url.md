@@ -73,6 +73,7 @@
 - jetbrain神key网站：[https://3.jetbra.in/](https://3.jetbra.in/)
 - JetBrains IntelliJ 系列全家桶激活服务器: [https://rushb.pro/article/JetBrains-license-server.html](https://rushb.pro/article/JetBrains-license-server.html)
 - [米坛论坛：小米手环自定义表盘、小程序](https://www.bandbbs.cn/)
+- [PVE安装win11](https://blog.nipx.cn/pages/9b1978/#%E4%B8%8B%E8%BD%BD)
 
 ## 书籍
 
