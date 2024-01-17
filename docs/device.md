@@ -8,8 +8,9 @@
 * Airpods Pro 第一代
 * Bose NC 700 HP
 
-## 手环
+## 健康相关
 * 小米手环8Pro
+* 有品体脂秤 PICOOC minic 充电款
 
 ## 平板
 * iPad 2020  128G
@@ -25,11 +26,12 @@
 * 华为智慧屏SE 55寸
 
 ## 投影仪
-* 
+* 投影仪，可type-c连接
+
+## 摄像头
+* 小米摄像头
 
 ## 阅读器
 * Kindle PaperWhite 2
 
-## 出行
-* Volvo XC60 2023
-* 雅迪小飞侠
+
