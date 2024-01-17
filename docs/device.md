@@ -34,6 +34,9 @@
 ## 摄像头
 * 小米摄像头
 
+## 路由器
+* 华为路由AX3 Pro，支持WiFi-6
+
 ## 阅读器
 * Kindle PaperWhite 2
 
