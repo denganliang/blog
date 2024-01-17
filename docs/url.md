@@ -115,3 +115,7 @@
 - AI副业赚钱大合集: [https://github.com/bleedline/aimoneyhunter](https://github.com/bleedline/aimoneyhunter)
 - [互联网创业最佳实践——域名、邮箱和官网](https://sinkcup.github.io/startup-best-practice-domain-email-and-landing-page)
 - [互联网创业最佳实践——办公硬件（网络、电脑、显示器、键盘）](https://sinkcup.github.io/startup-best-practice-office-hardware)
+
+## 生活
+- [跑步](https://muyids.github.io/run/07_%E4%B8%B9%E5%B0%BC%E5%B0%94%E6%96%AF%E7%BB%8F%E5%85%B8%E8%B7%91%E6%AD%A5%E8%AE%AD%E7%BB%83%E6%B3%95.html)
+
