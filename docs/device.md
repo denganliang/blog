@@ -1,7 +1,7 @@
 # 装备
 
 ## 手机
-* 小米12S Ultra
+* 小米12S Ultra       
 * iPhone SE 2 美版 with esim
 
 ## 降噪耳机
