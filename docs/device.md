@@ -6,7 +6,7 @@
 
 ## 降噪耳机
 * Airpods Pro 第一代
-* Bose NC 700 HP
+* Bose NC 700 HP: [使用说明书](https://www.bose.cn/content/dam/Bose_DAM/Web/consumer_electronics/global/products/headphones/noise_cancelling_headphones_700/pdfs/827452_og_noise-cancelling-headphones-700_ch.pdf)
 
 ## 健康相关
 * 小米手环8Pro
