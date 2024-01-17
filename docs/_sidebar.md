@@ -4,3 +4,4 @@
 * [系统设计101](https://denganliang.github.io/system-design-101/translations/chs/)
 * [The way to go中文版](https://denganliang.github.io/the-way-to-go_ZH_CN/directory)
 * [后端开发技术总览](backend.md)
+* [个人装备](device.md)
