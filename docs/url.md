@@ -29,7 +29,7 @@
 
 ### chatgpt
 
-- chatgpt镜像站：[https://c.aalib.net/tool/chatgpt/](https://c.aalib.net/tool/chatgpt/)
+- chatgpt镜像站：[https://c.aalib.net/tool/chatgpt/](https://c.aalib.net/tool/chatgpt/) [https://nav.free2gpt.xyz/](https://nav.free2gpt.xyz/)
 - 面向开发者的ai搜索引擎: [https://devv.ai/zh](https://devv.ai/zh)
 - [Deeplearning.ai深度学习教程中文笔记](https://github.com/fengdu78/deeplearning_ai_books)
 - [自动驾驶笔记 Autopilot Notes](https://github.com/gotonote/Autopilot-Notes)
