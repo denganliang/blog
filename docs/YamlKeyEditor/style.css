@@ -514,6 +514,7 @@ section h3 {
     overflow-y: auto;
     border: 1px solid #e9ecef;
     border-radius: 8px;
+    word-wrap: break-word;
 }
 
 .preview-item {
@@ -619,12 +620,15 @@ section h3 {
     grid-template-columns: 1fr 1fr;
     gap: 15px;
     margin-top: 15px;
+    min-width: 0;
 }
 
 .diff-section {
     background: #f8f9fa;
     border-radius: 6px;
     padding: 15px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .diff-title {
@@ -635,14 +639,17 @@ section h3 {
 
 .diff-content {
     font-family: 'Monaco', 'Consolas', monospace;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     background: #fff;
     border: 1px solid #e9ecef;
     border-radius: 4px;
     padding: 10px;
     max-height: 200px;
     overflow-y: auto;
-    white-space: pre-wrap;
+    overflow-x: auto;
+    white-space: pre;
+    word-break: break-all;
+    word-wrap: break-word;
 }
 
 /* Progress Section */
@@ -704,6 +711,26 @@ footer {
     
     .files-list {
         grid-template-columns: 1fr;
+    }
+    
+    .diff-content {
+        font-size: 0.75rem;
+        padding: 8px;
+        max-height: 150px;
+    }
+    
+    .preview-item {
+        padding: 15px 10px;
+    }
+    
+    .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .preview-actions {
+        flex-wrap: wrap;
     }
 }
 
