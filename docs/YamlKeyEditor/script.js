@@ -1,4 +1,4 @@
-gitclass YamlKeyReplacer {
+class YamlKeyReplacer {
     constructor() {
         this.files = new Map();
         this.modifiedFiles = new Map();
