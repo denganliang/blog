@@ -1,4 +1,4 @@
-class YamlKeyReplacer {
+gitclass YamlKeyReplacer {
     constructor() {
         this.files = new Map();
         this.modifiedFiles = new Map();
@@ -498,39 +498,44 @@ class YamlKeyReplacer {
             console.log('oldKeys:', oldKeys);
             console.log('newKeys:', newKeys);
             
-            // 进行文本替换
+            // 进行精确的文本替换，找到完整的key路径进行替换
             let modifiedContent = yamlContent;
             let hasChanges = false;
             
-            // 替换每一级的key
-            for (let i = 0; i < Math.min(oldKeys.length, newKeys.length); i++) {
-                const oldKey = oldKeys[i];
-                const newKey = newKeys[i];
+            // 使用整个路径替换逻辑
+            const result = this.replaceKeyPathInString(yamlContent, oldKeyPath, newKeyPath);
+            
+            if (result.hasChanges) {
+                modifiedContent = result.modifiedContent;
+                hasChanges = true;
+                console.log('已使用完整路径替换');
+            } else {
+                // 如果完整路径替换没有找到匹配，尝试使用旧的逻辑
+                const lines = yamlContent.split('\n');
+                const newLines = [...lines];
                 
-                if (oldKey !== newKey) {
-                    console.log(`替换第${i+1}级key: "${oldKey}" -> "${newKey}"`);
-                    
-                    if (i === 0) {
-                        // 顶层key替换：匹配行首的key
-                        const topLevelPattern = new RegExp(`^(\\s*)${this.escapeRegExp(oldKey)}(\\s*:)`, 'gm');
-                        const newModifiedContent = modifiedContent.replace(topLevelPattern, `$1${newKey}$2`);
+                // 找到所有匹配完整路径的位置
+                const matches = this.findKeyPathMatches(lines, oldKeys);
+                
+                if (matches.length > 0) {
+                    // 从后往前替换，避免行号变化影响
+                    for (let i = matches.length - 1; i >= 0; i--) {
+                        const match = matches[i];
+                        // 找到对应的行并替换最后的key名，保留原始value
+                        const originalLine = newLines[match.lineIndex];
+                        const indent = ' '.repeat(match.indentLevel);
+                        const newKeyName = newKeys[newKeys.length - 1];
                         
-                        if (newModifiedContent !== modifiedContent) {
-                            modifiedContent = newModifiedContent;
-                            hasChanges = true;
-                            console.log(`顶层key "${oldKey}" 替换为 "${newKey}"`);
-                        }
-                    } else {
-                        // 嵌套key替换：需要考虑缩进
-                        const nestedPattern = new RegExp(`^(\\s+)${this.escapeRegExp(oldKey)}(\\s*:)`, 'gm');
-                        const newModifiedContent = modifiedContent.replace(nestedPattern, `$1${newKey}$2`);
-                        
-                        if (newModifiedContent !== modifiedContent) {
-                            modifiedContent = newModifiedContent;
-                            hasChanges = true;
-                            console.log(`嵌套key "${oldKey}" 替换为 "${newKey}"`);
-                        }
+                        // 提取原始value（冒号后面的所有内容）
+                        const colonIndex = originalLine.indexOf(':');
+                        const originalValue = colonIndex !== -1 ? originalLine.substring(colonIndex + 1) : '';
+                        const newLine = indent + newKeyName + ':' + originalValue;
+                        newLines.splice(match.lineIndex, 1, newLine);
+                        hasChanges = true;
                     }
+                    
+                    modifiedContent = newLines.join('\n');
+                    console.log(`找到 ${matches.length} 处匹配，已进行替换`);
                 }
             }
             
@@ -565,6 +570,119 @@ class YamlKeyReplacer {
     escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
+
+    // 查找完整key路径的所有匹配位置
+    findKeyPathMatches(lines, keyPath) {
+        const matches = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmed = line.trim();
+            
+            // 跳过空行和注释
+            if (!trimmed || trimmed.startsWith('#')) continue;
+            
+            // 检查是否是key定义行（以:结尾）
+            if (!trimmed.includes(':')) continue;
+            
+            const indentLevel = line.length - line.trimStart().length;
+            const keyName = trimmed.replace(/\s*:.*/, '');
+            
+            // 如果第一级key匹配，开始检查完整路径
+            if (keyName === keyPath[0]) {
+                const pathMatch = this.checkCompletePath(lines, i, keyPath, indentLevel);
+                if (pathMatch) {
+                    matches.push({
+                        lineIndex: pathMatch.lineIndex,
+                        indentLevel: pathMatch.indentLevel,
+                        originalPath: keyPath
+                    });
+                }
+            }
+        }
+        
+        return matches;
+    }
+
+    // 检查完整的key路径是否匹配
+    checkCompletePath(lines, startLine, keyPath, baseIndent) {
+        if (keyPath.length === 1) {
+            // 单级key直接匹配
+            return { lineIndex: startLine, indentLevel: baseIndent };
+        }
+        
+        let currentLine = startLine + 1;
+        let expectedIndent = baseIndent + 2; // YAML标准的缩进
+        
+        for (let keyIndex = 1; keyIndex < keyPath.length; keyIndex++) {
+            const targetKey = keyPath[keyIndex];
+            let found = false;
+            
+            // 在当前层级查找匹配的key
+            for (let i = currentLine; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmed = line.trim();
+                
+                if (!trimmed || trimmed.startsWith('#')) {
+                    currentLine = i + 1;
+                    continue;
+                }
+                
+                const indent = line.length - line.trimStart().length;
+                
+                // 如果缩进小于预期的，说明已经出了当前层级
+                if (indent < expectedIndent) {
+                    return null;
+                }
+                
+                // 如果缩进等于预期，检查key名
+                if (indent === expectedIndent) {
+                    const keyName = trimmed.replace(/\s*:.*/, '');
+                    if (keyName === targetKey) {
+                        found = true;
+                        currentLine = i + 1;
+                        
+                        // 如果是最后一级key，返回匹配位置
+                        if (keyIndex === keyPath.length - 1) {
+                            return { lineIndex: i, indentLevel: indent };
+                        }
+                        
+                        // 继续检查下一级
+                        expectedIndent += 2;
+                        break;
+                    }
+                }
+                
+                // 如果缩进大于预期，继续查找
+                currentLine = i + 1;
+            }
+            
+            if (!found) {
+                return null;
+            }
+        }
+        
+        return null;
+    }
+
+    // 构建新的key结构
+    buildNewKeyStructure(keys, baseIndent) {
+        if (keys.length === 1) {
+            return ' '.repeat(baseIndent) + keys[0] + ':';
+        }
+        
+        let structure = '';
+        for (let i = 0; i < keys.length; i++) {
+            const indent = baseIndent + (i * 2);
+            structure += ' '.repeat(indent) + keys[i] + ':';
+            if (i < keys.length - 1) {
+                structure += '\n';
+            }
+        }
+        
+        return structure;
+    }
+
 
     // 安全地解析YAML（用于预览对象，不影响文本替换）
     tryParseYaml(content) {
@@ -1276,42 +1394,49 @@ class YamlKeyReplacer {
                 
                 alert(`✅ 文件 "${file.fileName}" 已成功保存！`);
             } else {
-                // 多个文件
-                for (let i = 0; i < filesToSave.length; i++) {
-                    const file = filesToSave[i];
-                    
-                    try {
-                        const fileHandle = await window.showSaveFilePicker({
-                            suggestedName: file.fileName,
-                            types: [
-                                {
-                                    description: 'YAML files',
-                                    accept: {
-                                        'text/yaml': ['.yml', '.yaml'],
-                                        'text/plain': ['.yml', '.yaml']
-                                    }
-                                }
-                            ]
-                        });
-                        
-                        const writable = await fileHandle.createWritable();
-                        await writable.write(file.content);
-                        await writable.close();
-                        
-                    } catch (error) {
-                        if (error.name === 'AbortError') {
-                            console.log(`用户取消了保存文件: ${file.fileName}`);
-                            break; // 用户取消了，停止后续文件保存
-                        } else {
-                            console.error(`保存文件 ${file.fileName} 失败:`, error);
-                            alert(`保存文件 "${file.fileName}" 失败: ${error.message}`);
-                        }
-                    }
-                }
+                // 多个文件，使用ZIP打包
+                this.showProgress('正在打包文件...', 0);
                 
-                alert(`✅ 文件保存完成！`);
+                const zip = new JSZip();
+                filesToSave.forEach((file, index) => {
+                    zip.file(file.fileName, file.content);
+                    const progress = ((index + 1) / filesToSave.length) * 100;
+                    this.showProgress(`正在打包 ${file.fileName}...`, progress);
+                });
+
+                this.showProgress('正在生成ZIP文件...', 100);
+                
+                const zipBlob = await zip.generateAsync({
+                    type: 'blob',
+                    compression: 'DEFLATE',
+                    compressionOptions: { level: 6 }
+                });
+
+                this.hideProgress();
+                
+                // 保存ZIP文件
+                const zipFileName = `yaml-modified-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.zip`;
+                
+                const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: zipFileName,
+                    types: [
+                        {
+                            description: 'ZIP files',
+                            accept: {
+                                'application/zip': ['.zip']
+                            }
+                        }
+                    ]
+                });
+                
+                const writable = await fileHandle.createWritable();
+                await writable.write(zipBlob);
+                await writable.close();
+                
+                alert(`📦 ${filesToSave.length} 个文件已打包成ZIP保存！\n\n💡 文件保存为：${zipFileName}`);
             }
         } catch (error) {
+            this.hideProgress();
             if (error.name === 'AbortError') {
                 console.log('用户取消了文件保存');
             } else {
@@ -1322,17 +1447,6 @@ class YamlKeyReplacer {
     }
 
     async saveWithDownload(filesToSave) {
-        // 显示提示信息，指导用户如何操作
-        const message = `🔧 您的浏览器不支持文件选择器，将使用下载方式。\n\n` +
-                       `💡 要选择保存位置，请：\n` +
-                       `1. 在浏览器设置中关闭"下载前询问每个文件的保存位置"\n` +
-                       `2. 或者使用Ctrl+J打开下载管理器，将文件移动到目标位置\n\n` +
-                       `点击确定开始下载 ${filesToSave.length} 个文件。`;
-        
-        if (!confirm(message)) {
-            return;
-        }
-
         // 如果只有一个文件，直接下载
         if (filesToSave.length === 1) {
             const file = filesToSave[0];
@@ -1344,38 +1458,61 @@ class YamlKeyReplacer {
             return;
         }
 
-        // 多个文件的情况
-        const choice = confirm(
-            `共有 ${filesToSave.length} 个修改的文件。\n\n` +
-            `选择下载方式：\n` +
-            `• 确定 - 逐个下载（间隔500ms）\n` +
-            `• 取消 - 批量快速下载`
-        );
+        // 多个文件，使用ZIP打包下载
+        try {
+            this.showProgress('正在打包文件...', 0);
+            
+            const zip = new JSZip();
+            
+            // 添加所有修改后的文件到zip
+            filesToSave.forEach((file, index) => {
+                zip.file(file.fileName, file.content);
+                const progress = ((index + 1) / filesToSave.length) * 100;
+                this.showProgress(`正在打包 ${file.fileName}...`, progress);
+            });
 
-        if (choice) {
-            // 逐个下载，给用户时间处理
+            this.showProgress('正在生成ZIP文件...', 100);
+            
+            // 生成zip文件
+            const zipBlob = await zip.generateAsync({
+                type: 'blob',
+                compression: 'DEFLATE',
+                compressionOptions: { level: 6 }
+            });
+
+            this.hideProgress();
+            
+            // 下载zip文件
+            const zipFileName = `yaml-modified-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.zip`;
+            
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = zipFileName;
+            a.style.display = 'none';
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // 清理
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert(`📦 ${filesToSave.length} 个文件已打包成ZIP下载！\n\n💡 文件保存为：${zipFileName}`);
+            }, 100);
+            
+        } catch (error) {
+            console.error('ZIP打包失败:', error);
+            this.hideProgress();
+            alert(`ZIP打包失败: ${error.message}\n\n将使用逐个文件下载方式。`);
+            
+            // 降级到逐个下载
             for (let i = 0; i < filesToSave.length; i++) {
                 const file = filesToSave[i];
-                
                 setTimeout(() => {
                     this.downloadSingleFile(file.fileName, file.content);
                 }, i * 500);
             }
-            
-            setTimeout(() => {
-                alert(`✅ ${filesToSave.length} 个文件已下载完成！\n\n💡 按Ctrl+J打开下载管理器查看所有文件。`);
-            }, filesToSave.length * 500 + 500);
-        } else {
-            // 批量下载
-            filesToSave.forEach((file, index) => {
-                setTimeout(() => {
-                    this.downloadSingleFile(file.fileName, file.content);
-                }, index * 100); // 更快的间隔
-            });
-            
-            setTimeout(() => {
-                alert(`🚀 ${filesToSave.length} 个文件已快速下载！\n\n💡 按Ctrl+J打开下载管理器查看所有文件。`);
-            }, filesToSave.length * 100 + 500);
         }
     }
 
