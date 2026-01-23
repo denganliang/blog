@@ -8,7 +8,10 @@
       "WebSearch",
       "WebFetch(domain:vitepress.dev)",
       "WebFetch(domain:astro.build)",
-      "WebFetch(domain:jimmysong.io)"
+      "WebFetch(domain:jimmysong.io)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }
