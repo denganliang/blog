@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAML Key 批量修改工具</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 YAML Key 批量修改工具</h1>
+            <p>一键更改多个YAML文件的key名称</p>
+        </header>
+
+        <main>
+            <!-- 文件上传区域 -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>选择或拖拽YAML文件</h3>
+                    <p>支持多个文件同时上传 (.yml, .yaml)</p>
+                    <input type="file" id="fileInput" multiple accept=".yml,.yaml" hidden>
+                    <button class="upload-btn" id="uploadBtn">
+                        选择文件
+                    </button>
+                </div>
+            </section>
+
+            <!-- 文件列表 -->
+            <section class="files-section" id="filesSection" style="display: none;">
+                <div class="files-header">
+                    <h3>已上传文件 (<span id="fileCount">0</span>)</h3>
+                    <div class="file-controls">
+                        <span class="selected-info">已选择: <span id="selectedCount">0</span> 个文件</span>
+                        <button class="control-btn" id="selectAllBtn">全选</button>
+                        <button class="control-btn" id="deselectAllBtn">全不选</button>
+                    </div>
+                </div>
+                <div class="files-list" id="filesList"></div>
+            </section>
+
+            <!-- Key 修改配置 -->
+            <section class="config-section" id="configSection" style="display: none;">
+                <h3>Key 路径修改配置</h3>
+                <div class="config-form">
+                    
+                    <div class="input-mode">
+                        <div class="input-group">
+                            <label for="oldKeyPath">原 Key 路径:</label>
+                            <input type="text" id="oldKeyPath" placeholder="例: user.profile.name" 
+                                   title="使用点号分隔的路径，如: user.profile.name">
+                            <div class="key-status" id="oldKeyStatus"></div>
+                            <small>使用点号(.)分隔嵌套key，如: user.profile.name</small>
+                        </div>
+                        <div class="input-group">
+                            <label for="newKeyPath">新 Key 路径:</label>
+                            <input type="text" id="newKeyPath" placeholder="例: user.info.fullName"
+                                   title="使用点号分隔的路径，如: user.info.fullName">
+                            <small>新的key路径，支持重新组织结构</small>
+                        </div>
+                    </div>
+
+                    <div class="detected-keys" id="detectedKeys" style="display: none;">
+                        <h4>检测到的Key:</h4>
+                        <div class="keys-list" id="keysList"></div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="preview-btn" id="previewBtn" disabled>👀 预览更改</button>
+                        <button class="save-btn" id="saveBtn" disabled>💾 另存为</button>
+                    </div>
+                    
+                    <div class="workflow-info">
+                        <h4>📋 操作流程</h4>
+                        <ol>
+                            <li><strong>上传文件</strong> → 选择需要修改的YAML文件</li>
+                            <li><strong>检测Key</strong> → 验证key路径是否存在</li>
+                            <li><strong>预览更改</strong> → 查看修改前后的对比</li>
+                            <li><strong>另存为</strong> → 保存修改后的文件</li>
+                        </ol>
+                        <div class="browser-tips">
+                            <h5>🔧 浏览器设置建议：</h5>
+                            <p><strong>Chrome/Edge：</strong> 设置 → 下载内容 → 开启"下载前询问每个文件的保存位置"</p>
+                            <p><strong>Firefox：</strong> 设置 → 常规 → 下载 → 选择"总是询问您要将文件保存到哪里"</p>
+                            <p>💡 这样点击"另存为"时就可以选择保存位置了！</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 预览区域 -->
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <h3>预览更改</h3>
+                <div class="preview-controls">
+                    <button class="tab-btn active" data-tab="affected">受影响文件 (<span id="affectedCount">0</span>)</button>
+                    <button class="tab-btn" data-tab="all">所有文件</button>
+                </div>
+                <div class="preview-content" id="previewContent"></div>
+            </section>
+
+            <!-- 进度条 -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">处理中...</div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 YAML Key 批量修改工具 | 支持嵌套路径和批量处理</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

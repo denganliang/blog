@@ -1,0 +1,58 @@
+[
+  {
+    "slug": "example-post",
+    "title": "如何使用番茄工作法提高效率",
+    "title_en": "How to Use the Pomodoro Technique to Boost Productivity",
+    "date": "2026-01-23",
+    "category": "生产力",
+    "category_en": "Productivity",
+    "tags": ["时间管理", "效率", "番茄工作法"],
+    "tags_en": ["Time Management", "Productivity", "Pomodoro"],
+    "excerpt": "番茄工作法是一种简单有效的时间管理方法，通过25分钟专注工作和5分钟休息的循环，帮助你保持高效和专注。本文将详细介绍如何实践这个方法。",
+    "excerpt_en": "The Pomodoro Technique is a simple yet effective time management method. Through cycles of 25-minute focused work and 5-minute breaks, it helps you stay productive and focused. This article will guide you through practicing this method.",
+    "url": "/blog/example-post/",
+    "lang": "zh"
+  },
+  {
+    "slug": "example-post",
+    "title": "How to Use the Pomodoro Technique to Boost Productivity",
+    "title_en": "How to Use the Pomodoro Technique to Boost Productivity",
+    "date": "2026-01-23",
+    "category": "Productivity",
+    "category_en": "Productivity",
+    "tags": ["Time Management", "Productivity", "Pomodoro"],
+    "tags_en": ["Time Management", "Productivity", "Pomodoro"],
+    "excerpt": "The Pomodoro Technique is a simple yet effective time management method. Through cycles of 25-minute focused work and 5-minute breaks, it helps you stay productive and focused. This article will guide you through practicing this method.",
+    "excerpt_en": "The Pomodoro Technique is a simple yet effective time management method. Through cycles of 25-minute focused work and 5-minute breaks, it helps you stay productive and focused. This article will guide you through practicing this method.",
+    "url": "/en/blog/example-post/",
+    "lang": "en"
+  },
+  {
+    "slug": "another-post",
+    "title": "我的个人网站重构之旅",
+    "title_en": "My Personal Website Redesign Journey",
+    "date": "2026-01-22",
+    "category": "技术",
+    "category_en": "Tech",
+    "tags": ["Web开发", "设计", "性能优化"],
+    "tags_en": ["Web Development", "Design", "Performance"],
+    "excerpt": "从docsify迁移到纯静态HTML的网站重构经验分享，包括技术选型、性能优化和设计思路。",
+    "excerpt_en": "Sharing my experience migrating from docsify to pure static HTML, including technology choices, performance optimization, and design thinking.",
+    "url": "/blog/another-post/",
+    "lang": "zh"
+  },
+  {
+    "slug": "another-post",
+    "title": "My Personal Website Redesign Journey",
+    "title_en": "My Personal Website Redesign Journey",
+    "date": "2026-01-22",
+    "category": "Tech",
+    "category_en": "Tech",
+    "tags": ["Web Development", "Design", "Performance"],
+    "tags_en": ["Web Development", "Design", "Performance"],
+    "excerpt": "Sharing my experience migrating from docsify to pure static HTML, including technology choices, performance optimization, and design thinking.",
+    "excerpt_en": "Sharing my experience migrating from docsify to pure static HTML, including technology choices, performance optimization, and design thinking.",
+    "url": "/en/blog/another-post/",
+    "lang": "en"
+  }
+]

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="邓安良的技术博客 - 分享技术文章、开发经验和生活感悟">
+  <title>博客 - 邓安良</title>
+
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <link rel="alternate" hreflang="en" href="/en/blog/">
+  <link rel="alternate" hreflang="zh" href="/blog/">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="navbar-logo">邓安良</a>
+      <ul class="navbar-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/about/">关于我</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+        <li><a href="/blog/">博客</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="lang-toggle" aria-label="切换语言">English</button>
+        <button class="theme-toggle" aria-label="切换主题"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+
+      <h1 style="margin-bottom: 1rem;">博客文章</h1>
+      <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 3rem;">
+        分享技术、产品和生活的思考
+      </p>
+
+      <!-- 搜索框 -->
+      <div class="search-box" style="margin-bottom: 3rem;">
+        <svg class="search-icon" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+        <input type="text" class="search-input" placeholder="搜索文章...">
+        <div class="search-results"></div>
+      </div>
+
+      <!-- 分类标签 -->
+      <div style="margin-bottom: 3rem; text-align: center;">
+        <span class="tag tag-outline" style="cursor: pointer;">全部</span>
+        <span class="tag tag-outline" style="cursor: pointer;">技术</span>
+        <span class="tag tag-outline" style="cursor: pointer;">生产力</span>
+        <span class="tag tag-outline" style="cursor: pointer;">设计</span>
+        <span class="tag tag-outline" style="cursor: pointer;">生活</span>
+      </div>
+
+      <!-- 文章列表 -->
+      <div class="grid grid-2">
+
+        <div class="card">
+          <div style="margin-bottom: 1rem;">
+            <span style="color: var(--text-tertiary); font-size: 0.9rem;">2026-01-23</span>
+          </div>
+          <h2 class="card-title" style="font-size: 1.75rem;">
+            <a href="/blog/example-post/" style="color: inherit;">如何使用番茄工作法提高效率</a>
+          </h2>
+          <div style="margin-bottom: 1rem;">
+            <span class="tag">生产力</span>
+            <span class="tag">时间管理</span>
+            <span class="tag">效率</span>
+          </div>
+          <div class="card-description">
+            番茄工作法是一种简单有效的时间管理方法，通过25分钟专注工作和5分钟休息的循环，帮助你保持高效和专注。本文将详细介绍如何实践这个方法。
+          </div>
+          <div class="card-footer">
+            <a href="/blog/example-post/" style="font-weight: 600;">阅读全文 →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="margin-bottom: 1rem;">
+            <span style="color: var(--text-tertiary); font-size: 0.9rem;">2026-01-22</span>
+          </div>
+          <h2 class="card-title" style="font-size: 1.75rem;">
+            <a href="/blog/another-post/" style="color: inherit;">我的个人网站重构之旅</a>
+          </h2>
+          <div style="margin-bottom: 1rem;">
+            <span class="tag">技术</span>
+            <span class="tag">Web开发</span>
+            <span class="tag">设计</span>
+          </div>
+          <div class="card-description">
+            从docsify迁移到纯静态HTML的网站重构经验分享，包括技术选型、性能优化和设计思路。如何在没有框架的情况下构建现代化的个人网站。
+          </div>
+          <div class="card-footer">
+            <a href="/blog/another-post/" style="font-weight: 600;">阅读全文 →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="margin-bottom: 1rem;">
+            <span style="color: var(--text-tertiary); font-size: 0.9rem;">2026-01-20</span>
+          </div>
+          <h2 class="card-title" style="font-size: 1.75rem;">
+            <a href="/blog/design-thinking/" style="color: inherit;">产品设计中的用户体验思考</a>
+          </h2>
+          <div style="margin-bottom: 1rem;">
+            <span class="tag">设计</span>
+            <span class="tag">用户体验</span>
+          </div>
+          <div class="card-description">
+            好的产品设计不仅仅是美观的界面，更重要的是解决用户的真实需求。分享我在产品设计过程中关于用户体验的一些思考和实践。
+          </div>
+          <div class="card-footer">
+            <a href="/blog/design-thinking/" style="font-weight: 600;">阅读全文 →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="margin-bottom: 1rem;">
+            <span style="color: var(--text-tertiary); font-size: 0.9rem;">2026-01-18</span>
+          </div>
+          <h2 class="card-title" style="font-size: 1.75rem;">
+            <a href="/blog/web-performance/" style="color: inherit;">Web性能优化实战指南</a>
+          </h2>
+          <div style="margin-bottom: 1rem;">
+            <span class="tag">技术</span>
+            <span class="tag">性能优化</span>
+            <span class="tag">Web开发</span>
+          </div>
+          <div class="card-description">
+            深入探讨Web性能优化的各个方面，从资源加载、渲染优化到缓存策略，帮助你构建快速响应的Web应用。包含实际案例和性能指标分析。
+          </div>
+          <div class="card-footer">
+            <a href="/blog/web-performance/" style="font-weight: 600;">阅读全文 →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 分页 -->
+      <ul class="pagination">
+        <li class="pagination-item active">1</li>
+        <li class="pagination-item">2</li>
+        <li class="pagination-item">3</li>
+        <li class="pagination-item">→</li>
+      </ul>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-social">
+        <a href="https://github.com/denganliang" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <a href="https://twitter.com/denganliang" target="_blank" rel="noopener" aria-label="Twitter">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+          </svg>
+        </a>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/about/">关于</a></li>
+        <li><a href="/blog/">博客</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+      </ul>
+      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/search.js"></script>
+</body>
+</html>

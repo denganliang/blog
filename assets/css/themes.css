@@ -1,0 +1,98 @@
+/* ========================================
+   主题变量定义 - 深浅色主题
+   ======================================== */
+
+/* 默认浅色主题 */
+:root {
+  /* 主要背景色 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+
+  /* 文字颜色 */
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-tertiary: #718096;
+
+  /* 强调色 */
+  --accent-color: #0066cc;
+  --accent-hover: #0052a3;
+  --accent-light: #e6f2ff;
+
+  /* 边框颜色 */
+  --border-color: #e2e8f0;
+  --border-light: #f7fafc;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+  /* 成功/警告/错误色 */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* 代码块背景 */
+  --code-bg: #f7fafc;
+  --code-border: #e2e8f0;
+
+  /* 导航栏 */
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  /* 卡片 */
+  --card-bg: #ffffff;
+  --card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色主题 */
+[data-theme="dark"] {
+  /* 主要背景色 */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3d3d3d;
+
+  /* 文字颜色 */
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0aec0;
+  --text-tertiary: #718096;
+
+  /* 强调色 */
+  --accent-color: #4da6ff;
+  --accent-hover: #6bb8ff;
+  --accent-light: #1a3a5c;
+
+  /* 边框颜色 */
+  --border-color: #3d3d3d;
+  --border-light: #2d2d2d;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+
+  /* 成功/警告/错误色 */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+
+  /* 代码块背景 */
+  --code-bg: #2d2d2d;
+  --code-border: #3d3d3d;
+
+  /* 导航栏 */
+  --nav-bg: rgba(26, 26, 26, 0.95);
+  --nav-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* 卡片 */
+  --card-bg: #2d2d2d;
+  --card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* 主题切换动画 */
+* {
+  transition: background-color 0.3s ease,
+              border-color 0.3s ease,
+              color 0.3s ease;
+}

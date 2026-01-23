@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C D:/code/denganliang.com/blog remote -v)",
+      "Bash(git -C D:/code/denganliang.com/blog log --oneline -10)",
+      "Bash(tree:*)",
+      "Bash(wc:*)",
+      "WebSearch",
+      "WebFetch(domain:vitepress.dev)",
+      "WebFetch(domain:astro.build)",
+      "WebFetch(domain:jimmysong.io)"
+    ]
+  }
+}

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>番茄钟</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .pomodoro-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .mode-switch {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .mode-btn {
+            background: #ecf0f1;
+            color: #666;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .mode-btn.work.active {
+            background: #e74c3c;
+        }
+        
+        .mode-btn.break.active {
+            background: #27ae60;
+        }
+        
+        .mode-btn.longbreak.active {
+            background: #f39c12;
+        }
+        
+        .timer-section {
+            position: relative;
+            margin: 2rem 0;
+        }
+        
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .timer-display.break {
+            color: #27ae60;
+        }
+        
+        .timer-display.longbreak {
+            color: #f39c12;
+        }
+        
+        .time-slider {
+            width: 100%;
+            margin: 1rem 0;
+            height: 6px;
+            border-radius: 3px;
+            background: #ecf0f1;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .time-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+        }
+        
+        .time-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .time-range {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .start-btn {
+            background: #27ae60;
+        }
+        
+        .start-btn:hover {
+            background: #229954;
+        }
+        
+        .pause-btn {
+            background: #f39c12;
+        }
+        
+        .pause-btn:hover {
+            background: #e67e22;
+        }
+        
+        .reset-btn {
+            background: #e74c3c;
+        }
+        
+        .reset-btn:hover {
+            background: #c0392b;
+        }
+        
+        .status {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #e74c3c;
+            transition: width 0.1s ease;
+        }
+        
+        .progress.break {
+            background: #27ae60;
+        }
+        
+        .progress.longbreak {
+            background: #f39c12;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 2rem;
+            border: none;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal h2 {
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+        
+        .modal p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal button {
+            background: #27ae60;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+        }
+        
+        .modal button:hover {
+            background: #229954;
+        }
+        
+        .modal .secondary-btn {
+            background: #95a5a6;
+        }
+        
+        .modal .secondary-btn:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="pomodoro-container">
+        <h1>🍅 番茄钟</h1>
+        
+        <div class="mode-switch">
+            <button class="mode-btn work active" data-mode="work">工作</button>
+            <button class="mode-btn break" data-mode="break">短休息</button>
+            <button class="mode-btn longbreak" data-mode="longbreak">长休息</button>
+        </div>
+        
+        <div class="timer-section">
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            <input type="range" class="time-slider" id="timeSlider" min="1" max="60" value="25">
+            <div class="time-range" id="timeRange">1 - 60 分钟</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="start-btn" id="startBtn">开始</button>
+            <button class="pause-btn" id="pauseBtn" style="display: none;">暂停</button>
+            <button class="reset-btn" id="resetBtn">重置</button>
+        </div>
+        
+        <div class="status" id="status">准备开始番茄钟</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="workSessions">0</div>
+                <div class="stat-label">工作完成</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalTime">0</div>
+                <div class="stat-label">总时间(分)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="currentCycle">1</div>
+                <div class="stat-label">当前周期</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">🎉 时间到！</h2>
+            <p id="modalText">恭喜你完成了一个番茄钟！<br>现在可以休息一下了。</p>
+            <button onclick="startNextSession()">开始下一阶段</button>
+            <button class="secondary-btn" onclick="closeModal()">稍后</button>
+        </div>
+    </div>
+    
+    <script>
+        let timer = null;
+        let isRunning = false;
+        let isPaused = false;
+        let currentMode = 'work';
+        let timeLeft = 25 * 60;
+        let totalTime = 25 * 60;
+        let workSessions = 0;
+        let totalMinutes = 0;
+        let currentCycle = 1;
+        
+        const modes = {
+            work: { duration: 25, color: '#e74c3c', name: '工作' },
+            break: { duration: 5, color: '#27ae60', name: '短休息' },
+            longbreak: { duration: 15, color: '#f39c12', name: '长休息' }
+        };
+        
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timeSlider = document.getElementById('timeSlider');
+        const timeRange = document.getElementById('timeRange');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const status = document.getElementById('status');
+        const progress = document.getElementById('progress');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+        const workSessionsEl = document.getElementById('workSessions');
+        const totalTimeEl = document.getElementById('totalTime');
+        const currentCycleEl = document.getElementById('currentCycle');
+        
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const progressPercent = ((totalTime - timeLeft) / totalTime) * 100;
+            progress.style.width = `${progressPercent}%`;
+            
+            document.title = `${timerDisplay.textContent} - ${modes[currentMode].name} - 番茄钟`;
+        }
+        
+        function updateStats() {
+            workSessionsEl.textContent = workSessions;
+            totalTimeEl.textContent = totalMinutes;
+            currentCycleEl.textContent = currentCycle;
+        }
+        
+        function switchMode(mode) {
+            if (isRunning) return;
+            
+            currentMode = mode;
+            const duration = modes[mode].duration;
+            timeLeft = duration * 60;
+            totalTime = duration * 60;
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+            
+            timerDisplay.className = `timer-display ${mode}`;
+            progress.className = `progress ${mode}`;
+            
+            timeSlider.value = duration;
+            updateSliderRange();
+            updateDisplay();
+            
+            status.textContent = `准备开始${modes[mode].name}`;
+        }
+        
+        function updateSliderRange() {
+            if (currentMode === 'work') {
+                timeSlider.min = 1;
+                timeSlider.max = 60;
+                timeRange.textContent = '1 - 60 分钟';
+            } else {
+                timeSlider.min = 1;
+                timeSlider.max = 30;
+                timeRange.textContent = '1 - 30 分钟';
+            }
+        }
+        
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            isPaused = false;
+            startBtn.style.display = 'none';
+            pauseBtn.style.display = 'inline-block';
+            timeSlider.disabled = true;
+            
+            status.textContent = `正在${modes[currentMode].name}中...`;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    completeSession();
+                }
+            }, 1000);
+        }
+        
+        function pauseTimer() {
+            if (!isRunning) return;
+            
+            if (isPaused) {
+                timer = setInterval(() => {
+                    timeLeft--;
+                    updateDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        isRunning = false;
+                        completeSession();
+                    }
+                }, 1000);
+                pauseBtn.textContent = '暂停';
+                status.textContent = `继续${modes[currentMode].name}中...`;
+            } else {
+                clearInterval(timer);
+                pauseBtn.textContent = '继续';
+                status.textContent = `${modes[currentMode].name}已暂停`;
+            }
+            isPaused = !isPaused;
+        }
+        
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            isPaused = false;
+            timeLeft = totalTime;
+            startBtn.style.display = 'inline-block';
+            pauseBtn.style.display = 'none';
+            pauseBtn.textContent = '暂停';
+            timeSlider.disabled = false;
+            status.textContent = `准备开始${modes[currentMode].name}`;
+            updateDisplay();
+        }
+        
+        function completeSession() {
+            startBtn.style.display = 'inline-block';
+            pauseBtn.style.display = 'none';
+            timeSlider.disabled = false;
+            
+            if (currentMode === 'work') {
+                workSessions++;
+                totalMinutes += Math.floor(totalTime / 60);
+                updateStats();
+            }
+            
+            showModal();
+            playNotificationSound();
+            
+            if (Notification.permission === 'granted') {
+                new Notification(`${modes[currentMode].name}完成！`, {
+                    body: `恭喜完成${modes[currentMode].name}时间！`,
+                    icon: '🍅'
+                });
+            }
+        }
+        
+        function showModal() {
+            const modeText = modes[currentMode].name;
+            modalTitle.textContent = `🎉 ${modeText}完成！`;
+            
+            if (currentMode === 'work') {
+                if (workSessions % 4 === 0) {
+                    modalText.innerHTML = `恭喜完成第 ${workSessions} 个番茄钟！<br>建议进行长休息。`;
+                } else {
+                    modalText.innerHTML = `恭喜完成第 ${workSessions} 个番茄钟！<br>建议进行短休息。`;
+                }
+            } else {
+                modalText.innerHTML = `${modeText}结束！<br>准备开始新的工作周期。`;
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+        
+        function startNextSession() {
+            modal.style.display = 'none';
+            
+            if (currentMode === 'work') {
+                if (workSessions % 4 === 0) {
+                    switchMode('longbreak');
+                } else {
+                    switchMode('break');
+                }
+            } else {
+                switchMode('work');
+                if (currentMode === 'work') {
+                    currentCycle++;
+                    updateStats();
+                }
+            }
+        }
+        
+        function playNotificationSound() {
+            if (window.AudioContext || window.webkitAudioContext) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 800;
+                        oscillator.type = 'sine';
+                        gainNode.gain.value = 0.3;
+                        
+                        oscillator.start();
+                        setTimeout(() => oscillator.stop(), 200);
+                    }, i * 300);
+                }
+            }
+        }
+        
+        // 请求通知权限
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        // 事件监听
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        
+        // 模式切换
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                switchMode(e.target.dataset.mode);
+            });
+        });
+        
+        // 时间滑块
+        timeSlider.addEventListener('input', (e) => {
+            if (isRunning) return;
+            
+            const minutes = parseInt(e.target.value);
+            timeLeft = minutes * 60;
+            totalTime = minutes * 60;
+            updateDisplay();
+        });
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // 阻止页面刷新时的确认对话框（如果正在运行）
+        window.addEventListener('beforeunload', function(e) {
+            if (isRunning) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (isRunning) {
+                    pauseTimer();
+                } else {
+                    startTimer();
+                }
+            } else if (e.code === 'Escape') {
+                resetTimer();
+            }
+        });
+        
+        // 初始化
+        updateSliderRange();
+        updateDisplay();
+        updateStats();
+    </script>
+</body>
+</html>
