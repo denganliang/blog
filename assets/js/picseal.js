@@ -212,14 +212,7 @@ function updateScale(scale) {
 
 function updatePreview() {
     document.getElementById('infoModel').textContent = currentState.model;
-    document.getElementById('infoDate').textContent = currentState.date;
     document.getElementById('infoDevice').textContent = currentState.device;
-    document.getElementById('infoGps').textContent = currentState.gps;
-
-    // Toggle visibility of second row if both date and gps are empty
-    const hasSecondRow = currentState.date || currentState.gps;
-    document.getElementById('infoDate').style.display = currentState.date ? 'block' : 'none';
-    document.getElementById('infoGps').style.display = currentState.gps ? 'block' : 'none';
 
     const brandImg = document.getElementById('infoBrandImg');
     brandImg.src = `/assets/images/brands/${currentState.brand}.svg`;
