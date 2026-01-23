@@ -77,11 +77,12 @@
     }
 
     .preview-info {
-      padding: calc(var(--base-padding) * var(--banner-scale));
+      padding: calc(var(--base-padding) * var(--banner-scale) * 0.8) calc(var(--base-padding) * var(--banner-scale));
       display: flex;
       align-items: center;
       background: #fff;
       color: #000;
+      line-height: 1;
     }
 
     .preview-info-left {
@@ -90,11 +91,12 @@
       flex-direction: column;
       align-items: flex-start;
       position: relative;
+      justify-content: center;
     }
 
     .preview-info-split {
       border-left: 2px solid #ddd;
-      height: calc(var(--base-height) * var(--banner-scale));
+      height: calc(var(--base-height) * var(--banner-scale) * 0.6);
       margin: 0 1.5rem;
     }
 
@@ -102,6 +104,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      justify-content: center;
     }
 
     .preview-info-model, .preview-info-device {
