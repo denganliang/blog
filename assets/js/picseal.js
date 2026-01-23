@@ -11,14 +11,16 @@ const BRANDS = [
 
 const DEFAULT_EXIF = {
     model: '',
-    date: new Date().toISOString().replace('T', ' ').split('.')[0].replace(/-/g, '.'),
+    date: '',
     gps: '',
     device: '',
     brand: 'leica',
     scale: 0.8,
     fontSize: 'normal',
     fontWeight: 'bold',
-    fontFamily: 'default'
+    fontFamily: 'default',
+    showDate: true,
+    showGps: true
 };
 
 const FONT_FAMILIES = {
@@ -150,7 +152,7 @@ function parseExif(exif) {
     }
 
     // Date
-    let date = currentState.date;
+    let date = '';
     if (exif.DateTimeOriginal) {
         const d = new Date(exif.DateTimeOriginal);
         date = `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getDate().toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
@@ -213,6 +215,11 @@ function updatePreview() {
     document.getElementById('infoDate').textContent = currentState.date;
     document.getElementById('infoDevice').textContent = currentState.device;
     document.getElementById('infoGps').textContent = currentState.gps;
+
+    // Toggle visibility of second row if both date and gps are empty
+    const hasSecondRow = currentState.date || currentState.gps;
+    document.getElementById('infoDate').style.display = currentState.date ? 'block' : 'none';
+    document.getElementById('infoGps').style.display = currentState.gps ? 'block' : 'none';
 
     const brandImg = document.getElementById('infoBrandImg');
     brandImg.src = `/assets/images/brands/${currentState.brand}.svg`;

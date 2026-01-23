@@ -20,7 +20,8 @@
       "Bash(gh:*)",
       "Bash(npx wasm-pack build:*)",
       "WebFetch(domain:cdnjs.com)",
-      "WebFetch(domain:www.jsdelivr.com)"
+      "WebFetch(domain:www.jsdelivr.com)",
+      "mcp__playwriter__execute"
     ]
   }
 }
