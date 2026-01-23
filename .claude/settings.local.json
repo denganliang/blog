@@ -11,7 +11,13 @@
       "WebFetch(domain:jimmysong.io)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "WebFetch(domain:whycoding.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh repo view:*)",
+      "Bash(gh api:*)",
+      "Bash(where:*)",
+      "Bash(gh:*)"
     ]
   }
 }

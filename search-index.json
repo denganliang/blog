@@ -22,7 +22,7 @@
     "category_en": "Productivity",
     "tags": ["Time Management", "Productivity", "Pomodoro"],
     "tags_en": ["Time Management", "Productivity", "Pomodoro"],
-    "excerpt": "The Pomodoro Technique is a simple yet effective time management method. Through cycles of 25-minute focused work and 5-minute breaks, it helps you stay productive and focused. This article will guide you through practicing this method.",
+    "excerpt": "The Pomodoro Technique is a simple yet effective time management method. Through cycles of 25-minute focused work and 5-minute breaks, it helps you stay productively and focused. This article will guide you through practicing this method.",
     "excerpt_en": "The Pomodoro Technique is a simple yet effective time management method. Through cycles of 25-minute focused work and 5-minute breaks, it helps you stay productive and focused. This article will guide you through practicing this method.",
     "url": "/en/blog/example-post/",
     "lang": "en"
@@ -54,5 +54,61 @@
     "excerpt_en": "Sharing my experience migrating from docsify to pure static HTML, including technology choices, performance optimization, and design thinking.",
     "url": "/en/blog/another-post/",
     "lang": "en"
+  },
+  {
+    "slug": "gemini-watermark-remover",
+    "title": "Gemini 水印抹除",
+    "title_en": "Gemini Watermark Remover",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["图片处理", "AI工具", "水印去除"],
+    "tags_en": ["Image Processing", "AI Tools", "Watermark Removal"],
+    "excerpt": "基于逆向 Alpha 混合算法，完美去除 Gemini 生成图片的水印。纯前端处理，保护隐私。",
+    "excerpt_en": "Perfectly remove watermarks from Gemini-generated images based on reverse alpha blending. Pure frontend processing for privacy.",
+    "url": "/tools/gemini-watermark-remover.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "gemini-watermark-remover",
+    "title": "Gemini Watermark Remover",
+    "title_en": "Gemini Watermark Remover",
+    "date": "2026-01-24",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["Image Processing", "AI Tools", "Watermark Removal"],
+    "tags_en": ["Image Processing", "AI Tools", "Watermark Removal"],
+    "excerpt": "Perfectly remove watermarks from Gemini-generated images based on reverse alpha blending. Pure frontend processing for privacy.",
+    "excerpt_en": "Perfectly remove watermarks from Gemini-generated images based on reverse alpha blending. Pure frontend processing for privacy.",
+    "url": "/en/tools/gemini-watermark-remover.html",
+    "lang": "en"
+  },
+  {
+    "slug": "pomodoro",
+    "title": "番茄钟",
+    "title_en": "Pomodoro Timer",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["生产力", "时间管理"],
+    "tags_en": ["Productivity", "Time Management"],
+    "excerpt": "基于番茄工作法的时间管理工具，帮助你保持专注。",
+    "excerpt_en": "A time management tool based on the Pomodoro Technique to help you stay focused.",
+    "url": "/tools/pomodoro.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "world-clock",
+    "title": "世界时钟",
+    "title_en": "World Clock",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["时间", "协作"],
+    "tags_en": ["Time", "Collaboration"],
+    "excerpt": "实时显示全球主要城市的当前时间。",
+    "excerpt_en": "Real-time current time for major cities worldwide.",
+    "url": "/tools/world-clock.html",
+    "lang": "zh"
   }
 ]

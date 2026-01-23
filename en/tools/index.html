@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="实用在线工具集合 - 番茄钟、世界时钟、Gemini 水印抹除等">
-  <meta name="keywords" content="在线工具,番茄钟,世界时钟,Gemini 水印抹除,图片处理">
-  <title>在线工具 - 邓安良</title>
+  <meta name="description" content="A collection of useful online tools - Pomodoro, World Clock, Gemini Watermark Remover, etc.">
+  <meta name="keywords" content="Online Tools, Pomodoro, World Clock, Gemini Watermark Remover, Image Processing">
+  <title>Online Tools - Deng Anliang</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
@@ -17,61 +17,61 @@
   <link rel="stylesheet" href="/assets/css/tools-layout.css">
 
   <!-- Alternate language -->
-  <link rel="alternate" hreflang="en" href="/en/tools/">
   <link rel="alternate" hreflang="zh" href="/tools/">
+  <link rel="alternate" hreflang="en" href="/en/tools/">
 </head>
 <body>
-  <!-- 导航栏 -->
+  <!-- Navigation -->
   <nav class="navbar">
     <div class="navbar-content">
-      <a href="/" class="navbar-logo">邓安良</a>
+      <a href="/en/" class="navbar-logo">Deng Anliang</a>
 
       <ul class="navbar-menu">
-        <li><a href="/">首页</a></li>
-        <li><a href="/about/">关于我</a></li>
-        <li><a href="/projects/">项目</a></li>
-        <li><a href="/tools/">工具</a></li>
-        <li><a href="/blog/">博客</a></li>
+        <li><a href="/en/">Home</a></li>
+        <li><a href="/en/about/">About</a></li>
+        <li><a href="/en/projects/">Projects</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
+        <li><a href="/en/blog/">Blog</a></li>
       </ul>
 
       <div class="navbar-actions">
-        <button class="lang-toggle" aria-label="切换语言">English</button>
-        <button class="theme-toggle" aria-label="切换主题"></button>
+        <button class="lang-toggle" aria-label="Switch language">中文</button>
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
       </div>
     </div>
   </nav>
 
-  <!-- 主要内容 -->
+  <!-- Main Content -->
   <main class="main-content">
     <div class="container">
       <div class="tools-layout">
-        <!-- 侧边栏 -->
+        <!-- Sidebar -->
         <aside class="tools-sidebar">
           <div class="sidebar-section">
-            <div class="sidebar-title">分类</div>
+            <div class="sidebar-title">Categories</div>
             <ul class="sidebar-menu">
               <li class="sidebar-menu-item">
-                <a href="#all" class="sidebar-menu-link active" data-category="all">所有工具</a>
+                <a href="#all" class="sidebar-menu-link active" data-category="all">All Tools</a>
               </li>
               <li class="sidebar-menu-item">
-                <a href="#image" class="sidebar-menu-link" data-category="image">图片工具</a>
+                <a href="#image" class="sidebar-menu-link" data-category="image">Image Tools</a>
               </li>
               <li class="sidebar-menu-item">
-                <a href="#productivity" class="sidebar-menu-link" data-category="productivity">生产力</a>
+                <a href="#productivity" class="sidebar-menu-link" data-category="productivity">Productivity</a>
               </li>
               <li class="sidebar-menu-item">
-                <a href="#time" class="sidebar-menu-link" data-category="time">时间管理</a>
+                <a href="#time" class="sidebar-menu-link" data-category="time">Time Management</a>
               </li>
             </ul>
           </div>
         </aside>
 
-        <!-- 内容区 -->
+        <!-- Content Area -->
         <div class="tools-content">
           <div class="tools-header">
-            <h1>在线工具</h1>
+            <h1>Online Tools</h1>
             <div class="tools-search search-box">
-              <input type="text" class="search-input" placeholder="搜索工具..." id="tool-search">
+              <input type="text" class="search-input" placeholder="Search tools..." id="tool-search">
               <span class="search-icon">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -81,95 +81,95 @@
           </div>
 
           <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-            精心打造的实用在线工具，完全免费，无需注册。
+            A collection of useful online tools, completely free and no registration required.
           </p>
 
           <div class="grid grid-3" id="tools-grid">
-            <!-- Gemini 水印抹除 -->
+            <!-- Gemini Watermark Remover -->
             <div class="card tool-card" data-categories="image">
               <div style="font-size: 2.5rem; margin-bottom: 1rem;">✨</div>
-              <div class="card-title">Gemini 水印抹除</div>
+              <div class="card-title">Gemini Watermark Remover</div>
               <div class="card-description">
-                基于逆向 Alpha 混合算法，一键完美去除 Gemini 生成图片右下角的水印。纯前端处理，保护隐私。
+                Perfectly remove the watermark from Gemini-generated images based on reverse alpha blending. Pure frontend processing for privacy.
               </div>
               <div style="margin: 1rem 0;">
-                <span class="tag-outline">图片工具</span>
-                <span class="tag-outline">AI 工具</span>
+                <span class="tag-outline">Image Tools</span>
+                <span class="tag-outline">AI Tools</span>
               </div>
               <div class="card-footer">
-                <a href="/tools/gemini-watermark-remover.html" class="btn btn-primary">开始使用</a>
+                <a href="/en/tools/gemini-watermark-remover.html" class="btn btn-primary">Start Using</a>
               </div>
             </div>
 
-            <!-- 番茄钟 -->
+            <!-- Pomodoro Timer -->
             <div class="card tool-card" data-categories="productivity,time">
               <div style="font-size: 2.5rem; margin-bottom: 1rem;">🍅</div>
-              <div class="card-title">番茄钟</div>
+              <div class="card-title">Pomodoro Timer</div>
               <div class="card-description">
-                基于番茄工作法的时间管理工具。设定25分钟专注时间，搭配5分钟短休息，提高工作效率。
+                A time management tool based on the Pomodoro Technique. Set a 25-minute focus session followed by a 5-minute break.
               </div>
               <div style="margin: 1rem 0;">
-                <span class="tag-outline">时间管理</span>
-                <span class="tag-outline">效率工具</span>
+                <span class="tag-outline">Time Management</span>
+                <span class="tag-outline">Productivity</span>
               </div>
               <div class="card-footer">
-                <a href="/tools/pomodoro.html" class="btn btn-primary">开始使用</a>
+                <a href="/tools/pomodoro.html" class="btn btn-primary">Start Using</a>
               </div>
             </div>
 
-            <!-- 世界时钟 -->
+            <!-- World Clock -->
             <div class="card tool-card" data-categories="time">
               <div style="font-size: 2.5rem; margin-bottom: 1rem;">🌍</div>
-              <div class="card-title">世界时钟</div>
+              <div class="card-title">World Clock</div>
               <div class="card-description">
-                实时显示全球主要城市的当前时间。支持添加自定义城市，方便跨时区协作。
+                Real-time current time for major cities worldwide. Add custom cities for easy cross-timezone collaboration.
               </div>
               <div style="margin: 1rem 0;">
-                <span class="tag-outline">时区转换</span>
-                <span class="tag-outline">协作工具</span>
+                <span class="tag-outline">Timezone</span>
+                <span class="tag-outline">Collaboration</span>
               </div>
               <div class="card-footer">
-                <a href="/tools/world-clock.html" class="btn btn-primary">开始使用</a>
+                <a href="/tools/world-clock.html" class="btn btn-primary">Start Using</a>
               </div>
             </div>
           </div>
 
-          <!-- 即将推出 -->
+          <!-- Coming Soon -->
           <div style="margin-top: 4rem;">
-            <h2 style="margin-bottom: 2rem;">即将推出</h2>
+            <h2 style="margin-bottom: 2rem;">Coming Soon</h2>
             <div class="grid grid-3">
               <div class="card" style="opacity: 0.7;">
                 <div style="font-size: 2.5rem; margin-bottom: 1rem;">📊</div>
                 <div class="card-title">
-                  Markdown 编辑器
-                  <span class="badge" style="background: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.7rem;">即将来临</span>
+                  Markdown Editor
+                  <span class="badge" style="background: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.7rem;">Coming Soon</span>
                 </div>
                 <div class="card-description">
-                  功能强大的在线 Markdown 编辑器，支持实时预览、导出 PDF 等功能。
+                  Powerful online Markdown editor with live preview and PDF export features.
                 </div>
               </div>
 
               <div class="card" style="opacity: 0.7;">
                 <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎨</div>
                 <div class="card-title">
-                  颜色工具
-                  <span class="badge" style="background: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.7rem;">即将来临</span>
+                  Color Tools
+                  <span class="badge" style="background: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.7rem;">Coming Soon</span>
                 </div>
                 <div class="card-description">
-                  颜色选择器、配色方案生成器、颜色转换工具。
+                  Color picker, palette generator, and color conversion tools.
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 建议新工具 -->
+          <!-- Suggest New Tool -->
           <div style="margin-top: 4rem; padding: 2rem; background: var(--bg-secondary); border-radius: 12px; text-align: center;">
-            <h3 style="margin-bottom: 1rem;">有工具建议？</h3>
+            <h3 style="margin-bottom: 1rem;">Have tool suggestions?</h3>
             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-              如果你有任何工具建议或功能需求，欢迎联系我。
+              If you have any tool suggestions or feature requests, feel free to contact me.
             </p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-              <a href="https://github.com/denganliang" class="btn btn-primary" target="_blank" rel="noopener">在 GitHub 提建议</a>
+              <a href="https://github.com/denganliang" class="btn btn-primary" target="_blank" rel="noopener">Suggest on GitHub</a>
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@
     </div>
   </main>
 
-  <!-- 页脚 -->
+  <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <div class="footer-social">
@@ -194,13 +194,13 @@
       </div>
 
       <ul class="footer-links">
-        <li><a href="/about/">关于</a></li>
-        <li><a href="/blog/">博客</a></li>
-        <li><a href="/projects/">项目</a></li>
-        <li><a href="/tools/">工具</a></li>
+        <li><a href="/en/about/">About</a></li>
+        <li><a href="/en/blog/">Blog</a></li>
+        <li><a href="/en/projects/">Projects</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
       </ul>
 
-      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+      <p>&copy; 2026 Deng Anliang. All rights reserved.</p>
     </div>
   </footer>
 
@@ -209,7 +209,7 @@
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
   <script>
-    // 侧边栏分类过滤
+    // Sidebar category filtering
     const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
     const toolCards = document.querySelectorAll('.tool-card');
     const toolSearch = document.getElementById('tool-search');

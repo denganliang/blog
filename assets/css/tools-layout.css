@@ -1,0 +1,121 @@
+/* ========================================
+   工具页面布局 - 侧边栏 + 内容区
+   ======================================== */
+
+.tools-layout {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* 侧边栏 */
+.tools-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 90px;
+  height: fit-content;
+}
+
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: 1rem;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu-item {
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-menu-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sidebar-menu-link:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-color);
+}
+
+.sidebar-menu-link.active {
+  background: var(--accent-light);
+  color: var(--accent-color);
+}
+
+/* 内容区 */
+.tools-content {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.tools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.tools-search {
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .tools-layout {
+    flex-direction: column;
+  }
+
+  .tools-sidebar {
+    width: 100%;
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+  }
+
+  .sidebar-section {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  .sidebar-title {
+    display: none;
+  }
+
+  .sidebar-menu {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tools-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tools-search {
+    width: 100%;
+    max-width: none;
+  }
+}
