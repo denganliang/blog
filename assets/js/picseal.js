@@ -214,9 +214,6 @@ function updatePreview() {
     document.getElementById('infoModel').textContent = currentState.model;
     document.getElementById('infoDevice').textContent = currentState.device;
 
-    const brandImg = document.getElementById('infoBrandImg');
-    brandImg.src = `/assets/images/brands/${currentState.brand}.svg`;
-
     const infoArea = document.getElementById('previewInfo');
     infoArea.style.fontFamily = FONT_FAMILIES[currentState.fontFamily];
 
@@ -232,18 +229,12 @@ async function handleDownload() {
     const loading = document.getElementById('loadingOverlay');
     loading.style.display = 'flex';
 
-    const zoomRatio = 4;
+    const zoomRatio = 1;
     try {
         const dataUrl = await domtoimage.toJpeg(preview, {
             quality: 0.95,
-            width: preview.clientWidth * zoomRatio,
-            height: preview.clientHeight * zoomRatio,
-            style: {
-                transform: `scale(${zoomRatio})`,
-                transformOrigin: 'top left',
-                width: preview.clientWidth + 'px',
-                height: preview.clientHeight + 'px'
-            }
+            width: preview.clientWidth,
+            height: preview.clientHeight,
         });
 
         const link = document.createElement('a');
