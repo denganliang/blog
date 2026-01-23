@@ -75,6 +75,20 @@
   </url>
 
   <url>
+    <loc>https://denganliang.com/tools/picseal.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/picseal.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
     <loc>https://denganliang.com/tools/gemini-watermark-remover.html</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>

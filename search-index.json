@@ -56,6 +56,34 @@
     "lang": "en"
   },
   {
+    "slug": "picseal",
+    "title": "PICSEAL 莱卡水印",
+    "title_en": "PICSEAL Leica Watermark",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["图片处理", "水印生成", "莱卡"],
+    "tags_en": ["Image Processing", "Watermark", "Leica"],
+    "excerpt": "生成类似小米风格的莱卡水印照片。支持自动识别主流相机品牌 EXIF 信息，纯前端处理。",
+    "excerpt_en": "Generate Xiaomi-style Leica watermark photos. Automatically parses EXIF data from major camera brands.",
+    "url": "/tools/picseal.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "picseal",
+    "title": "PICSEAL Leica Watermark",
+    "title_en": "PICSEAL Leica Watermark",
+    "date": "2026-01-24",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["Image Processing", "Watermark", "Leica"],
+    "tags_en": ["Image Processing", "Watermark", "Leica"],
+    "excerpt": "Generate Xiaomi-style Leica watermark photos. Automatically parses EXIF data from major camera brands.",
+    "excerpt_en": "Generate Xiaomi-style Leica watermark photos. Automatically parses EXIF data from major camera brands.",
+    "url": "/en/tools/picseal.html",
+    "lang": "en"
+  },
+  {
     "slug": "gemini-watermark-remover",
     "title": "Gemini 水印抹除",
     "title_en": "Gemini Watermark Remover",
