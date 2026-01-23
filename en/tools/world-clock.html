@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="世界时钟 - 查看全球主要城市的当前时间，方便跨时区协作。">
-  <title>世界时钟 - 邓安良</title>
+  <meta name="description" content="World Clock - View current time in major cities around the world for cross-timezone collaboration.">
+  <title>World Clock - Deng Anliang</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
@@ -79,13 +79,13 @@
 <body>
   <nav class="navbar">
     <div class="navbar-content">
-      <a href="/" class="navbar-logo">邓安良</a>
+      <a href="/en/" class="navbar-logo">Deng Anliang</a>
       <ul class="navbar-menu">
-        <li><a href="/">首页</a></li>
-        <li><a href="/tools/">工具</a></li>
+        <li><a href="/en/">Home</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
       </ul>
       <div class="navbar-actions">
-        <button class="lang-toggle">English</button>
+        <button class="lang-toggle">中文</button>
         <button class="theme-toggle"></button>
       </div>
     </div>
@@ -94,14 +94,14 @@
   <main class="main-content">
     <div class="container">
       <div class="breadcrumb">
-        <a href="/tools/">工具</a>
+        <a href="/en/tools/">Tools</a>
         <span class="breadcrumb-separator">/</span>
-        <span>世界时钟</span>
+        <span>World Clock</span>
       </div>
 
-      <h1>世界时钟</h1>
+      <h1>World Clock</h1>
       <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-        实时显示全球主要城市的时间。
+        Real-time display of time in major cities worldwide.
       </p>
 
       <div class="clock-grid" id="clockGrid">
@@ -112,7 +112,7 @@
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+      <p>&copy; 2026 Deng Anliang. All rights reserved.</p>
     </div>
   </footer>
 
@@ -121,18 +121,18 @@
   <script src="/assets/js/main.js"></script>
   <script>
     const cities = [
-      { name: '北京', timezone: 'Asia/Shanghai', isLocal: true },
-      { name: '东京', timezone: 'Asia/Tokyo' },
-      { name: '首尔', timezone: 'Asia/Seoul' },
-      { name: '新加坡', timezone: 'Asia/Singapore' },
-      { name: '迪拜', timezone: 'Asia/Dubai' },
-      { name: '莫斯科', timezone: 'Europe/Moscow' },
-      { name: '伦敦', timezone: 'Europe/London' },
-      { name: '巴黎', timezone: 'Europe/Paris' },
-      { name: '纽约', timezone: 'America/New_York' },
-      { name: '芝加哥', timezone: 'America/Chicago' },
-      { name: '洛杉矶', timezone: 'America/Los_Angeles' },
-      { name: '悉尼', timezone: 'Australia/Sydney' }
+      { name: 'Beijing', timezone: 'Asia/Shanghai' },
+      { name: 'Tokyo', timezone: 'Asia/Tokyo' },
+      { name: 'Seoul', timezone: 'Asia/Seoul' },
+      { name: 'Singapore', timezone: 'Asia/Singapore' },
+      { name: 'Dubai', timezone: 'Asia/Dubai' },
+      { name: 'Moscow', timezone: 'Europe/Moscow' },
+      { name: 'London', timezone: 'Europe/London' },
+      { name: 'Paris', timezone: 'Europe/Paris' },
+      { name: 'New York', timezone: 'America/New_York' },
+      { name: 'Chicago', timezone: 'America/Chicago' },
+      { name: 'Los Angeles', timezone: 'America/Los_Angeles' },
+      { name: 'Sydney', timezone: 'Australia/Sydney' }
     ];
 
     function updateClocks() {
@@ -142,7 +142,6 @@
       if (grid.children.length === 0) {
         grid.innerHTML = cities.map(city => `
           <div class="clock-card">
-            ${city.isLocal ? '<div class="local-badge">本地</div>' : ''}
             <div class="city-name">${city.name}</div>
             <div class="time-display" id="time-${city.timezone.replace('/', '-')}">--:--:--</div>
             <div class="date-display" id="date-${city.timezone.replace('/', '-')}">----/--/--</div>
@@ -155,7 +154,7 @@
         const timeEl = document.getElementById(`time-${city.timezone.replace('/', '-')}`);
         const dateEl = document.getElementById(`date-${city.timezone.replace('/', '-')}`);
 
-        const timeStr = now.toLocaleTimeString('zh-CN', {
+        const timeStr = now.toLocaleTimeString('en-US', {
           timeZone: city.timezone,
           hour12: false,
           hour: '2-digit',
@@ -163,10 +162,10 @@
           second: '2-digit'
         });
 
-        const dateStr = now.toLocaleDateString('zh-CN', {
+        const dateStr = now.toLocaleDateString('en-US', {
           timeZone: city.timezone,
           year: 'numeric',
-          month: '2-digit',
+          month: 'short',
           day: '2-digit',
           weekday: 'short'
         });

@@ -10,10 +10,10 @@ const BRANDS = [
 ];
 
 const DEFAULT_EXIF = {
-    model: 'XIAOMI 13 ULTRA',
+    model: '',
     date: new Date().toISOString().replace('T', ' ').split('.')[0].replace(/-/g, '.'),
-    gps: `41°12'47"N 124°00'16"W`,
-    device: '75mm f/1.8 1/33s ISO800',
+    gps: '',
+    device: '',
     brand: 'leica',
     scale: 0.8,
     fontSize: 'normal',
@@ -159,9 +159,9 @@ function parseExif(exif) {
     currentState = {
         ...currentState,
         brand,
-        model: formattedModel || currentState.model,
-        device: device || currentState.device,
-        gps: gps || currentState.gps,
+        model: formattedModel || '',
+        device: device || '',
+        gps: gps || '',
         date: date
     };
 

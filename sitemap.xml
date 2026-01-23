@@ -107,6 +107,17 @@
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/pomodoro.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/pomodoro.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/pomodoro.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/pomodoro.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/pomodoro.html"/>
   </url>
 
   <url>
@@ -114,6 +125,17 @@
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/world-clock.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/world-clock.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/world-clock.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/world-clock.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/world-clock.html"/>
   </url>
 
   <!-- 博客 -->

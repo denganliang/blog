@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="番茄钟 - 专注工作的时间管理工具，采用番茄工作法，帮助你提高工作效率。">
-  <title>番茄钟 - 邓安良</title>
+  <meta name="description" content="Pomodoro Timer - A time management tool based on the Pomodoro Technique to help you improve productivity.">
+  <title>Pomodoro Timer - Deng Anliang</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
@@ -158,13 +158,13 @@
 <body>
   <nav class="navbar">
     <div class="navbar-content">
-      <a href="/" class="navbar-logo">邓安良</a>
+      <a href="/en/" class="navbar-logo">Deng Anliang</a>
       <ul class="navbar-menu">
-        <li><a href="/">首页</a></li>
-        <li><a href="/tools/">工具</a></li>
+        <li><a href="/en/">Home</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
       </ul>
       <div class="navbar-actions">
-        <button class="lang-toggle">English</button>
+        <button class="lang-toggle">中文</button>
         <button class="theme-toggle"></button>
       </div>
     </div>
@@ -174,28 +174,28 @@
     <div class="container">
       <div class="pomodoro-container">
         <div class="breadcrumb">
-          <a href="/tools/">工具</a>
+          <a href="/en/tools/">Tools</a>
           <span class="breadcrumb-separator">/</span>
-          <span>番茄钟</span>
+          <span>Pomodoro Timer</span>
         </div>
 
-        <h1>番茄钟</h1>
+        <h1>Pomodoro Timer</h1>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-          专注工作的时间管理工具，帮助你提高效率。
+          A time management tool based on the Pomodoro Technique to help you stay focused.
         </p>
 
         <div class="timer-card">
           <div class="mode-switch">
-            <button class="mode-btn active" data-mode="work">工作</button>
-            <button class="mode-btn" data-mode="break">短休息</button>
-            <button class="mode-btn" data-mode="longbreak">长休息</button>
+            <button class="mode-btn active" data-mode="work">Work</button>
+            <button class="mode-btn" data-mode="break">Short Break</button>
+            <button class="mode-btn" data-mode="longbreak">Long Break</button>
           </div>
 
           <div class="timer-display" id="timerDisplay">25:00</div>
 
           <input type="range" class="time-slider" id="timeSlider" min="1" max="60" value="25">
           <div style="font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 1rem;" id="timeRange">
-            1 - 60 分钟
+            1 - 60 Minutes
           </div>
 
           <div class="progress-bar">
@@ -203,25 +203,25 @@
           </div>
 
           <div class="controls">
-            <button class="btn btn-primary" id="startBtn">开始</button>
-            <button class="btn btn-secondary" id="pauseBtn" style="display: none;">暂停</button>
-            <button class="btn btn-outline" id="resetBtn">重置</button>
+            <button class="btn btn-primary" id="startBtn">Start</button>
+            <button class="btn btn-secondary" id="pauseBtn" style="display: none;">Pause</button>
+            <button class="btn btn-outline" id="resetBtn">Reset</button>
           </div>
 
-          <div id="status" style="font-weight: 500; color: var(--text-secondary);">准备开始</div>
+          <div id="status" style="font-weight: 500; color: var(--text-secondary);">Ready to Start</div>
 
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-number" id="workSessions">0</div>
-              <div class="stat-label">完成番茄数</div>
+              <div class="stat-label">Pomodoros</div>
             </div>
             <div class="stat-item">
               <div class="stat-number" id="totalTime">0</div>
-              <div class="stat-label">总专注时长</div>
+              <div class="stat-label">Focus (min)</div>
             </div>
             <div class="stat-item">
               <div class="stat-number" id="currentCycle">1</div>
-              <div class="stat-label">当前周期</div>
+              <div class="stat-label">Current Cycle</div>
             </div>
           </div>
         </div>
@@ -231,19 +231,19 @@
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+      <p>&copy; 2026 Deng Anliang. All rights reserved.</p>
     </div>
   </footer>
 
   <div class="modal" id="modal">
     <div class="modal-content">
-      <h2 id="modalTitle" style="margin-bottom: 1rem;">🎉 时间到！</h2>
+      <h2 id="modalTitle" style="margin-bottom: 1rem;">🎉 Time's Up!</h2>
       <p id="modalText" style="margin-bottom: 2rem; color: var(--text-secondary);">
-        恭喜你完成了一个番茄钟！<br>现在可以休息一下了。
+        Congratulations! You completed a Pomodoro session.<br>Time to take a break.
       </p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button class="btn btn-primary" onclick="startNextSession()">开始下一阶段</button>
-        <button class="btn btn-secondary" onclick="closeModal()">稍后</button>
+        <button class="btn btn-primary" onclick="startNextSession()">Next Phase</button>
+        <button class="btn btn-secondary" onclick="closeModal()">Maybe Later</button>
       </div>
     </div>
   </div>
@@ -263,9 +263,9 @@
     let currentCycle = 1;
 
     const modes = {
-      work: { duration: 25, name: '工作' },
-      break: { duration: 5, name: '短休息' },
-      longbreak: { duration: 15, name: '长休息' }
+      work: { duration: 25, name: 'Work' },
+      break: { duration: 5, name: 'Short Break' },
+      longbreak: { duration: 15, name: 'Long Break' }
     };
 
     const timerDisplay = document.getElementById('timerDisplay');
@@ -291,7 +291,7 @@
       const progressPercent = ((totalTime - timeLeft) / totalTime) * 100;
       progress.style.width = `${progressPercent}%`;
 
-      document.title = `${timerDisplay.textContent} - ${modes[currentMode].name} - 番茄钟`;
+      document.title = `${timerDisplay.textContent} - ${modes[currentMode].name} - Pomodoro`;
     }
 
     function updateStats() {
@@ -316,18 +316,18 @@
       updateSliderRange();
       updateDisplay();
 
-      status.textContent = `准备开始${modes[mode].name}`;
+      status.textContent = `Ready to start ${modes[mode].name}`;
     }
 
     function updateSliderRange() {
       if (currentMode === 'work') {
         timeSlider.min = 1;
         timeSlider.max = 60;
-        timeRange.textContent = '1 - 60 分钟';
+        timeRange.textContent = '1 - 60 Minutes';
       } else {
         timeSlider.min = 1;
         timeSlider.max = 30;
-        timeRange.textContent = '1 - 30 分钟';
+        timeRange.textContent = '1 - 30 Minutes';
       }
     }
 
@@ -338,10 +338,10 @@
       isPaused = false;
       startBtn.style.display = 'none';
       pauseBtn.style.display = 'inline-block';
-      pauseBtn.textContent = '暂停';
+      pauseBtn.textContent = 'Pause';
       timeSlider.disabled = true;
 
-      status.textContent = `正在${modes[currentMode].name}中...`;
+      status.textContent = `${modes[currentMode].name} in progress...`;
 
       timer = setInterval(() => {
         timeLeft--;
@@ -369,12 +369,12 @@
             completeSession();
           }
         }, 1000);
-        pauseBtn.textContent = '暂停';
-        status.textContent = `继续${modes[currentMode].name}中...`;
+        pauseBtn.textContent = 'Pause';
+        status.textContent = `${modes[currentMode].name} continues...`;
       } else {
         clearInterval(timer);
-        pauseBtn.textContent = '继续';
-        status.textContent = `${modes[currentMode].name}已暂停`;
+        pauseBtn.textContent = 'Resume';
+        status.textContent = `${modes[currentMode].name} paused`;
       }
       isPaused = !isPaused;
     }
@@ -386,9 +386,9 @@
       timeLeft = totalTime;
       startBtn.style.display = 'inline-block';
       pauseBtn.style.display = 'none';
-      pauseBtn.textContent = '暂停';
+      pauseBtn.textContent = 'Pause';
       timeSlider.disabled = false;
-      status.textContent = `准备开始${modes[currentMode].name}`;
+      status.textContent = `Ready to start ${modes[currentMode].name}`;
       updateDisplay();
     }
 
@@ -407,8 +407,8 @@
       playNotificationSound();
 
       if (Notification.permission === 'granted') {
-        new Notification(`${modes[currentMode].name}完成！`, {
-          body: `恭喜完成${modes[currentMode].name}时间！`,
+        new Notification(`${modes[currentMode].name} Finished!`, {
+          body: `Congratulations! ${modes[currentMode].name} time is up!`,
           icon: '🍅'
         });
       }
@@ -416,16 +416,16 @@
 
     function showModal() {
       const modeText = modes[currentMode].name;
-      modalTitle.textContent = `🎉 ${modeText}完成！`;
+      modalTitle.textContent = `🎉 ${modeText} Finished!`;
 
       if (currentMode === 'work') {
         if (workSessions % 4 === 0) {
-          modalText.innerHTML = `恭喜完成第 ${workSessions} 个番茄钟！<br>建议进行长休息。`;
+          modalText.innerHTML = `You completed your ${workSessions}th pomodoro!<br>Take a long break.`;
         } else {
-          modalText.innerHTML = `恭喜完成第 ${workSessions} 个番茄钟！<br>建议进行短休息。`;
+          modalText.innerHTML = `You completed your ${workSessions}th pomodoro!<br>Take a short break.`;
         }
       } else {
-        modalText.innerHTML = `${modeText}结束！<br>准备开始新的工作周期。`;
+        modalText.innerHTML = `${modeText} finished!<br>Ready for a new work cycle?`;
       }
 
       modal.style.display = 'flex';
