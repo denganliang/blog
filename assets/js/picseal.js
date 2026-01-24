@@ -288,7 +288,7 @@ function updatePreview() {
 
     // Update Brand Icon
     const infoBrand = document.getElementById('infoBrand');
-    if (currentState.brand && currentState.brand !== 'unknow') {
+    if (currentState.brand && currentState.brand !== 'unknow' && currentState.brand !== 'leica') {
         infoBrand.innerHTML = `<img src="/assets/images/brands/${currentState.brand}.svg" alt="${currentState.brand}">`;
     } else {
         infoBrand.innerHTML = '';
