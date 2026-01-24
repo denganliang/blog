@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="功能强大的在线 Markdown 编辑器，支持实时预览、导出 PDF 和 Word 文档。">
+  <title>Markdown 编辑器 - 邓安良</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <!-- EasyMDE CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+  <style>
+    .editor-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    /* Fix for EasyMDE dark mode integration */
+    [data-theme="dark"] .EasyMDEContainer .CodeMirror {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    [data-theme="dark"] .editor-toolbar {
+      background-color: var(--bg-primary);
+      border-color: var(--border-color);
+    }
+    [data-theme="dark"] .editor-toolbar button {
+      color: var(--text-primary);
+    }
+    [data-theme="dark"] .editor-toolbar button:hover,
+    [data-theme="dark"] .editor-toolbar button.active {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    [data-theme="dark"] .editor-preview,
+    [data-theme="dark"] .editor-preview-side {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    /* Button icons */
+    .btn-icon {
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="navbar-logo">邓安良</a>
+      <ul class="navbar-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/tools/">工具</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="lang-toggle">English</button>
+        <button class="theme-toggle"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="editor-container">
+        <div class="breadcrumb">
+          <a href="/tools/">工具</a>
+          <span class="breadcrumb-separator">/</span>
+          <span>Markdown 编辑器</span>
+        </div>
+
+        <h1>Markdown 编辑器</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+          支持实时预览、自动保存，可导出为 PDF、Word 和 Markdown 格式。所有数据仅保存在本地浏览器中。
+        </p>
+
+        <div class="toolbar-actions">
+          <button id="export-md" class="btn btn-secondary">
+            <span class="btn-icon">⬇️</span>导出 Markdown
+          </button>
+          <button id="export-pdf" class="btn btn-secondary">
+            <span class="btn-icon">📄</span>导出 PDF
+          </button>
+          <button id="export-word" class="btn btn-secondary">
+            <span class="btn-icon">📝</span>导出 Word
+          </button>
+        </div>
+
+        <textarea id="markdown-editor"></textarea>
+      </div>
+    </div>
+  </main>
+
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
+
+  <!-- Scripts -->
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/markdown-editor.js"></script>
+</body>
+</html>

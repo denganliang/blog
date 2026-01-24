@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Powerful online Markdown editor with live preview, supporting PDF and Word export.">
+  <title>Markdown Editor - Deng Anliang</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <!-- EasyMDE CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+  <style>
+    .editor-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    /* Fix for EasyMDE dark mode integration */
+    [data-theme="dark"] .EasyMDEContainer .CodeMirror {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    [data-theme="dark"] .editor-toolbar {
+      background-color: var(--bg-primary);
+      border-color: var(--border-color);
+    }
+    [data-theme="dark"] .editor-toolbar button {
+      color: var(--text-primary);
+    }
+    [data-theme="dark"] .editor-toolbar button:hover,
+    [data-theme="dark"] .editor-toolbar button.active {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    [data-theme="dark"] .editor-preview,
+    [data-theme="dark"] .editor-preview-side {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    /* Button icons */
+    .btn-icon {
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/en/" class="navbar-logo">Deng Anliang</a>
+      <ul class="navbar-menu">
+        <li><a href="/en/">Home</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="lang-toggle">中文</button>
+        <button class="theme-toggle"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="editor-container">
+        <div class="breadcrumb">
+          <a href="/en/tools/">Tools</a>
+          <span class="breadcrumb-separator">/</span>
+          <span>Markdown Editor</span>
+        </div>
+
+        <h1>Markdown Editor</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+          Features live preview, auto-save, and export to PDF, Word, and Markdown formats. All data is stored locally in your browser.
+        </p>
+
+        <div class="toolbar-actions">
+          <button id="export-md" class="btn btn-secondary">
+            <span class="btn-icon">⬇️</span>Export Markdown
+          </button>
+          <button id="export-pdf" class="btn btn-secondary">
+            <span class="btn-icon">📄</span>Export PDF
+          </button>
+          <button id="export-word" class="btn btn-secondary">
+            <span class="btn-icon">📝</span>Export Word
+          </button>
+        </div>
+
+        <textarea id="markdown-editor"></textarea>
+      </div>
+    </div>
+  </main>
+
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
+
+  <!-- Scripts -->
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/markdown-editor.js"></script>
+</body>
+</html>
