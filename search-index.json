@@ -140,6 +140,34 @@
     "lang": "zh"
   },
   {
+    "slug": "image-toolbox",
+    "title": "图片工具箱",
+    "title_en": "Image Toolbox",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["图片工具", "图片压缩", "格式转换"],
+    "tags_en": ["Image Tools", "Compression", "Converter"],
+    "excerpt": "集成智能图片压缩、格式转换等实用功能。支持指定目标大小压缩，纯前端处理，无需上传服务器。",
+    "excerpt_en": "Integrated image compression and format conversion tools. Supports target size compression. Pure frontend processing for privacy.",
+    "url": "/tools/image-toolbox.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "image-toolbox",
+    "title": "Image Toolbox",
+    "title_en": "Image Toolbox",
+    "date": "2026-01-24",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["Image Tools", "Compression", "Converter"],
+    "tags_en": ["Image Tools", "Compression", "Converter"],
+    "excerpt": "Integrated image compression and format conversion tools. Supports target size compression. Pure frontend processing for privacy.",
+    "excerpt_en": "Integrated image compression and format conversion tools. Supports target size compression. Pure frontend processing for privacy.",
+    "url": "/en/tools/image-toolbox.html",
+    "lang": "en"
+  },
+  {
     "slug": "dev-toolbox",
     "title": "开发工具箱",
     "title_en": "Developer Toolbox",
@@ -152,6 +180,34 @@
     "excerpt_en": "Integrated developer toolbox with 15+ utilities including encoding, JSON formatting, regex testing, hashing, and more. Pure front-end, your data stays secure.",
     "url": "/tools/dev-toolbox.html",
     "lang": "zh"
+  },
+  {
+    "slug": "image-toolbox",
+    "title": "图片工具箱",
+    "title_en": "Image Toolbox",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["图片工具", "图片压缩", "格式转换"],
+    "tags_en": ["Image Tools", "Compression", "Converter"],
+    "excerpt": "集成智能图片压缩、格式转换等实用功能。支持指定目标大小压缩，纯前端处理，无需上传服务器。",
+    "excerpt_en": "Integrated image compression and format conversion tools. Supports target size compression. Pure frontend processing for privacy.",
+    "url": "/tools/image-toolbox.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "image-toolbox",
+    "title": "Image Toolbox",
+    "title_en": "Image Toolbox",
+    "date": "2026-01-24",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["Image Tools", "Compression", "Converter"],
+    "tags_en": ["Image Tools", "Compression", "Converter"],
+    "excerpt": "Integrated image compression and format conversion tools. Supports target size compression. Pure frontend processing for privacy.",
+    "excerpt_en": "Integrated image compression and format conversion tools. Supports target size compression. Pure frontend processing for privacy.",
+    "url": "/en/tools/image-toolbox.html",
+    "lang": "en"
   },
   {
     "slug": "dev-toolbox",

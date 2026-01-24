@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="图片工具箱 - 在线图片处理工具集合，包含智能图片压缩、格式转换等实用工具。">
+  <meta name="keywords" content="图片工具,图片压缩,指定大小压缩,图片格式转换,在线工具">
+  <title>图片工具箱 - 邓安良</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <!-- Alternate language -->
+  <link rel="alternate" hreflang="en" href="/en/tools/image-toolbox.html">
+  <link rel="alternate" hreflang="zh" href="/tools/image-toolbox.html">
+
+  <style>
+    .toolbox-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .toolbox-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .toolbox-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .toolbox-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Tab导航 */
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-color);
+      border-bottom-color: var(--accent-color);
+    }
+
+    /* 工具面板 */
+    .tool-panel {
+      display: none;
+    }
+
+    .tool-panel.active {
+      display: block;
+    }
+
+    /* 工具卡片 */
+    .tool-item {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-item h3 {
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tool-item h3 .icon {
+      font-size: 1.3rem;
+    }
+
+    /* 输入输出区域 */
+    .io-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .io-group.two-columns {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .io-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .io-section label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .io-section input[type="text"],
+    .io-section input[type="number"],
+    .io-section select {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      width: 100%;
+    }
+
+    /* 按钮组 */
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    /* 文件上传区域 */
+    .file-upload {
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .file-upload:hover, .file-upload.drag-over {
+      border-color: var(--accent-color);
+      background: var(--bg-secondary);
+    }
+
+    .file-upload input[type="file"] {
+      display: none;
+    }
+
+    .preview-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    /* 子导航栏 */
+    .sub-nav {
+      position: sticky;
+      top: 60px;
+      background: var(--bg-primary);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
+    }
+
+    .sub-nav-list {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .sub-nav-item {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .sub-nav-item:hover {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    /* 压缩结果信息 */
+    .compression-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: none;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .success-text {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .error {
+      color: #ef4444;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .toolbox-header h1 {
+        font-size: 2rem;
+      }
+
+      .tab-nav {
+        justify-content: flex-start;
+      }
+
+      .tool-item {
+        padding: 1rem;
+      }
+
+      .sub-nav {
+        top: 50px;
+      }
+
+      .sub-nav-list {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .sub-nav-item {
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="navbar-logo">邓安良</a>
+
+      <ul class="navbar-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/about/">关于我</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+        <li><a href="/blog/">博客</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <button class="lang-toggle" aria-label="切换语言">English</button>
+        <button class="theme-toggle" aria-label="切换主题"></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主要内容 -->
+  <main class="main-content">
+    <div class="toolbox-container">
+      <!-- 页面标题 -->
+      <div class="toolbox-header">
+        <h1>🖼️ 图片工具箱</h1>
+        <p>集成图片压缩、格式转换等实用工具，纯前端处理，保护隐私</p>
+      </div>
+
+      <!-- Tab导航 -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="basic-tools">基础工具</button>
+      </div>
+
+      <!-- 子导航栏 -->
+      <nav class="sub-nav">
+        <div class="sub-nav-list">
+          <a href="#compress" class="sub-nav-item">图片压缩</a>
+        </div>
+      </nav>
+
+      <!-- 基础工具面板 -->
+      <div class="tool-panel active" id="basic-tools">
+        <!-- 图片压缩 -->
+        <div class="tool-item" id="compress">
+          <h3><span class="icon">📉</span> 图片压缩工具</h3>
+
+          <div class="file-upload" id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" onchange="handleFileSelect(event)">
+            <div id="upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请加载一张图片</p>
+              <p class="hint">点击或拖拽图片到此处 (支持 JPG, PNG, WEBP)</p>
+            </div>
+            <div class="preview-container">
+              <img id="preview-img" class="preview-image">
+              <p id="file-info" style="margin-top: 0.5rem; color: var(--text-secondary);"></p>
+            </div>
+          </div>
+
+          <div class="io-group">
+            <div class="io-section">
+              <label>目标大小 (KB)</label>
+              <input type="number" id="target-size" placeholder="例如: 200" value="200" min="10">
+              <p class="hint">工具会自动调整质量以接近此大小（仅支持JPG/WEBP输出）</p>
+            </div>
+
+            <div class="io-section">
+              <label>新文件名 (可选)</label>
+              <input type="text" id="new-filename" placeholder="不填则使用原文件名">
+            </div>
+
+            <div class="io-section">
+              <label>输出格式</label>
+              <select id="output-format">
+                <option value="image/jpeg">JPG</option>
+                <option value="image/webp">WEBP</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="compress-btn" onclick="startCompression()" disabled>开始压缩</button>
+            <button class="btn btn-secondary" onclick="resetCompressor()">重置</button>
+            <a id="download-link" class="btn" style="display: none; background: #10b981;" download>下载图片</a>
+          </div>
+
+          <div id="result-info" class="compression-info"></div>
+          <div id="error-msg" class="error"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-social">
+        <a href="mailto:i@denganliang.com" aria-label="Email">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+          </svg>
+        </a>
+        <a href="https://github.com/denganliang" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <a href="https://twitter.com/denganliang" target="_blank" rel="noopener" aria-label="Twitter">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057a3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+          </svg>
+        </a>
+      </div>
+
+      <ul class="footer-links">
+        <li><a href="/about/">关于</a></li>
+        <li><a href="/blog/">博客</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+      </ul>
+
+      <p style="margin-bottom: 0.5rem;">联系方式: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
+      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+
+  <script>
+    // ==================== 拖拽上传处理 ====================
+    const dropZone = document.getElementById('drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      dropZone.classList.add('drag-over');
+    }
+
+    function unhighlight(e) {
+      dropZone.classList.remove('drag-over');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      handleFiles(files);
+    }
+
+    // ==================== 图片处理逻辑 ====================
+    let originalImage = null;
+    let originalFile = null;
+
+    function handleFiles(files) {
+      if (files.length === 0) return;
+
+      const file = files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('请选择有效的图片文件');
+        return;
+      }
+
+      originalFile = file;
+
+      // 显示文件信息
+      const info = document.getElementById('file-info');
+      info.textContent = `原始文件: ${file.name} (${formatSize(file.size)})`;
+
+      // 预览
+      const img = document.getElementById('preview-img');
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        img.src = e.target.result;
+        img.style.display = 'block';
+        document.getElementById('upload-text').style.display = 'none';
+
+        // 加载到Image对象用于处理
+        originalImage = new Image();
+        originalImage.src = e.target.result;
+
+        document.getElementById('compress-btn').disabled = false;
+        document.getElementById('result-info').style.display = 'none';
+        document.getElementById('download-link').style.display = 'none';
+        document.getElementById('error-msg').textContent = '';
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async function startCompression() {
+      if (!originalImage) return;
+
+      const targetSizeKB = parseFloat(document.getElementById('target-size').value);
+      if (!targetSizeKB || targetSizeKB <= 0) {
+        alert('请输入有效的目标大小');
+        return;
+      }
+
+      const targetSizeBytes = targetSizeKB * 1024;
+      const outputFormat = document.getElementById('output-format').value;
+      const btn = document.getElementById('compress-btn');
+
+      btn.textContent = '处理中...';
+      btn.disabled = true;
+
+      try {
+        // 使用二分法寻找合适的质量参数
+        let minQ = 0.01;
+        let maxQ = 1.0;
+        let bestBlob = null;
+        let bestQuality = 1.0;
+
+        // 创建Canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = originalImage.naturalWidth;
+        canvas.height = originalImage.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(originalImage, 0, 0);
+
+        // 第一次尝试，使用最高质量
+        const initialBlob = await new Promise(resolve => canvas.toBlob(resolve, outputFormat, 1.0));
+
+        if (initialBlob.size <= targetSizeBytes) {
+          // 如果最高质量已经满足要求，直接使用
+          bestBlob = initialBlob;
+          bestQuality = 1.0;
+        } else {
+          // 二分查找
+          for (let i = 0; i < 7; i++) { // 7次迭代足够精确
+            const midQ = (minQ + maxQ) / 2;
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, outputFormat, midQ));
+
+            if (blob.size <= targetSizeBytes) {
+              bestBlob = blob;
+              bestQuality = midQ;
+              minQ = midQ; // 尝试更高的质量
+            } else {
+              maxQ = midQ; // 需要更低的质量
+            }
+          }
+
+          // 如果二分查找后还没找到满足的（通常是目标太小），就用最小质量或最后找到的
+          if (!bestBlob) {
+            bestBlob = await new Promise(resolve => canvas.toBlob(resolve, outputFormat, minQ));
+            bestQuality = minQ;
+          }
+        }
+
+        showResult(bestBlob, bestQuality);
+
+      } catch (e) {
+        console.error(e);
+        document.getElementById('error-msg').textContent = '压缩过程中出错: ' + e.message;
+      } finally {
+        btn.textContent = '开始压缩';
+        btn.disabled = false;
+      }
+    }
+
+    function showResult(blob, quality) {
+      const resultInfo = document.getElementById('result-info');
+      const downloadLink = document.getElementById('download-link');
+      const targetSizeKB = parseFloat(document.getElementById('target-size').value);
+
+      // 生成下载链接
+      const url = URL.createObjectURL(blob);
+      const ext = document.getElementById('output-format').value === 'image/webp' ? 'webp' : 'jpg';
+
+      // 确定文件名
+      let filename = document.getElementById('new-filename').value.trim();
+      if (!filename) {
+        const originalName = originalFile.name;
+        const dotIndex = originalName.lastIndexOf('.');
+        if (dotIndex > 0) {
+          filename = originalName.substring(0, dotIndex) + '_compressed';
+        } else {
+          filename = originalName + '_compressed';
+        }
+      }
+      if (!filename.toLowerCase().endsWith('.' + ext)) {
+        filename += '.' + ext;
+      }
+
+      downloadLink.href = url;
+      downloadLink.download = filename;
+      downloadLink.style.display = 'inline-block';
+
+      // 显示结果信息
+      const compressionRatio = ((1 - (blob.size / originalFile.size)) * 100).toFixed(1);
+      const isSuccess = blob.size <= targetSizeKB * 1024;
+
+      resultInfo.innerHTML = `
+        <div class="info-row">
+          <span>原始大小:</span>
+          <span>${formatSize(originalFile.size)}</span>
+        </div>
+        <div class="info-row">
+          <span>压缩后大小:</span>
+          <span class="${isSuccess ? 'success-text' : ''}">${formatSize(blob.size)}</span>
+        </div>
+        <div class="info-row">
+          <span>压缩率:</span>
+          <span>-${compressionRatio}% (质量: ${(quality * 100).toFixed(0)}%)</span>
+        </div>
+        ${!isSuccess ? '<div class="error">警告: 无法压缩到目标大小，已使用最低质量。建议调整图片尺寸。</div>' : ''}
+      `;
+      resultInfo.style.display = 'block';
+    }
+
+    function resetCompressor() {
+      document.getElementById('file-input').value = '';
+      document.getElementById('preview-img').style.display = 'none';
+      document.getElementById('upload-text').style.display = 'block';
+      document.getElementById('file-info').textContent = '';
+      document.getElementById('compress-btn').disabled = true;
+      document.getElementById('result-info').style.display = 'none';
+      document.getElementById('download-link').style.display = 'none';
+      document.getElementById('error-msg').textContent = '';
+      document.getElementById('target-size').value = '200';
+      document.getElementById('new-filename').value = '';
+      originalImage = null;
+      originalFile = null;
+    }
+  </script>
+</body>
+</html>
