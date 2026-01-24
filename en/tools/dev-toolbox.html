@@ -559,7 +559,7 @@
       <!-- Data Tools Panel -->
       <div class="tool-panel" id="data-tools">
         <!-- JSON Formatter -->
-        <div class="tool-item">
+        <div class="tool-item" id="json">
           <h3><span class="icon">{ }</span> JSON Formatter</h3>
           <div class="io-group">
             <div class="io-section">
@@ -580,7 +580,7 @@
         </div>
 
         <!-- JWT Parser -->
-        <div class="tool-item">
+        <div class="tool-item" id="jwt">
           <h3><span class="icon">🔐</span> JWT Parser</h3>
           <div class="io-group">
             <div class="io-section">
@@ -600,7 +600,7 @@
         </div>
 
         <!-- UUID Generator -->
-        <div class="tool-item">
+        <div class="tool-item" id="uuid">
           <h3><span class="icon">🆔</span> UUID Generator</h3>
           <div class="io-group">
             <div class="io-section">
@@ -619,7 +619,7 @@
         </div>
 
         <!-- Timestamp Converter -->
-        <div class="tool-item">
+        <div class="tool-item" id="timestamp">
           <h3><span class="icon">⏰</span> Timestamp Converter</h3>
 
           <!-- Current Time Display -->
@@ -713,7 +713,7 @@
       <!-- Crypto Tools Panel -->
       <div class="tool-panel" id="crypto-tools">
         <!-- Hash Generator -->
-        <div class="tool-item">
+        <div class="tool-item" id="hash">
           <h3><span class="icon">🔒</span> Hash Generator</h3>
           <div class="io-group">
             <div class="io-section">
@@ -732,7 +732,7 @@
         </div>
 
         <!-- QR Code Generator -->
-        <div class="tool-item">
+        <div class="tool-item" id="qr-gen">
           <h3><span class="icon">📱</span> QR Code Generator</h3>
           <div class="io-group">
             <div class="io-section">
@@ -751,7 +751,7 @@
         </div>
 
         <!-- QR Code Decoder -->
-        <div class="tool-item">
+        <div class="tool-item" id="qr-decode">
           <h3><span class="icon">📷</span> QR Code Decoder</h3>
           <div class="file-upload" onclick="document.getElementById('qr-file').click()">
             <input type="file" id="qr-file" accept="image/*" onchange="decodeQRCode(event)">
