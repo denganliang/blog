@@ -6,15 +6,65 @@
 .card {
   background: var(--card-bg);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1.75rem;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
   box-shadow: var(--card-hover-shadow);
   transform: translateY(-4px);
+}
+
+.card-meta {
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 0.875rem;
+  color: var(--text-primary);
+}
+
+.card-description {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.card-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.card-date {
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+.card-link {
+  font-weight: 600;
+  color: var(--accent-color);
+  transition: color 0.2s ease;
+}
+
+.card-link:hover {
+  color: var(--accent-hover);
 }
 
 .tool-card {
