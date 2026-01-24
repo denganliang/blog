@@ -30,7 +30,9 @@
       "Bash(ls:*)",
       "Bash(git reset:*)",
       "Bash(python:*)",
-      "Skill(playwright-skill)"
+      "Skill(playwright-skill)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)"
     ]
   }
 }
