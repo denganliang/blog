@@ -104,7 +104,7 @@
             </div>
 
             <!-- 图片工具箱 -->
-            <div class="card tool-card" data-categories="image">
+            <div class="card tool-card" data-categories="image" data-keywords="压缩, 格式转换, 视频转GIF, 视频压缩, 裁剪, 旋转, 水印">
               <div class="tool-card-header">
                 <div class="tool-card-icon">🖼️</div>
                 <div class="card-title">图片工具箱</div>
@@ -176,7 +176,7 @@
             </div>
 
             <!-- 开发工具箱 -->
-            <div class="card tool-card" data-categories="productivity">
+            <div class="card tool-card" data-categories="productivity" data-keywords="编码转换, JSON, 正则表达式, 哈希, MD5, SHA, Base64, URL编码, 时间戳, UUID, 二维码, 颜色转换">
               <div class="tool-card-header">
                 <div class="tool-card-icon">🧰</div>
                 <div class="card-title">开发工具箱</div>
@@ -296,9 +296,10 @@
         const categories = card.dataset.categories.split(',');
         const title = card.querySelector('.card-title').textContent.toLowerCase();
         const description = card.querySelector('.card-description').textContent.toLowerCase();
+        const keywords = (card.dataset.keywords || '').toLowerCase();
 
         const matchesCategory = category === 'all' || categories.includes(category);
-        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm) || keywords.includes(searchTerm);
 
         if (matchesCategory && matchesSearch) {
           card.style.display = '';
