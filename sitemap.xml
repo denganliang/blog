@@ -75,17 +75,21 @@
   </url>
 
   <url>
-    <loc>https://denganliang.com/tools/picseal.html</loc>
+    <loc>https://denganliang.com/tools/photosign.html</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/photosign.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/photosign.html"/>
   </url>
 
   <url>
-    <loc>https://denganliang.com/en/tools/picseal.html</loc>
+    <loc>https://denganliang.com/en/tools/photosign.html</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/photosign.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/photosign.html"/>
   </url>
 
   <url>
@@ -93,6 +97,8 @@
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/gemini-watermark-remover.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/gemini-watermark-remover.html"/>
   </url>
 
   <url>
@@ -100,6 +106,8 @@
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/gemini-watermark-remover.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/gemini-watermark-remover.html"/>
   </url>
 
   <url>
@@ -154,6 +162,42 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/dev-toolbox.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/dev-toolbox.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/tools/image-toolbox.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/image-toolbox.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/image-toolbox.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/image-toolbox.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/image-toolbox.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/image-toolbox.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/tools/markdown-editor.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/markdown-editor.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/markdown-editor.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/markdown-editor.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/markdown-editor.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/markdown-editor.html"/>
   </url>
 
   <!-- 博客 -->

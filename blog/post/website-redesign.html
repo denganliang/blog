@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="从docsify迁移到纯静态HTML的网站重构经验分享，包括技术选型、性能优化和设计思路。如何在没有框架的情况下构建现代化的个人网站。">
+  <meta name="author" content="邓安良">
+
+  <title>我的个人网站重构之旅 - 邓安良</title>
+
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://denganliang.com/blog/another-post/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="我的个人网站重构之旅 - 邓安良">
+  <meta property="og:description" content="从docsify迁移到纯静态HTML的网站重构经验分享，包括技术选型、性能优化和设计思路。">
+  <meta property="og:url" content="https://denganliang.com/blog/another-post/">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-01-22">
+  <meta property="article:author" content="邓安良">
+  <meta property="article:tag" content="Web开发">
+  <meta property="article:tag" content="设计">
+  <meta property="article:tag" content="性能优化">
+
+  <!-- Alternate language -->
+  <link rel="alternate" hreflang="en" href="/en/blog/another-post/">
+  <link rel="alternate" hreflang="zh" href="/blog/another-post/">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="navbar-logo">邓安良</a>
+      <ul class="navbar-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/about/">关于我</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+        <li><a href="/blog/">博客</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="lang-toggle" aria-label="切换语言">English</button>
+        <button class="theme-toggle" aria-label="切换主题"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <article class="article">
+        <header class="article-header">
+          <div class="article-meta">
+            <span class="article-date">2026-01-22</span>
+            <span class="tag">Web开发</span>
+            <span class="tag">设计</span>
+            <span class="tag">性能优化</span>
+          </div>
+          <h1 class="article-title">我的个人网站重构之旅</h1>
+        </header>
+
+        <div class="article-content">
+          <p>作为一个开发者，个人网站是展示自我技术栈和审美的最佳窗口。最近，我花了一些时间对我的个人网站进行了彻底的重构。在这篇文章中，我将分享为什么我决定重构，我的技术选型思考，以及在过程中遇到的一些挑战和解决方案。</p>
+
+          <h2>为什么要重构？</h2>
+          <p>我的旧网站是基于 Docsify 构建的。Docsify 是一个非常优秀的文档生成工具，轻量且易用。但随着我对网站定制化需求的增加，我发现 Docsify 存在一些局限性：</p>
+          <ul>
+            <li><strong>SEO 不友好：</strong> 默认情况下，Docsify 是单页应用（SPA），内容通过 JavaScript 动态渲染，这对搜索引擎的抓取不太友好。</li>
+            <li><strong>加载性能：</strong> 首次加载需要下载解析 JS 才能显示内容，首屏时间（FCP）不够理想。</li>
+            <li><strong>布局限制：</strong> Docsify 的主题定制能力有限，很难实现复杂的个性化布局。</li>
+          </ul>
+
+          <h2>技术选型：回归基础</h2>
+          <p>在考察了 Next.js, Gatsby, Hugo 等现代静态站点生成器（SSG）后，我做出了一个“复古”的决定：<strong>使用原生 HTML, CSS 和 JavaScript</strong>。</p>
+          <p>原因很简单：</p>
+          <ol>
+            <li><strong>极致的性能：</strong> 没有比纯 HTML 更快的了。没有 hydration，没有复杂的运行时。</li>
+            <li><strong>完全的控制：</strong> 每一行代码都是我写的，我可以精确控制 DOM 结构和样式。</li>
+            <li><strong>学习与探索：</strong> 抛开框架的抽象，重新审视 Web 标准的原生能力（如 CSS Variables, Grid, ES Modules）。</li>
+          </ol>
+
+          <h2>重构亮点</h2>
+
+          <h3>1. 响应式设计与暗色模式</h3>
+          <p>我使用了 CSS Variables 来定义主题色。通过简单的 JS 切换 `html` 标签上的 `data-theme` 属性，即可实现秒开的暗色模式切换，并且没有闪烁问题。</p>
+          <pre><code>:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #f0f0f0;
+}</code></pre>
+
+          <h3>2. 国际化 (i18n)</h3>
+          <p>为了支持中英双语，我采用了目录结构区分语言的方式（`/` 和 `/en/`）。这种方式对 SEO 最为友好，配合 `hreflang` 标签，可以让搜索引擎准确识别不同语言版本。</p>
+
+          <h3>3. 无构建步骤</h3>
+          <p>现在的开发流程非常简单。没有 `npm install`，没有 `npm run build`。修改完代码，直接推送到 GitHub，GitHub Pages 就会自动部署。这种“所见即所得”的开发体验让人感到无比轻松。</p>
+
+          <h2>结语</h2>
+          <p>这次重构让我重新找回了写代码的纯粹乐趣。有时候，少即是多。在这个框架横行的时代，回归原生 Web 开发，不仅是一种技术选择，更是一种对简单、高效的追求。</p>
+        </div>
+
+        <div class="article-footer">
+          <a href="/blog/" class="btn btn-secondary">返回博客列表</a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-social">
+        <a href="mailto:i@denganliang.com" aria-label="Email">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+          </svg>
+        </a>
+        <a href="https://github.com/denganliang" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <a href="https://twitter.com/denganliang" target="_blank" rel="noopener" aria-label="Twitter">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+          </svg>
+        </a>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/about/">关于</a></li>
+        <li><a href="/blog/">博客</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+      </ul>
+      <p style="margin-bottom: 0.5rem;">联系方式: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
+      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
