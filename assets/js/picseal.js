@@ -320,12 +320,18 @@ async function handleDownload(includeWatermark) {
     }
 
     try {
+        // Use offsetWidth/Height instead of scrollWidth/Height to avoid measuring hidden overflow
+        const exportWidth = preview.offsetWidth;
+        const exportHeight = preview.offsetHeight;
+
         const dataUrl = await domtoimage.toJpeg(preview, {
             quality: 0.95,
-            width: preview.scrollWidth,
-            height: preview.scrollHeight,
+            width: exportWidth,
+            height: exportHeight,
             style: {
-                transform: 'none'
+                transform: 'none',
+                margin: '0',
+                padding: '0'
             }
         });
 
