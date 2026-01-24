@@ -614,7 +614,7 @@
     // ==================== Single Threaded FFmpeg Workaround ====================
     // GitHub Pages doesn't support COOP/COEP headers required for SharedArrayBuffer
     // We must use a single-threaded version of FFmpeg core
-    const FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js';
+    const FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
 
     // ==================== Tab导航 ====================
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1169,6 +1169,7 @@
           ffmpeg = createFFmpeg({
             log: true,
             corePath: FFMPEG_CORE_URL,
+            mainName: 'main'
           });
 
           ffmpeg.setLogger(({ type, message }) => {
