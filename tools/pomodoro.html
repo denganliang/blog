@@ -46,6 +46,9 @@
       font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
     }
 
     .mode-btn.active {
@@ -129,6 +132,40 @@
       font-size: 0.8rem;
       color: var(--text-secondary);
       margin-top: 0.2rem;
+    }
+
+    /* 移动端优化 */
+    @media (max-width: 768px) {
+      .timer-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .timer-display {
+        font-size: 4rem;
+      }
+
+      .controls {
+        flex-wrap: wrap;
+      }
+
+      .stats-grid {
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+
+      .stat-number {
+        font-size: 1.2rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+      }
+
+      .mode-btn {
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+        min-height: 44px;
+      }
     }
 
     .modal {
@@ -242,8 +279,8 @@
         恭喜你完成了一个番茄钟！<br>现在可以休息一下了。
       </p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button class="btn btn-primary" onclick="startNextSession()">开始下一阶段</button>
-        <button class="btn btn-secondary" onclick="closeModal()">稍后</button>
+        <button class="btn btn-primary" id="nextSessionBtn">开始下一阶段</button>
+        <button class="btn btn-secondary" id="closModalBtn">稍后</button>
       </div>
     </div>
   </div>
@@ -476,12 +513,27 @@
       Notification.requestPermission();
     }
 
-    startBtn.addEventListener('click', startTimer);
-    pauseBtn.addEventListener('click', pauseTimer);
-    resetBtn.addEventListener('click', resetTimer);
+    // 添加触摸事件支持，提升移动端响应
+    function addClickListener(element, handler) {
+      element.addEventListener('click', handler);
+      element.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handler(e);
+      });
+    }
+
+    addClickListener(startBtn, startTimer);
+    addClickListener(pauseBtn, pauseTimer);
+    addClickListener(resetBtn, resetTimer);
+
+    // 模态框按钮
+    const nextSessionBtn = document.getElementById('nextSessionBtn');
+    const closeModalBtn = document.getElementById('closModalBtn');
+    addClickListener(nextSessionBtn, startNextSession);
+    addClickListener(closeModalBtn, closeModal);
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      addClickListener(btn, (e) => {
         switchMode(e.target.dataset.mode);
       });
     });

@@ -46,6 +46,9 @@
       font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
     }
 
     .mode-btn.active {
@@ -129,6 +132,40 @@
       font-size: 0.8rem;
       color: var(--text-secondary);
       margin-top: 0.2rem;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .timer-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .timer-display {
+        font-size: 4rem;
+      }
+
+      .controls {
+        flex-wrap: wrap;
+      }
+
+      .stats-grid {
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+
+      .stat-number {
+        font-size: 1.2rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+      }
+
+      .mode-btn {
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+        min-height: 44px;
+      }
     }
 
     .modal {
@@ -242,8 +279,8 @@
         Congratulations! You completed a Pomodoro session.<br>Time to take a break.
       </p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button class="btn btn-primary" onclick="startNextSession()">Next Phase</button>
-        <button class="btn btn-secondary" onclick="closeModal()">Maybe Later</button>
+        <button class="btn btn-primary" id="nextSessionBtn">Next Phase</button>
+        <button class="btn btn-secondary" id="closeModalBtn">Maybe Later</button>
       </div>
     </div>
   </div>
@@ -476,12 +513,27 @@
       Notification.requestPermission();
     }
 
-    startBtn.addEventListener('click', startTimer);
-    pauseBtn.addEventListener('click', pauseTimer);
-    resetBtn.addEventListener('click', resetTimer);
+    // Add touch event support for better mobile responsiveness
+    function addClickListener(element, handler) {
+      element.addEventListener('click', handler);
+      element.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handler(e);
+      });
+    }
+
+    addClickListener(startBtn, startTimer);
+    addClickListener(pauseBtn, pauseTimer);
+    addClickListener(resetBtn, resetTimer);
+
+    // Modal buttons
+    const nextSessionBtn = document.getElementById('nextSessionBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    addClickListener(nextSessionBtn, startNextSession);
+    addClickListener(closeModalBtn, closeModal);
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      addClickListener(btn, (e) => {
         switchMode(e.target.dataset.mode);
       });
     });
