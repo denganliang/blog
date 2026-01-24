@@ -1088,20 +1088,47 @@
     }
 
     // ==================== Timestamp Tool ====================
+    // Update current time display
     function updateCurrentTimestamp() {
-      document.getElementById('current-timestamp').textContent = Date.now();
+      const now = Date.now();
+      const nowDate = new Date(now);
+
+      document.getElementById('current-timestamp-ms').textContent = now;
+      document.getElementById('current-timestamp-s').textContent = Math.floor(now / 1000);
+      document.getElementById('current-datetime-str').textContent = nowDate.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
     }
 
     setInterval(updateCurrentTimestamp, 1000);
     updateCurrentTimestamp();
 
-    function copyTimestamp() {
-      const timestamp = document.getElementById('current-timestamp').textContent;
-      copyToClipboard(timestamp, event.target);
+    // Copy current date string
+    function copyCurrentDateStr() {
+      const text = document.getElementById('current-datetime-str').textContent;
+      copyToClipboard(text, event.target);
     }
 
+    // Generic copy text function
+    function copyText(text, button) {
+      copyToClipboard(text, button);
+    }
+
+    // Use current timestamp
+    function useCurrentTimestamp() {
+      document.getElementById('timestamp-input').value = Date.now();
+      timestampToDate();
+    }
+
+    // Timestamp to date
     function timestampToDate() {
-      const timestamp = parseInt(document.getElementById('timestamp-input').value);
+      let timestamp = parseInt(document.getElementById('timestamp-input').value);
       const result = document.getElementById('timestamp-result');
 
       if (isNaN(timestamp)) {
@@ -1109,32 +1136,150 @@
         return;
       }
 
+      // Auto-detect 10-digit (seconds) and 13-digit (milliseconds) timestamps
+      if (timestamp.toString().length === 10) {
+        timestamp = timestamp * 1000;
+      }
+
       const date = new Date(timestamp);
+
+      if (isNaN(date.getTime())) {
+        result.innerHTML = '<div class="error">Invalid timestamp</div>';
+        return;
+      }
+
       result.innerHTML = `
-        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; position: relative; padding-right: 4rem;">
           <strong>Local Time:</strong> ${date.toLocaleString('en-US')}<br>
           <strong>UTC Time:</strong> ${date.toUTCString()}<br>
-          <strong>ISO Format:</strong> ${date.toISOString()}
+          <strong>ISO Format:</strong> ${date.toISOString()}<br>
+          <strong>Date:</strong> ${date.toLocaleDateString('en-US')}<br>
+          <strong>Time:</strong> ${date.toLocaleTimeString('en-US')}
+          <button class="copy-btn" onclick="copyText('${date.toLocaleString('en-US')}', this)">Copy</button>
         </div>
       `;
     }
 
+    // Date to timestamp
     function dateToTimestamp() {
-      const datetime = document.getElementById('datetime-input').value;
-      const result = document.getElementById('timestamp-result');
+      const datetimeInput = document.getElementById('datetime-input').value;
+      const datestrInput = document.getElementById('datestr-input').value.trim();
+      const result = document.getElementById('date-result');
 
-      if (!datetime) {
-        result.innerHTML = '<div class="error">Please select a date time</div>';
+      let timestamp;
+
+      if (datestrInput) {
+        // Prefer string input
+        const date = new Date(datestrInput);
+        if (isNaN(date.getTime())) {
+          result.innerHTML = '<div class="error">Invalid date format, please use format like "2024-01-01 12:00:00"</div>';
+          return;
+        }
+        timestamp = date.getTime();
+      } else if (datetimeInput) {
+        // Use datetime-local input
+        timestamp = new Date(datetimeInput).getTime();
+      } else {
+        result.innerHTML = '<div class="error">Please select date time or enter date string</div>';
         return;
       }
 
-      const timestamp = new Date(datetime).getTime();
       result.innerHTML = `
         <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
-          <strong>Timestamp (ms):</strong> ${timestamp}<br>
-          <strong>Timestamp (s):</strong> ${Math.floor(timestamp / 1000)}
+          <div style="margin-bottom: 0.5rem;">
+            <strong>Timestamp (ms):</strong>
+            <code style="margin-left: 0.5rem;">${timestamp}</code>
+            <button class="btn btn-sm" style="margin-left: 0.5rem;" onclick="copyText('${timestamp}', this)">Copy</button>
+          </div>
+          <div>
+            <strong>Timestamp (s):</strong>
+            <code style="margin-left: 0.5rem;">${Math.floor(timestamp / 1000)}</code>
+            <button class="btn btn-sm" style="margin-left: 0.5rem;" onclick="copyText('${Math.floor(timestamp / 1000)}', this)">Copy</button>
+          </div>
         </div>
       `;
+    }
+
+    // Clear date input
+    function clearDateInput() {
+      document.getElementById('datetime-input').value = '';
+      document.getElementById('datestr-input').value = '';
+      document.getElementById('date-result').innerHTML = '';
+    }
+
+    // Calculate time difference
+    function calculateTimeDiff() {
+      const startDate = document.getElementById('diff-start').value;
+      const endDate = document.getElementById('diff-end').value;
+      let startTs = parseInt(document.getElementById('diff-start-ts').value);
+      let endTs = parseInt(document.getElementById('diff-end-ts').value);
+      const result = document.getElementById('diff-result');
+
+      // Determine start time
+      let startTime;
+      if (!isNaN(startTs)) {
+        // Auto-detect seconds/milliseconds
+        if (startTs.toString().length === 10) startTs *= 1000;
+        startTime = startTs;
+      } else if (startDate) {
+        startTime = new Date(startDate).getTime();
+      } else {
+        result.innerHTML = '<div class="error">Please enter start time</div>';
+        return;
+      }
+
+      // Determine end time
+      let endTime;
+      if (!isNaN(endTs)) {
+        // Auto-detect seconds/milliseconds
+        if (endTs.toString().length === 10) endTs *= 1000;
+        endTime = endTs;
+      } else if (endDate) {
+        endTime = new Date(endDate).getTime();
+      } else {
+        result.innerHTML = '<div class="error">Please enter end time</div>';
+        return;
+      }
+
+      // Calculate difference
+      const diff = Math.abs(endTime - startTime);
+      const isNegative = endTime < startTime;
+
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      const remainSeconds = seconds % 60;
+      const remainMinutes = minutes % 60;
+      const remainHours = hours % 24;
+
+      result.innerHTML = `
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--accent-color); font-weight: 600;">
+            ${isNegative ? '⬅️ ' : '➡️ '} Time Difference
+          </div>
+          <div style="margin-bottom: 0.5rem;"><strong>Total Milliseconds:</strong> ${diff.toLocaleString()} ms</div>
+          <div style="margin-bottom: 0.5rem;"><strong>Total Seconds:</strong> ${seconds.toLocaleString()} seconds</div>
+          <div style="margin-bottom: 0.5rem;"><strong>Total Minutes:</strong> ${minutes.toLocaleString()} minutes</div>
+          <div style="margin-bottom: 0.5rem;"><strong>Total Hours:</strong> ${hours.toLocaleString()} hours</div>
+          <div style="margin-bottom: 0.75rem;"><strong>Total Days:</strong> ${days.toLocaleString()} days</div>
+          <div style="padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+            <strong>Detailed Difference:</strong>
+            ${days > 0 ? `${days} days ` : ''}${remainHours} hours ${remainMinutes} minutes ${remainSeconds} seconds
+          </div>
+          ${isNegative ? '<div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Note: End time is earlier than start time</div>' : ''}
+        </div>
+      `;
+    }
+
+    // Clear time difference
+    function clearTimeDiff() {
+      document.getElementById('diff-start').value = '';
+      document.getElementById('diff-end').value = '';
+      document.getElementById('diff-start-ts').value = '';
+      document.getElementById('diff-end-ts').value = '';
+      document.getElementById('diff-result').innerHTML = '';
     }
 
     // ==================== Hash Generator ====================
