@@ -65,6 +65,7 @@
       width: 100%;
       line-height: 0;
       position: relative;
+      overflow: hidden;
     }
 
     .watermark-overlay {
@@ -104,6 +105,7 @@
       background: #fff;
       color: #000;
       line-height: 1;
+      position: relative;
     }
 
     .preview-info-left {
@@ -143,10 +145,9 @@
 
     .preview-info-brand {
       position: absolute;
-      right: 0;
+      right: calc(var(--base-padding) * var(--banner-scale));
       top: 50%;
       transform: translateY(-50%);
-      height: 100%;
       display: flex;
       align-items: center;
     }
