@@ -73,6 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Update watermark text immediately
+    if (watermarkOverlay) {
+        watermarkOverlay.textContent = currentState.watermarkText || '';
+    }
+
     // Dynamic brand icons display
     const brandIcons = document.getElementById('brandIcons');
     BRANDS.forEach(brand => {
@@ -154,6 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save position to localStorage
             currentState.xOffset = xOffset;
             currentState.yOffset = yOffset;
+
+            // Make sure the state has current form values too
+            const formData = new FormData(form);
+            for (let [key, value] of formData.entries()) {
+                currentState[key] = value;
+            }
+
             saveSettings();
         }
     }
