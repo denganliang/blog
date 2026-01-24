@@ -322,6 +322,46 @@
       display: none;
     }
 
+    /* 子导航栏 */
+    .sub-nav {
+      position: sticky;
+      top: 60px;
+      background: var(--bg-primary);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
+    }
+
+    .sub-nav-list {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .sub-nav-item {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .sub-nav-item:hover {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
     /* 响应式 */
     @media (max-width: 768px) {
       .toolbox-header h1 {
@@ -334,6 +374,21 @@
 
       .tool-item {
         padding: 1rem;
+      }
+
+      .sub-nav {
+        top: 50px;
+      }
+
+      .sub-nav-list {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .sub-nav-item {
+        white-space: nowrap;
       }
     }
   </style>
@@ -376,10 +431,31 @@
         <button class="tab-btn" data-tab="dev-tools">开发工具</button>
       </div>
 
+      <!-- 子导航栏 -->
+      <nav class="sub-nav">
+        <div class="sub-nav-list">
+          <a href="#base64" class="sub-nav-item">Base64</a>
+          <a href="#url-encode" class="sub-nav-item">URL编码</a>
+          <a href="#html-entity" class="sub-nav-item">HTML实体</a>
+          <a href="#unicode" class="sub-nav-item">Unicode</a>
+          <a href="#text-diff" class="sub-nav-item">文本对比</a>
+          <a href="#json" class="sub-nav-item">JSON</a>
+          <a href="#jwt" class="sub-nav-item">JWT</a>
+          <a href="#uuid" class="sub-nav-item">UUID</a>
+          <a href="#timestamp" class="sub-nav-item">时间戳</a>
+          <a href="#hash" class="sub-nav-item">哈希</a>
+          <a href="#qr-gen" class="sub-nav-item">二维码生成</a>
+          <a href="#qr-decode" class="sub-nav-item">二维码解码</a>
+          <a href="#regex" class="sub-nav-item">正则</a>
+          <a href="#color" class="sub-nav-item">颜色</a>
+          <a href="#base-convert" class="sub-nav-item">进制</a>
+        </div>
+      </nav>
+
       <!-- 文本工具面板 -->
       <div class="tool-panel active" id="text-tools">
         <!-- Base64 编解码 -->
-        <div class="tool-item">
+        <div class="tool-item" id="base64">
           <h3><span class="icon">🔤</span> Base64 编解码</h3>
           <div class="io-group two-columns">
             <div class="io-section">
