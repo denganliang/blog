@@ -24,11 +24,11 @@
 
     // 3. 检查浏览器语言
     const browserLang = navigator.language || navigator.userLanguage;
-    if (browserLang.startsWith('zh')) {
+    if (browserLang.toLowerCase().startsWith('zh')) {
       return 'zh';
     }
 
-    return DEFAULT_LANG;
+    return 'en';
   }
 
   // 从URL路径获取语言
@@ -119,7 +119,7 @@
     }
 
     // 首次访问时自动跳转（可选，取消注释以启用）
-    // autoRedirect();
+    autoRedirect();
   }
 
   // DOM加载完成后初始化
