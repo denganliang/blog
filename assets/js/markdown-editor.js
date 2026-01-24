@@ -1,24 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize EasyMDE
-  const easyMDE = new EasyMDE({
-    element: document.getElementById('markdown-editor'),
-    autoDownloadFontAwesome: true,
-    spellChecker: false,
-    autosave: {
-      enabled: true,
-      uniqueId: "markdown-editor-content",
-      delay: 1000,
-    },
-    toolbar: [
-      "bold", "italic", "heading", "|",
-      "quote", "unordered-list", "ordered-list", "|",
-      "link", "image", "|",
-      "preview", "side-by-side", "fullscreen", "|",
-      "guide"
-    ],
-    placeholder: "Type your markdown here...",
-    minHeight: "500px",
-  });
+  const isEn = document.documentElement.lang === 'en';
 
   // Helper function to download a blob
   function downloadBlob(blob, filename) {
@@ -32,18 +13,17 @@ document.addEventListener('DOMContentLoaded', function() {
     URL.revokeObjectURL(url);
   }
 
-  // Export Markdown
-  document.getElementById('export-md').addEventListener('click', function() {
-    const markdown = easyMDE.value();
+  // Export functions
+  function exportMarkdown(editor) {
+    const markdown = editor.value();
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     downloadBlob(blob, 'document.md');
-  });
+  }
 
-  // Export PDF
-  document.getElementById('export-pdf').addEventListener('click', function() {
-    const markdown = easyMDE.value();
+  function exportPDF(editor) {
+    const markdown = editor.value();
     // Render Markdown to HTML using EasyMDE's internal parser (marked)
-    const htmlContent = easyMDE.markdown(markdown);
+    const htmlContent = editor.markdown(markdown);
 
     // Create a temporary container for styling the PDF content
     const element = document.createElement('div');
@@ -73,13 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Use html2pdf library
-    html2pdf().set(opt).from(element).save();
-  });
+    if (typeof html2pdf !== 'undefined') {
+      html2pdf().set(opt).from(element).save();
+    } else {
+      console.error('html2pdf library not loaded');
+      alert(isEn ? 'Error: Export library not loaded.' : '错误：导出库未加载。');
+    }
+  }
 
-  // Export Word
-  document.getElementById('export-word').addEventListener('click', function() {
-    const markdown = easyMDE.value();
-    const htmlContent = easyMDE.markdown(markdown);
+  function exportWord(editor) {
+    const markdown = editor.value();
+    const htmlContent = editor.markdown(markdown);
 
     const content = `
       <!DOCTYPE html>
@@ -97,14 +81,52 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
 
     // Use html-docx-js library
-    // html-docx-js might be exposed as 'htmlDocx' or similar depending on the build
-    // Assuming 'htmlDocx' is available globally
     if (typeof htmlDocx !== 'undefined') {
       const converted = htmlDocx.asBlob(content);
       downloadBlob(converted, 'document.docx');
     } else {
       console.error('html-docx-js library not loaded');
-      alert('Error: Export library not loaded.');
+      alert(isEn ? 'Error: Export library not loaded.' : '错误：导出库未加载。');
     }
+  }
+
+  // Initialize EasyMDE
+  const easyMDE = new EasyMDE({
+    element: document.getElementById('markdown-editor'),
+    autoDownloadFontAwesome: true,
+    spellChecker: false,
+    autosave: {
+      enabled: true,
+      uniqueId: "markdown-editor-content",
+      delay: 1000,
+    },
+    toolbar: [
+      "bold", "italic", "heading", "|",
+      "quote", "unordered-list", "ordered-list", "|",
+      "link", "image", "|",
+      "preview", "side-by-side", "fullscreen", "|",
+      {
+        name: "export-md",
+        action: exportMarkdown,
+        className: "fa fa-download",
+        title: isEn ? "Export Markdown" : "导出 Markdown",
+      },
+      {
+        name: "export-pdf",
+        action: exportPDF,
+        className: "fa fa-file-pdf-o",
+        title: isEn ? "Export PDF" : "导出 PDF",
+      },
+      {
+        name: "export-word",
+        action: exportWord,
+        className: "fa fa-file-word-o",
+        title: isEn ? "Export Word" : "导出 Word",
+      },
+      "|",
+      "guide"
+    ],
+    placeholder: isEn ? "Type your markdown here..." : "在这里输入 Markdown 内容...",
+    minHeight: "500px",
   });
 });
