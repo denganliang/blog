@@ -63,6 +63,27 @@
     .preview-inner {
       background: #fff;
       width: 100%;
+      line-height: 0;
+      position: relative;
+    }
+
+    .watermark-overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 24px;
+      cursor: move;
+      user-select: none;
+      pointer-events: auto;
+      z-index: 10;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      line-height: 1.2;
+      display: none;
+    }
+
+    .watermark-overlay.active {
+      display: block;
     }
 
     .preview-picture {
@@ -256,6 +277,7 @@
         <div class="preview-box" id="previewContainer">
           <div class="preview-inner" id="preview">
             <img id="previewPicture" class="preview-picture" alt="Preview">
+            <div id="watermarkOverlay" class="watermark-overlay"></div>
             <div class="preview-info" id="previewInfo">
               <div class="preview-info-left">
                 <div class="preview-info-model" id="infoModel"></div>
@@ -264,11 +286,13 @@
               <div class="preview-info-right">
                 <div class="preview-info-device" id="infoDevice"></div>
               </div>
+              <div class="preview-info-brand" id="infoBrand"></div>
             </div>
           </div>
 
-          <div style="padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
+          <div style="padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
             <button id="downloadBtn" class="btn btn-primary">导出水印照片</button>
+            <button id="downloadWatermarkBtn" class="btn btn-secondary">导出带防盗水印</button>
           </div>
         </div>
 
@@ -340,6 +364,18 @@
                   <option value="avenir">Avenir</option>
                   <option value="didot">Didot</option>
                 </select>
+              </div>
+              <div class="form-group">
+                <label>防盗水印文字</label>
+                <input type="text" name="watermarkText" class="form-control" placeholder="输入水印文字...">
+              </div>
+              <div class="form-group">
+                <label>水印大小</label>
+                <input type="range" name="watermarkSize" min="12" max="100" step="1" value="24">
+              </div>
+              <div class="form-group">
+                <label>水印透明度</label>
+                <input type="range" name="watermarkOpacity" min="0.1" max="1" step="0.1" value="0.8">
               </div>
             </div>
           </form>

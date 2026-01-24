@@ -20,7 +20,10 @@ const DEFAULT_EXIF = {
     fontWeight: 'bold',
     fontFamily: 'default',
     showDate: true,
-    showGps: true
+    showGps: true,
+    watermarkText: '',
+    watermarkSize: 24,
+    watermarkOpacity: 0.8
 };
 
 const FONT_FAMILIES = {
@@ -44,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContainer = document.getElementById('previewContainer');
     const previewPicture = document.getElementById('previewPicture');
     const downloadBtn = document.getElementById('downloadBtn');
+    const downloadWatermarkBtn = document.getElementById('downloadWatermarkBtn');
     const form = document.getElementById('propsForm');
+    const watermarkOverlay = document.getElementById('watermarkOverlay');
 
     // Dynamic brand icons display
     const brandIcons = document.getElementById('brandIcons');
@@ -60,7 +65,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     uploadArea.onclick = () => fileInput.click();
     fileInput.onchange = handleFileUpload;
-    downloadBtn.onclick = handleDownload;
+    downloadBtn.onclick = () => handleDownload(false);
+    downloadWatermarkBtn.onclick = () => handleDownload(true);
+
+    // Draggable Watermark
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    watermarkOverlay.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    watermarkOverlay.addEventListener('touchstart', dragStart);
+    document.addEventListener('touchmove', drag);
+    document.addEventListener('touchend', dragEnd);
+
+    function dragStart(e) {
+        if (e.type === 'touchstart') {
+            initialX = e.touches[0].clientX - xOffset;
+            initialY = e.touches[0].clientY - yOffset;
+        } else {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+        }
+
+        if (e.target === watermarkOverlay) {
+            isDragging = true;
+        }
+    }
+
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            if (e.type === 'touchmove') {
+                currentX = e.touches[0].clientX - initialX;
+                currentY = e.touches[0].clientY - initialY;
+            } else {
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+            }
+
+            xOffset = currentX;
+            yOffset = currentY;
+
+            setTranslate(currentX, currentY, watermarkOverlay);
+        }
+    }
+
+    function setTranslate(xPos, yPos, el) {
+        el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+    }
+
+    function dragEnd() {
+        isDragging = false;
+    }
 
     // Form sync
     form.addEventListener('input', (e) => {
@@ -222,29 +285,62 @@ function updatePreview() {
 
     const sizeMap = { small: '0.85', normal: '1', large: '1.15' };
     document.documentElement.style.setProperty('--current-font-size', sizeMap[currentState.fontSize]);
+
+    // Update Brand Icon
+    const infoBrand = document.getElementById('infoBrand');
+    if (currentState.brand && currentState.brand !== 'unknow') {
+        infoBrand.innerHTML = `<img src="/assets/images/brands/${currentState.brand}.svg" alt="${currentState.brand}">`;
+    } else {
+        infoBrand.innerHTML = '';
+    }
+
+    // Update Watermark
+    const watermarkOverlay = document.getElementById('watermarkOverlay');
+    if (currentState.watermarkText) {
+        watermarkOverlay.textContent = currentState.watermarkText;
+        watermarkOverlay.style.fontSize = `${currentState.watermarkSize}px`;
+        watermarkOverlay.style.opacity = currentState.watermarkOpacity;
+        watermarkOverlay.classList.add('active');
+    } else {
+        watermarkOverlay.classList.remove('active');
+    }
 }
 
-async function handleDownload() {
+async function handleDownload(includeWatermark) {
     const preview = document.getElementById('preview');
     const loading = document.getElementById('loadingOverlay');
+    const watermarkOverlay = document.getElementById('watermarkOverlay');
+
     loading.style.display = 'flex';
 
-    const zoomRatio = 1;
+    // Toggle watermark visibility for export
+    const wasWatermarkActive = watermarkOverlay.classList.contains('active');
+    if (!includeWatermark) {
+        watermarkOverlay.classList.remove('active');
+    }
+
     try {
         const dataUrl = await domtoimage.toJpeg(preview, {
             quality: 0.95,
-            width: preview.clientWidth,
-            height: preview.clientHeight,
+            width: preview.scrollWidth,
+            height: preview.scrollHeight,
+            style: {
+                transform: 'none'
+            }
         });
 
         const link = document.createElement('a');
-        link.download = `picseal_${Date.now()}.jpg`;
+        link.download = `picseal_${includeWatermark ? 'w_' : ''}${Date.now()}.jpg`;
         link.href = dataUrl;
         link.click();
     } catch (err) {
         console.error('Export failed:', err);
         alert('导出失败，请重试');
     } finally {
+        // Restore watermark state
+        if (wasWatermarkActive) {
+            watermarkOverlay.classList.add('active');
+        }
         loading.style.display = 'none';
     }
 }
