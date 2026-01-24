@@ -21,7 +21,11 @@
       "Bash(npx wasm-pack build:*)",
       "WebFetch(domain:cdnjs.com)",
       "WebFetch(domain:www.jsdelivr.com)",
-      "mcp__playwriter__execute"
+      "mcp__playwriter__execute",
+      "WebFetch(domain:denganliang.com)",
+      "Skill(playwright-skill:playwright-skill)",
+      "Bash(node:*)",
+      "Bash(dir:*)"
     ]
   }
 }
