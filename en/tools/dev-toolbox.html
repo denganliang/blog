@@ -1291,12 +1291,12 @@
 
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/qrcodegen@1.8.0/js/qrcodegen.min.js';
+        script.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
         script.onload = () => {
-          qrCodeLib = window.qrcodegen;
+          qrCodeLib = window.qrcode;
           resolve();
         };
-        script.onerror = reject;
+        script.onerror = () => reject(new Error('Failed to load QR code library'));
         document.head.appendChild(script);
       });
     }
@@ -1311,28 +1311,44 @@
       try {
         await loadQRCodeLib();
 
-        const qr = qrCodeLib.QrCode.encodeText(text, qrCodeLib.QrCode.Ecc.MEDIUM);
-        const canvas = document.getElementById('qr-canvas');
-        const scale = 8;
-        const border = 2;
+        // Create QR code object
+        const typeNumber = 0; // Auto-determine
+        const errorCorrectionLevel = 'M'; // L, M, Q, H
+        const qr = qrCodeLib(typeNumber, errorCorrectionLevel);
+        qr.addData(text);
+        qr.make();
 
-        canvas.width = (qr.size + border * 2) * scale;
-        canvas.height = (qr.size + border * 2) * scale;
+        const canvas = document.getElementById('qr-canvas');
+        const cellSize = 8;
+        const margin = 2;
+        const size = qr.getModuleCount();
+
+        canvas.width = (size + margin * 2) * cellSize;
+        canvas.height = (size + margin * 2) * cellSize;
 
         const ctx = canvas.getContext('2d');
+
+        // White background
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#000000';
 
-        for (let y = 0; y < qr.size; y++) {
-          for (let x = 0; x < qr.size; x++) {
-            if (qr.getModule(x, y)) {
-              ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
+        // Black modules
+        ctx.fillStyle = '#000000';
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size; col++) {
+            if (qr.isDark(row, col)) {
+              ctx.fillRect(
+                (col + margin) * cellSize,
+                (row + margin) * cellSize,
+                cellSize,
+                cellSize
+              );
             }
           }
         }
       } catch (e) {
-        alert('QR code generation failed: ' + e.message);
+        console.error('QR Code Error:', e);
+        alert('QR code generation failed: ' + (e.message || String(e)));
       }
     }
 
