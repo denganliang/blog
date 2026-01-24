@@ -451,7 +451,7 @@ async function handleDownload(includeWatermark) {
         }
 
         const link = document.createElement('a');
-        link.download = `picseal_${includeWatermark ? 'w_' : ''}${Date.now()}.jpg`;
+        link.download = `photosign_${includeWatermark ? 'w_' : ''}${Date.now()}.jpg`;
         link.href = dataUrl;
         link.click();
     } catch (err) {

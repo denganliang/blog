@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PICSEAL - Generate Xiaomi-style Leica watermark photos. Supports Canon, Nikon, Sony, and more.">
-  <title>PICSEAL Leica Watermark Generator - Deng Anliang</title>
+  <meta name="description" content="PhotoSign 照片署名 - 为照片添加专业的相机水印，支持佳能、尼康、索尼、徕卡等多种相机品牌。">
+  <title>PhotoSign 照片署名 - 邓安良</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
@@ -17,6 +17,7 @@
   <!-- External Libraries (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
 
   <style>
     :root {
@@ -29,7 +30,7 @@
       --current-font-size: 1;
     }
 
-    .picseal-container {
+    .photosign-container {
       max-width: 900px;
       margin: 0 auto;
     }
@@ -66,7 +67,7 @@
       line-height: 0;
       position: relative;
       overflow: hidden;
-      font-size: 0;
+      font-size: 0; /* 彻底消除行内元素间隙 */
     }
 
     .watermark-overlay {
@@ -107,7 +108,7 @@
       color: #000;
       line-height: 1;
       position: relative;
-      margin-bottom: -1px;
+      margin-bottom: -1px; /* 消除可能存在的缝隙 */
     }
 
     .preview-info-left {
@@ -240,13 +241,13 @@
 <body>
   <nav class="navbar">
     <div class="navbar-content">
-      <a href="/en/" class="navbar-logo">Deng Anliang</a>
+      <a href="/" class="navbar-logo">邓安良</a>
       <ul class="navbar-menu">
-        <li><a href="/en/">Home</a></li>
-        <li><a href="/en/tools/">Tools</a></li>
+        <li><a href="/">首页</a></li>
+        <li><a href="/tools/">工具</a></li>
       </ul>
       <div class="navbar-actions">
-        <button class="lang-toggle">中文</button>
+        <button class="lang-toggle">English</button>
         <button class="theme-toggle"></button>
       </div>
     </div>
@@ -254,22 +255,22 @@
 
   <main class="main-content">
     <div class="container">
-      <div class="picseal-container">
+      <div class="photosign-container">
         <div class="breadcrumb">
-          <a href="/en/tools/">Tools</a>
+          <a href="/tools/">工具</a>
           <span class="breadcrumb-separator">/</span>
-          <span>PICSEAL Generator</span>
+          <span>PhotoSign 照片署名</span>
         </div>
 
-        <h1>PICSEAL Watermark</h1>
+        <h1>PhotoSign 照片署名</h1>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-          Generate watermark photos with camera brand info. Automatically parses EXIF data from major camera brands.
+          为照片添加专业的相机水印，展示拍摄设备和参数信息。支持自动识别主流相机品牌 EXIF 信息，纯前端处理。
         </p>
 
         <div class="upload-area" id="uploadArea">
           <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
-          <h3>Select or Drop Image</h3>
-          <p style="color: var(--text-tertiary); font-size: 0.9rem;">EXIF data will be parsed automatically</p>
+          <h3>选择或拖入照片</h3>
+          <p style="color: var(--text-tertiary); font-size: 0.9rem;">我们将自动解析 EXIF 数据</p>
           <input type="file" id="fileInput" accept="image/*" style="display: none;">
         </div>
 
@@ -294,19 +295,19 @@
           </div>
 
           <div style="padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-            <button id="downloadBtn" class="btn btn-primary">Export Watermarked Image</button>
-            <button id="downloadWatermarkBtn" class="btn btn-secondary">Export with Anti-theft</button>
+            <button id="downloadBtn" class="btn btn-primary">导出水印照片</button>
+            <button id="downloadWatermarkBtn" class="btn btn-secondary">导出带防盗水印</button>
           </div>
         </div>
 
         <div class="props-panel">
-          <h3 style="margin-bottom: 1.5rem;">Parameters</h3>
+          <h3 style="margin-bottom: 1.5rem;">参数调整</h3>
           <form id="propsForm">
             <div class="form-grid">
               <div class="form-group">
-                <label>Font Family</label>
+                <label>字体族</label>
                 <select name="fontFamily" class="form-control">
-                  <option value="default">Default System</option>
+                  <option value="default">默认系统字体</option>
                   <option value="helvetica">Helvetica</option>
                   <option value="futura">Futura</option>
                   <option value="avenir">Avenir</option>
@@ -314,16 +315,24 @@
                 </select>
               </div>
               <div class="form-group">
-                <label>Anti-theft Watermark Text</label>
-                <input type="text" name="watermarkText" class="form-control" placeholder="Enter text...">
+                <label>防盗水印文字</label>
+                <input type="text" name="watermarkText" class="form-control" placeholder="输入水印文字...">
               </div>
               <div class="form-group">
-                <label>Watermark Size</label>
+                <label>水印大小</label>
                 <input type="range" name="watermarkSize" min="12" max="100" step="1" value="24">
               </div>
               <div class="form-group">
-                <label>Watermark Opacity</label>
+                <label>水印透明度</label>
                 <input type="range" name="watermarkOpacity" min="0.1" max="1" step="0.1" value="0.8">
+              </div>
+              <div class="form-group">
+                <label style="font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;">隐私设置</label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: normal;">
+                  <input type="checkbox" name="removeExif" id="removeExifCheckbox" checked style="width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;">
+                  <span style="color: var(--text-primary);">去除 EXIF 信息</span>
+                </label>
+                <p style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: 0.25rem; margin-left: 26px;">导出照片时不包含原始 EXIF 数据</p>
               </div>
             </div>
           </form>
@@ -334,12 +343,12 @@
 
   <div id="loadingOverlay">
     <div class="spinner"></div>
-    <p>Generating image...</p>
+    <p>正在生成导出图片...</p>
   </div>
 
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script src="/assets/js/picseal.js"></script>
+  <script src="/assets/js/photosign.js"></script>
 </body>
 </html>
