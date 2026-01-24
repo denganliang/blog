@@ -2,11 +2,11 @@
    工具页面布局 - 侧边栏 + 内容区
    ======================================== */
 
+/* 工具页面容器需要顶部内边距以避开固定导航栏 */
 .tools-layout {
   display: flex;
   gap: 2rem;
-  margin-top: 0;
-  padding-top: 2rem;
+  padding-top: 4rem;
 }
 
 /* 侧边栏 */
