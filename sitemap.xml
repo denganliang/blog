@@ -138,6 +138,24 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/world-clock.html"/>
   </url>
 
+  <url>
+    <loc>https://denganliang.com/tools/dev-toolbox.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/dev-toolbox.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/dev-toolbox.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/dev-toolbox.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/dev-toolbox.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/dev-toolbox.html"/>
+  </url>
+
   <!-- 博客 -->
   <url>
     <loc>https://denganliang.com/blog/</loc>
