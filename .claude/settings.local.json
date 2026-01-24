@@ -25,7 +25,10 @@
       "WebFetch(domain:denganliang.com)",
       "Skill(playwright-skill:playwright-skill)",
       "Bash(node:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git mv:*)",
+      "Bash(ls:*)",
+      "Bash(git reset:*)"
     ]
   }
 }
