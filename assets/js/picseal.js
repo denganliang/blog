@@ -96,8 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentY;
     let initialX;
     let initialY;
-    let xOffset = 0;
-    let yOffset = 0;
+    let xOffset = currentState.xOffset || 0;
+    let yOffset = currentState.yOffset || 0;
+
+    // Apply initial position if exists
+    if (xOffset !== 0 || yOffset !== 0) {
+        setTranslate(xOffset, yOffset, watermarkOverlay);
+    }
 
     watermarkOverlay.addEventListener('mousedown', dragStart);
     document.addEventListener('mousemove', drag);
@@ -144,7 +149,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function dragEnd() {
-        isDragging = false;
+        if (isDragging) {
+            isDragging = false;
+            // Save position to localStorage
+            currentState.xOffset = xOffset;
+            currentState.yOffset = yOffset;
+            saveSettings();
+        }
+    }
+
+    function saveSettings() {
+        const settingsToSave = {
+            fontFamily: currentState.fontFamily,
+            watermarkText: currentState.watermarkText,
+            watermarkSize: currentState.watermarkSize,
+            watermarkOpacity: currentState.watermarkOpacity,
+            xOffset: currentState.xOffset,
+            yOffset: currentState.yOffset
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settingsToSave));
     }
 
     // Form sync
@@ -152,16 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = e.target.name;
         const value = e.target.value;
         currentState[name] = value;
-
-        // Save settings to localStorage
-        const settingsToSave = {
-            fontFamily: currentState.fontFamily,
-            watermarkText: currentState.watermarkText,
-            watermarkSize: currentState.watermarkSize,
-            watermarkOpacity: currentState.watermarkOpacity
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(settingsToSave));
-
+        saveSettings();
         updatePreview();
     });
 
