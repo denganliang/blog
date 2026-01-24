@@ -357,6 +357,7 @@
         <div class="sub-nav-list">
           <a href="#compress" class="sub-nav-item">图片压缩</a>
           <a href="#video2gif" class="sub-nav-item">视频转GIF</a>
+          <a href="#videocompress" class="sub-nav-item">视频压缩</a>
         </div>
       </nav>
 
@@ -477,6 +478,94 @@
             <p style="margin-top: 0.5rem; color: var(--text-secondary);">生成预览</p>
           </div>
         </div>
+
+        <!-- 视频压缩 -->
+        <div class="tool-item" id="videocompress">
+          <h3><span class="icon">💾</span> 视频压缩工具</h3>
+
+          <div class="file-upload" id="vc-drop-zone" onclick="document.getElementById('vc-input').click()">
+            <input type="file" id="vc-input" accept="video/mp4,video/webm,video/avi,video/x-matroska,video/quicktime" onchange="handleVcSelect(event)">
+            <div id="vc-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请加载一个视频</p>
+              <p class="hint">点击或拖拽视频到此处 (MP4, WEBM, AVI, MKV, MOV)</p>
+            </div>
+            <div class="preview-container" style="display:none;" id="vc-preview-container">
+              <div style="display: flex; gap: 1rem; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
+                 <video id="vc-preview-video" controls class="preview-image" style="max-height: 200px; width: auto; max-width: 100%;"></video>
+                 <div style="text-align: left; font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                   <p id="vc-file-info"></p>
+                   <p id="vc-file-meta"></p>
+                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>目标格式</label>
+              <select id="vc-format">
+                <option value="mp4">MP4</option>
+                <option value="webm">WEBM</option>
+              </select>
+            </div>
+
+             <div class="io-section">
+              <label>分辨率</label>
+              <select id="vc-resolution" onchange="toggleVcResolution()">
+                <option value="original">保持原样</option>
+                <option value="1080p">1080p (1920x1080)</option>
+                <option value="720p">720p (1280x720)</option>
+                <option value="480p">480p (854x480)</option>
+                <option value="custom">自定义...</option>
+              </select>
+              <div id="vc-custom-res" style="display:none; margin-top: 0.5rem; gap: 0.5rem; align-items: center;">
+                 <input type="number" id="vc-width" placeholder="宽" style="width: 80px; padding: 0.5rem;"> x
+                 <input type="number" id="vc-height" placeholder="高" style="width: 80px; padding: 0.5rem;">
+              </div>
+            </div>
+
+            <div class="io-section">
+              <label>压缩模式</label>
+              <select id="vc-mode" onchange="toggleVcMode()">
+                 <option value="crf">质量优先 (CRF)</option>
+                 <option value="bitrate">指定比特率</option>
+              </select>
+            </div>
+
+            <div class="io-section" id="vc-crf-group">
+              <label>CRF 质量值 (0-51)</label>
+              <input type="number" id="vc-crf" value="23" min="0" max="51">
+              <p class="hint">默认 23。值越小质量越好，值越大压缩越狠。</p>
+            </div>
+
+            <div class="io-section" id="vc-bitrate-group" style="display:none;">
+              <label>视频比特率 (kbps)</label>
+              <input type="number" id="vc-bitrate" value="1000" step="100">
+              <p class="hint">建议 800-2000 kbps 用于网络分享。</p>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="vc-start-btn" onclick="startVideoCompression(false)" disabled>开始压缩</button>
+            <button class="btn btn-secondary" id="vc-test-btn" onclick="startVideoCompression(true)" disabled>测试转换 (前5秒)</button>
+            <button class="btn btn-secondary" onclick="resetVc()">重置</button>
+            <a id="vc-download-link" class="btn" style="display: none; background: #10b981;" download>下载视频</a>
+          </div>
+
+          <div id="vc-progress-container" style="margin-top: 1rem; display: none;">
+            <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+              <span id="vc-status-text">初始化引擎...</span>
+              <span id="vc-progress-text">0%</span>
+            </div>
+            <div style="height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden;">
+              <div id="vc-progress-bar" style="height: 100%; width: 0%; background: var(--accent-color); transition: width 0.3s;"></div>
+            </div>
+             <p id="vc-log-text" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+          </div>
+
+          <div id="vc-result-info" class="compression-info"></div>
+          <div id="vc-error-msg" class="error"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -518,6 +607,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 
   <script>
@@ -986,6 +1076,248 @@
       document.getElementById('gif-progress-container').style.display = 'none';
       videoFile = null;
     }
-  </script>
+
+    // ==================== 视频压缩逻辑 ====================
+    let vcFile = null;
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    let ffmpeg = null;
+
+    function toggleVcResolution() {
+      const res = document.getElementById('vc-resolution').value;
+      document.getElementById('vc-custom-res').style.display = res === 'custom' ? 'flex' : 'none';
+    }
+
+    function toggleVcMode() {
+      const mode = document.getElementById('vc-mode').value;
+      document.getElementById('vc-crf-group').style.display = mode === 'crf' ? 'flex' : 'none';
+      document.getElementById('vc-bitrate-group').style.display = mode === 'bitrate' ? 'flex' : 'none';
+    }
+
+    // 拖拽处理
+    const vcDropZone = document.getElementById('vc-drop-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      vcDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    ['dragenter', 'dragover'].forEach(eventName => {
+      vcDropZone.addEventListener(eventName, () => vcDropZone.classList.add('drag-over'), false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      vcDropZone.addEventListener(eventName, () => vcDropZone.classList.remove('drag-over'), false);
+    });
+    vcDropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      handleVcFiles(dt.files);
+    }, false);
+
+    function handleVcSelect(e) {
+      handleVcFiles(e.target.files);
+    }
+
+    function handleVcFiles(files) {
+      if (files.length === 0) return;
+      const file = files[0];
+      if (!file.type.startsWith('video/')) {
+        alert('请选择有效的视频文件');
+        return;
+      }
+      vcFile = file;
+
+      // 预览
+      const url = URL.createObjectURL(file);
+      const video = document.getElementById('vc-preview-video');
+      video.src = url;
+
+      video.onloadedmetadata = () => {
+         document.getElementById('vc-file-info').textContent = `文件名: ${file.name}`;
+         document.getElementById('vc-file-meta').textContent = `大小: ${formatSize(file.size)} | 分辨率: ${video.videoWidth}x${video.videoHeight} | 时长: ${formatTime(video.duration)}`;
+         document.getElementById('vc-start-btn').disabled = false;
+         document.getElementById('vc-test-btn').disabled = false;
+      };
+
+      document.getElementById('vc-upload-text').style.display = 'none';
+      document.getElementById('vc-preview-container').style.display = 'block';
+      document.getElementById('vc-result-info').style.display = 'none';
+      document.getElementById('vc-download-link').style.display = 'none';
+      document.getElementById('vc-error-msg').textContent = '';
+      document.getElementById('vc-progress-container').style.display = 'none';
+    }
+
+    async function startVideoCompression(isTest) {
+      if (!vcFile) return;
+
+      const btn = document.getElementById(isTest ? 'vc-test-btn' : 'vc-start-btn');
+      const otherBtn = document.getElementById(isTest ? 'vc-start-btn' : 'vc-test-btn');
+      const originalText = btn.textContent;
+
+      btn.disabled = true;
+      otherBtn.disabled = true;
+      btn.textContent = '处理中...';
+
+      document.getElementById('vc-progress-container').style.display = 'block';
+      document.getElementById('vc-error-msg').textContent = '';
+      document.getElementById('vc-result-info').style.display = 'none';
+      document.getElementById('vc-download-link').style.display = 'none';
+
+      try {
+        if (!ffmpeg) {
+          updateVcStatus('加载 FFmpeg 核心...', 0);
+          ffmpeg = createFFmpeg({
+            log: true,
+            corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
+          });
+
+          ffmpeg.setLogger(({ type, message }) => {
+            document.getElementById('vc-log-text').textContent = message;
+            // 简单的进度解析 (不完美，因为 FFmpeg 输出很复杂)
+            if (message.includes('time=')) {
+               const timeMatch = message.match(/time=(\d{2}):(\d{2}):(\d{2}.\d{2})/);
+               if (timeMatch) {
+                 const [_, h, m, s] = timeMatch;
+                 const currentTime = parseFloat(h) * 3600 + parseFloat(m) * 60 + parseFloat(s);
+                 const totalDuration = isTest ? 5 : document.getElementById('vc-preview-video').duration;
+                 const percent = Math.min(99, Math.round((currentTime / totalDuration) * 100));
+                 updateVcStatus('压缩中...', percent);
+               }
+            }
+          });
+
+          await ffmpeg.load();
+        }
+
+        updateVcStatus('写入文件...', 0);
+        const inputName = 'input_' + Date.now() + '.mp4'; // 统一扩展名，ffmpeg会自动识别
+        ffmpeg.FS('writeFile', inputName, await fetchFile(vcFile));
+
+        const format = document.getElementById('vc-format').value;
+        const outputName = 'output.' + format;
+
+        // 构建参数
+        let args = ['-i', inputName];
+
+        // 分辨率
+        const res = document.getElementById('vc-resolution').value;
+        if (res !== 'original') {
+           args.push('-vf');
+           if (res === 'custom') {
+              const w = document.getElementById('vc-width').value || -2;
+              const h = document.getElementById('vc-height').value || -2;
+              args.push(`scale=${w}:${h}`);
+           } else if (res === '1080p') {
+              args.push('scale=-2:1080');
+           } else if (res === '720p') {
+              args.push('scale=-2:720');
+           } else if (res === '480p') {
+              args.push('scale=-2:480');
+           }
+        }
+
+        // 测试模式
+        if (isTest) {
+          args.push('-t', '5');
+        }
+
+        // 压缩模式
+        const mode = document.getElementById('vc-mode').value;
+        if (mode === 'crf') {
+           const crf = document.getElementById('vc-crf').value;
+           if (format === 'webm') {
+             args.push('-c:v', 'libvpx-vp9', '-crf', crf, '-b:v', '0');
+           } else {
+             args.push('-c:v', 'libx264', '-crf', crf, '-preset', 'fast');
+           }
+        } else {
+           const bitrate = document.getElementById('vc-bitrate').value + 'k';
+           args.push('-b:v', bitrate);
+        }
+
+        // 确保 WebM 使用 VP9/Opus, MP4 使用 AAC
+        if (format === 'webm') {
+           // 上面已经处理了VP9
+        } else {
+           args.push('-c:a', 'aac', '-b:a', '128k');
+           args.push('-movflags', '+faststart'); // 优化网络播放
+        }
+
+        args.push(outputName);
+
+        updateVcStatus('正在转换...', 0);
+        await ffmpeg.run(...args);
+
+        updateVcStatus('读取结果...', 100);
+        const data = ffmpeg.FS('readFile', outputName);
+
+        // 结果显示
+        const blob = new Blob([data.buffer], { type: 'video/' + format });
+        const url = URL.createObjectURL(blob);
+
+        const downloadLink = document.getElementById('vc-download-link');
+        downloadLink.href = url;
+        downloadLink.download = `compressed_${Date.now()}.${format}`;
+        downloadLink.style.display = 'inline-block';
+
+        // 显示压缩信息
+        const resultInfo = document.getElementById('vc-result-info');
+        const ratio = ((1 - (blob.size / (isTest ? blob.size : vcFile.size))) * 100).toFixed(1); // 测试模式下比例不准确，暂时这样
+
+        let ratioText = '';
+        if (!isTest) {
+           ratioText = `
+            <div class="info-row">
+              <span>原始大小:</span>
+              <span>${formatSize(vcFile.size)}</span>
+            </div>
+            <div class="info-row">
+              <span>压缩后大小:</span>
+              <span class="success-text">${formatSize(blob.size)}</span>
+            </div>
+            <div class="info-row">
+              <span>压缩率:</span>
+              <span>-${ratio}%</span>
+            </div>`;
+        } else {
+            ratioText = `<div class="info-row"><span>测试完成，文件大小:</span><span>${formatSize(blob.size)}</span></div>`;
+        }
+
+        resultInfo.innerHTML = ratioText;
+        resultInfo.style.display = 'block';
+
+        // 清理
+        ffmpeg.FS('unlink', inputName);
+        ffmpeg.FS('unlink', outputName);
+
+      } catch (e) {
+        console.error(e);
+        document.getElementById('vc-error-msg').textContent = '错误: ' + e.message + ' (请确保浏览器支持 SharedArrayBuffer 或尝试使用 Chrome/Edge)';
+      } finally {
+        btn.disabled = false;
+        otherBtn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
+
+    function updateVcStatus(text, percent) {
+      document.getElementById('vc-status-text').textContent = text;
+      document.getElementById('vc-progress-text').textContent = percent + '%';
+      document.getElementById('vc-progress-bar').style.width = percent + '%';
+    }
+
+    function resetVc() {
+      document.getElementById('vc-input').value = '';
+      document.getElementById('vc-upload-text').style.display = 'block';
+      document.getElementById('vc-preview-container').style.display = 'none';
+      document.getElementById('vc-start-btn').disabled = true;
+      document.getElementById('vc-test-btn').disabled = true;
+      document.getElementById('vc-result-info').style.display = 'none';
+      document.getElementById('vc-download-link').style.display = 'none';
+      document.getElementById('vc-progress-container').style.display = 'none';
+      document.getElementById('vc-error-msg').textContent = '';
+      vcFile = null;
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
 </body>
 </html>
