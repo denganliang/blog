@@ -203,7 +203,7 @@
   <!-- 博客 -->
   <url>
     <loc>https://denganliang.com/blog/</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/"/>
@@ -212,11 +212,84 @@
 
   <url>
     <loc>https://denganliang.com/en/blog/</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/"/>
+  </url>
+
+  <!-- 博客文章 -->
+  <url>
+    <loc>https://denganliang.com/blog/post/pomodoro-technique.html</loc>
+    <lastmod>2026-01-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/pomodoro-technique.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/pomodoro-technique.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/blog/post/pomodoro-technique.html</loc>
+    <lastmod>2026-01-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/pomodoro-technique.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/pomodoro-technique.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/blog/post/website-redesign.html</loc>
+    <lastmod>2026-01-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/website-redesign.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/website-redesign.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/blog/post/website-redesign.html</loc>
+    <lastmod>2026-01-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/website-redesign.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/website-redesign.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/blog/post/design-thinking.html</loc>
+    <lastmod>2026-01-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/design-thinking.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/design-thinking.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/blog/post/design-thinking.html</loc>
+    <lastmod>2026-01-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/design-thinking.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/design-thinking.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/blog/post/web-performance.html</loc>
+    <lastmod>2026-01-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/web-performance.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/web-performance.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/blog/post/web-performance.html</loc>
+    <lastmod>2026-01-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/web-performance.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/web-performance.html"/>
   </url>
 
 </urlset>
