@@ -37,7 +37,20 @@ const FONT_FAMILIES = {
 };
 
 // State
+const STORAGE_KEY = 'picseal_settings';
 let currentState = { ...DEFAULT_EXIF };
+
+// Load settings from localStorage
+const savedSettings = localStorage.getItem(STORAGE_KEY);
+if (savedSettings) {
+    try {
+        const parsed = JSON.parse(savedSettings);
+        currentState = { ...currentState, ...parsed };
+    } catch (e) {
+        console.error('Failed to load settings:', e);
+    }
+}
+
 let originalFile = null;
 
 // DOM Elements
@@ -50,6 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadWatermarkBtn = document.getElementById('downloadWatermarkBtn');
     const form = document.getElementById('propsForm');
     const watermarkOverlay = document.getElementById('watermarkOverlay');
+
+    // Initialize form values from currentState
+    if (form) {
+        Object.keys(currentState).forEach(key => {
+            if (form[key]) {
+                form[key].value = currentState[key];
+            }
+        });
+    }
 
     // Dynamic brand icons display
     const brandIcons = document.getElementById('brandIcons');
@@ -129,12 +151,18 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('input', (e) => {
         const name = e.target.name;
         const value = e.target.value;
-        if (name === 'scale') {
-            updateScale(value);
-        } else {
-            currentState[name] = value;
-            updatePreview();
-        }
+        currentState[name] = value;
+
+        // Save settings to localStorage
+        const settingsToSave = {
+            fontFamily: currentState.fontFamily,
+            watermarkText: currentState.watermarkText,
+            watermarkSize: currentState.watermarkSize,
+            watermarkOpacity: currentState.watermarkOpacity
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settingsToSave));
+
+        updatePreview();
     });
 
     uploadArea.addEventListener('dragover', (e) => {
@@ -151,6 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadArea.classList.remove('dragover');
         handleFileUpload({ target: { files: e.dataTransfer.files } });
     });
+
+    // Initial preview update if values are loaded
+    updatePreview();
 });
 
 async function handleFileUpload(e) {
