@@ -253,6 +253,11 @@ a:hover {
   color: var(--accent-color);
 }
 
+.btn-sm {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9rem;
+}
+
 /* 内容区域 */
 .main-content {
   margin-top: 0;

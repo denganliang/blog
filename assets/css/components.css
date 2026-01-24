@@ -109,32 +109,10 @@
   margin-bottom: 0.25rem;
 }
 
-.card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-.card-description {
-  color: var(--text-secondary);
-  margin-bottom: 1rem;
-  line-height: 1.6;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-
 /* 网格布局 */
 .grid {
   display: grid;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .grid-2 {
