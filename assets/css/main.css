@@ -260,7 +260,7 @@ a:hover {
 
 /* 内容区域 */
 .main-content {
-  margin-top: 0;
+  margin-top: 70px;
   min-height: calc(100vh - 70px);
 }
 
