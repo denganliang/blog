@@ -181,20 +181,20 @@ a:hover {
 
 /* Hero区域 */
 .hero {
-  min-height: 60vh;
+  min-height: 25vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   margin-top: 70px;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
 .hero-title {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -202,9 +202,9 @@ a:hover {
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--text-secondary);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -265,7 +265,7 @@ a:hover {
 }
 
 .section {
-  padding: 3rem 0;
+  padding: 2.5rem 0;
 }
 
 .section-alt {
@@ -275,19 +275,19 @@ a:hover {
 .section-title {
   text-align: center;
   margin-bottom: 0.5rem;
-  font-size: 2rem;
+  font-size: 1.75rem;
 }
 
 .section-subtitle {
   text-align: center;
   color: var(--text-secondary);
-  margin-bottom: 2.5rem;
-  font-size: 1rem;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
 }
 
 .section-cta {
   text-align: center;
-  margin-top: 2.5rem;
+  margin-top: 2rem;
 }
 
 /* 页脚 */
