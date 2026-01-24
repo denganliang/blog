@@ -349,12 +349,14 @@
       <!-- Tab导航 -->
       <div class="tab-nav">
         <button class="tab-btn active" data-tab="basic-tools">基础工具</button>
+        <button class="tab-btn" data-tab="video-tools">视频工具</button>
       </div>
 
       <!-- 子导航栏 -->
       <nav class="sub-nav">
         <div class="sub-nav-list">
           <a href="#compress" class="sub-nav-item">图片压缩</a>
+          <a href="#video2gif" class="sub-nav-item">视频转GIF</a>
         </div>
       </nav>
 
@@ -407,6 +409,75 @@
           <div id="error-msg" class="error"></div>
         </div>
       </div>
+      <!-- 视频工具面板 -->
+      <div class="tool-panel" id="video-tools">
+        <!-- 视频转GIF -->
+        <div class="tool-item" id="video2gif">
+          <h3><span class="icon">🎬</span> 视频转 GIF</h3>
+
+          <div class="file-upload" id="video-drop-zone" onclick="document.getElementById('video-input').click()">
+            <input type="file" id="video-input" accept="video/mp4,video/webm" onchange="handleVideoSelect(event)">
+            <div id="video-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请加载一个视频</p>
+              <p class="hint">点击或拖拽视频到此处 (支持 MP4, WEBM)</p>
+            </div>
+            <div class="preview-container" style="display:none;" id="video-preview-container">
+              <video id="preview-video" controls class="preview-image" style="max-height: 300px;"></video>
+              <p id="video-file-info" style="margin-top: 0.5rem; color: var(--text-secondary);"></p>
+            </div>
+          </div>
+
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>开始时间 (秒)</label>
+              <input type="number" id="gif-start" value="0" min="0" step="0.1">
+            </div>
+            <div class="io-section">
+              <label>持续时间 (秒)</label>
+              <input type="number" id="gif-duration" value="3" min="0.1" max="10" step="0.1">
+            </div>
+            <div class="io-section">
+              <label>宽度 (像素)</label>
+              <input type="number" id="gif-width" value="300" min="50" max="600">
+              <p class="hint">宽度越小，生成速度越快</p>
+            </div>
+            <div class="io-section">
+              <label>帧率 (FPS)</label>
+              <input type="number" id="gif-fps" value="10" min="1" max="30">
+            </div>
+            <div class="io-section">
+              <label>质量 (1-10)</label>
+              <input type="number" id="gif-quality" value="10" min="1" max="30">
+              <p class="hint">数值越小质量越好，但速度越慢</p>
+            </div>
+            <div class="io-section">
+              <label>添加文字 (可选)</label>
+              <input type="text" id="gif-text" placeholder="在底部添加文字">
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="generate-gif-btn" onclick="generateGif()" disabled>生成 GIF</button>
+            <button class="btn btn-secondary" onclick="resetVideo()">重置</button>
+            <a id="gif-download-link" class="btn" style="display: none; background: #10b981;" download>下载 GIF</a>
+          </div>
+
+          <div id="gif-progress-container" style="margin-top: 1rem; display: none;">
+            <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+              <span id="gif-status-text">处理中...</span>
+              <span id="gif-progress-text">0%</span>
+            </div>
+            <div style="height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden;">
+              <div id="gif-progress-bar" style="height: 100%; width: 0%; background: var(--accent-color); transition: width 0.3s;"></div>
+            </div>
+          </div>
+
+          <div id="gif-result-container" class="preview-container" style="display: none; margin-top: 1.5rem;">
+            <img id="generated-gif" class="preview-image">
+            <p style="margin-top: 0.5rem; color: var(--text-secondary);">生成预览</p>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -447,9 +518,54 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 
   <script>
-    // ==================== 拖拽上传处理 ====================
+    // ==================== Tab导航 ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 移除所有active类
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+
+        // 添加active类
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ==================== 子导航跳转 ====================
+    document.querySelectorAll('.sub-nav-item').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+          // 找到父级工具面板
+          const panel = targetElement.closest('.tool-panel');
+          if (panel && !panel.classList.contains('active')) {
+            const tabId = panel.id;
+            const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            if (tabBtn) tabBtn.click();
+          }
+
+          // 滚动到元素
+          setTimeout(() => {
+            const headerOffset = 140;
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth"
+            });
+          }, 10);
+        }
+      });
+    });
+
+    // ==================== 拖拽上传处理 (图片) ====================
     const dropZone = document.getElementById('drop-zone');
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -488,6 +604,34 @@
     function handleFileSelect(e) {
       const files = e.target.files;
       handleFiles(files);
+    }
+
+    // ==================== 拖拽上传处理 (视频) ====================
+    const videoDropZone = document.getElementById('video-drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      videoDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      videoDropZone.addEventListener(eventName, (e) => videoDropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      videoDropZone.addEventListener(eventName, (e) => videoDropZone.classList.remove('drag-over'), false);
+    });
+
+    videoDropZone.addEventListener('drop', handleVideoDrop, false);
+
+    function handleVideoDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleVideoFiles(files);
+    }
+
+    function handleVideoSelect(e) {
+      const files = e.target.files;
+      handleVideoFiles(files);
     }
 
     // ==================== 图片处理逻辑 ====================
@@ -672,6 +816,175 @@
       document.getElementById('new-filename').value = '';
       originalImage = null;
       originalFile = null;
+    }
+
+    // ==================== 视频转GIF逻辑 ====================
+    let videoFile = null;
+    const videoPreview = document.getElementById('preview-video');
+
+    function handleVideoFiles(files) {
+      if (files.length === 0) return;
+
+      const file = files[0];
+      if (!file.type.startsWith('video/')) {
+        alert('请选择有效的视频文件');
+        return;
+      }
+
+      videoFile = file;
+      document.getElementById('video-file-info').textContent = `文件名: ${file.name} (${formatSize(file.size)})`;
+      document.getElementById('video-upload-text').style.display = 'none';
+      document.getElementById('video-preview-container').style.display = 'block';
+
+      const url = URL.createObjectURL(file);
+      videoPreview.src = url;
+
+      videoPreview.onloadedmetadata = () => {
+        document.getElementById('gif-duration').value = Math.min(3, videoPreview.duration).toFixed(1);
+        document.getElementById('gif-start').max = videoPreview.duration;
+        document.getElementById('generate-gif-btn').disabled = false;
+      };
+
+      document.getElementById('gif-result-container').style.display = 'none';
+      document.getElementById('gif-download-link').style.display = 'none';
+      document.getElementById('gif-progress-container').style.display = 'none';
+    }
+
+    async function generateGif() {
+      if (!videoFile) return;
+
+      const start = parseFloat(document.getElementById('gif-start').value);
+      const duration = parseFloat(document.getElementById('gif-duration').value);
+      const width = parseInt(document.getElementById('gif-width').value);
+      const fps = parseInt(document.getElementById('gif-fps').value);
+      const quality = parseInt(document.getElementById('gif-quality').value);
+      const text = document.getElementById('gif-text').value;
+
+      const btn = document.getElementById('generate-gif-btn');
+      btn.disabled = true;
+      btn.textContent = '生成中...';
+
+      document.getElementById('gif-progress-container').style.display = 'block';
+      updateProgress(0, '正在处理视频帧...');
+
+      try {
+        // 加载 worker blob (解决跨域问题)
+        const workerBlob = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js')
+          .then(r => r.blob());
+        const workerUrl = URL.createObjectURL(workerBlob);
+
+        const gif = new GIF({
+          workers: 2,
+          quality: quality,
+          width: width,
+          height: width * (videoPreview.videoHeight / videoPreview.videoWidth),
+          workerScript: workerUrl
+        });
+
+        // 抽取帧
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = width;
+        canvas.height = width * (videoPreview.videoHeight / videoPreview.videoWidth);
+
+        const step = 1 / fps;
+        let currentTime = start;
+        const endTime = Math.min(start + duration, videoPreview.duration);
+
+        // 临时 Video 元素用于抓取，避免影响预览
+        const tempVideo = document.createElement('video');
+        tempVideo.src = videoPreview.src;
+        tempVideo.muted = true;
+
+        await new Promise(r => {
+           tempVideo.onloadedmetadata = r;
+        });
+
+        const frameCount = Math.ceil((endTime - start) * fps);
+        let processedFrames = 0;
+
+        const seekAndCapture = async () => {
+          if (currentTime >= endTime) {
+            updateProgress(50, '正在渲染 GIF...');
+            gif.render();
+            return;
+          }
+
+          tempVideo.currentTime = currentTime;
+          await new Promise(r => {
+             tempVideo.onseeked = r;
+          });
+
+          ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+
+          // 添加文字
+          if (text) {
+            ctx.font = `${canvas.width / 15}px Arial`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 3;
+            ctx.strokeText(text, canvas.width / 2, canvas.height - 10);
+            ctx.fillText(text, canvas.width / 2, canvas.height - 10);
+          }
+
+          gif.addFrame(ctx, {copy: true, delay: 1000 / fps});
+
+          processedFrames++;
+          updateProgress(Math.floor((processedFrames / frameCount) * 50), `正在抓取帧 ${processedFrames}/${frameCount}`);
+
+          currentTime += step;
+          setTimeout(seekAndCapture, 0); // 避免阻塞主线程
+        };
+
+        gif.on('progress', (p) => {
+          updateProgress(50 + Math.floor(p * 50), '正在编码 GIF...');
+        });
+
+        gif.on('finished', (blob) => {
+          const url = URL.createObjectURL(blob);
+          const img = document.getElementById('generated-gif');
+          img.src = url;
+          img.style.display = 'block';
+
+          document.getElementById('gif-result-container').style.display = 'block';
+
+          const downloadLink = document.getElementById('gif-download-link');
+          downloadLink.href = url;
+          downloadLink.download = `video_${Date.now()}.gif`;
+          downloadLink.style.display = 'inline-block';
+
+          btn.disabled = false;
+          btn.textContent = '生成 GIF';
+          updateProgress(100, '完成！');
+          URL.revokeObjectURL(workerUrl); // 清理
+        });
+
+        seekAndCapture();
+
+      } catch (e) {
+        console.error(e);
+        alert('生成失败: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = '生成 GIF';
+      }
+    }
+
+    function updateProgress(percent, status) {
+      document.getElementById('gif-progress-bar').style.width = `${percent}%`;
+      document.getElementById('gif-progress-text').textContent = `${percent}%`;
+      document.getElementById('gif-status-text').textContent = status;
+    }
+
+    function resetVideo() {
+      document.getElementById('video-input').value = '';
+      document.getElementById('video-upload-text').style.display = 'block';
+      document.getElementById('video-preview-container').style.display = 'none';
+      document.getElementById('generate-gif-btn').disabled = true;
+      document.getElementById('gif-result-container').style.display = 'none';
+      document.getElementById('gif-download-link').style.display = 'none';
+      document.getElementById('gif-progress-container').style.display = 'none';
+      videoFile = null;
     }
   </script>
 </body>
