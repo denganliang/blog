@@ -181,7 +181,6 @@ a:hover {
 
 /* Hero区域 */
 .hero {
-  position: relative;
   min-height: 80vh;
   display: flex;
   align-items: center;
@@ -189,17 +188,7 @@ a:hover {
   text-align: center;
   padding: 6rem 2rem;
   margin-top: 70px;
-  overflow: hidden;
-}
-
-#galaxyCanvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
-  z-index: 0;
-  display: block;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
 .hero-title {
