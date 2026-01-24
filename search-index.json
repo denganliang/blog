@@ -138,5 +138,33 @@
     "excerpt_en": "Real-time current time for major cities worldwide.",
     "url": "/tools/world-clock.html",
     "lang": "zh"
+  },
+  {
+    "slug": "dev-toolbox",
+    "title": "开发工具箱",
+    "title_en": "Developer Toolbox",
+    "date": "2026-01-24",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["开发工具", "编码转换", "JSON工具", "正则表达式", "哈希生成"],
+    "tags_en": ["Dev Tools", "Encoding", "JSON", "Regex", "Hash"],
+    "excerpt": "集成15+常用开发工具的在线工具箱，包含编码转换、JSON格式化、正则表达式测试、哈希生成等。纯前端实现，数据安全不上传。",
+    "excerpt_en": "Integrated developer toolbox with 15+ utilities including encoding, JSON formatting, regex testing, hashing, and more. Pure front-end, your data stays secure.",
+    "url": "/tools/dev-toolbox.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "dev-toolbox",
+    "title": "Developer Toolbox",
+    "title_en": "Developer Toolbox",
+    "date": "2026-01-24",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["Dev Tools", "Encoding", "JSON", "Regex", "Hash"],
+    "tags_en": ["Dev Tools", "Encoding", "JSON", "Regex", "Hash"],
+    "excerpt": "Integrated developer toolbox with 15+ utilities including encoding, JSON formatting, regex testing, hashing, and more. Pure front-end, your data stays secure.",
+    "excerpt_en": "Integrated developer toolbox with 15+ utilities including encoding, JSON formatting, regex testing, hashing, and more. Pure front-end, your data stays secure.",
+    "url": "/en/tools/dev-toolbox.html",
+    "lang": "en"
   }
 ]
