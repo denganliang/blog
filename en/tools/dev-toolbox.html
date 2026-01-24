@@ -545,28 +545,92 @@
         <!-- Timestamp Converter -->
         <div class="tool-item">
           <h3><span class="icon">⏰</span> Timestamp Converter</h3>
-          <div class="io-group">
-            <div class="io-section">
-              <label>Current Timestamp</label>
+
+          <!-- Current Time Display -->
+          <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="margin-bottom: 0.75rem;">
+              <label style="display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-secondary);">Current DateTime String</label>
               <div class="result-box with-copy">
-                <span id="current-timestamp">0</span>
-                <button class="copy-btn" onclick="copyTimestamp()">Copy</button>
+                <span id="current-datetime-str" style="font-size: 0.9rem;">-</span>
+                <button class="copy-btn btn-sm" onclick="copyCurrentDateStr()">Copy</button>
+              </div>
+            </div>
+            <div class="io-group two-columns">
+              <div style="margin-bottom: 0;">
+                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-secondary);">Timestamp (ms)</label>
+                <div class="result-box with-copy">
+                  <span id="current-timestamp-ms">0</span>
+                  <button class="copy-btn btn-sm" onclick="copyText(document.getElementById('current-timestamp-ms').textContent, event.target)">Copy</button>
+                </div>
+              </div>
+              <div style="margin-bottom: 0;">
+                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-secondary);">Timestamp (s)</label>
+                <div class="result-box with-copy">
+                  <span id="current-timestamp-s">0</span>
+                  <button class="copy-btn btn-sm" onclick="copyText(document.getElementById('current-timestamp-s').textContent, event.target)">Copy</button>
+                </div>
               </div>
             </div>
           </div>
-          <div class="io-group two-columns" style="margin-top: 1rem;">
-            <div class="io-section">
-              <label>Timestamp (milliseconds)</label>
-              <input type="number" id="timestamp-input" placeholder="Enter timestamp">
-              <button class="btn" style="margin-top: 0.5rem;" onclick="timestampToDate()">Convert to Date</button>
+
+          <!-- Timestamp to Date -->
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Timestamp → Date</label>
+            <div class="io-group two-columns">
+              <div class="io-section">
+                <input type="number" id="timestamp-input" placeholder="Enter timestamp (ms or s)">
+              </div>
+              <div class="io-section">
+                <div class="btn-group">
+                  <button class="btn" onclick="timestampToDate()">Convert</button>
+                  <button class="btn btn-secondary btn-sm" onclick="useCurrentTimestamp()">Use Current</button>
+                </div>
+              </div>
             </div>
-            <div class="io-section">
-              <label>Date Time</label>
-              <input type="datetime-local" id="datetime-input">
-              <button class="btn" style="margin-top: 0.5rem;" onclick="dateToTimestamp()">Convert to Timestamp</button>
-            </div>
+            <div id="timestamp-result" style="margin-top: 0.75rem;"></div>
           </div>
-          <div id="timestamp-result" style="margin-top: 1rem;"></div>
+
+          <!-- Date to Timestamp -->
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Date → Timestamp</label>
+            <div class="io-group">
+              <div class="io-section">
+                <label>Select DateTime</label>
+                <input type="datetime-local" id="datetime-input">
+              </div>
+              <div class="io-section">
+                <label>Or Enter Date String</label>
+                <input type="text" id="datestr-input" placeholder="e.g: 2024-01-01 12:00:00">
+              </div>
+            </div>
+            <div class="btn-group" style="margin-top: 0.5rem;">
+              <button class="btn" onclick="dateToTimestamp()">Convert</button>
+              <button class="btn btn-secondary" onclick="clearDateInput()">Clear</button>
+            </div>
+            <div id="date-result" style="margin-top: 0.75rem;"></div>
+          </div>
+
+          <!-- Time Difference Calculator -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">⏱️ Time Difference Calculator</label>
+            <div class="io-group two-columns">
+              <div class="io-section">
+                <label>Start Time</label>
+                <input type="datetime-local" id="diff-start">
+                <input type="number" id="diff-start-ts" placeholder="Or enter timestamp" style="margin-top: 0.5rem;">
+              </div>
+              <div class="io-section">
+                <label>End Time</label>
+                <input type="datetime-local" id="diff-end">
+                <input type="number" id="diff-end-ts" placeholder="Or enter timestamp" style="margin-top: 0.5rem;">
+              </div>
+            </div>
+            <div class="btn-group" style="margin-top: 0.5rem;">
+              <button class="btn" onclick="calculateTimeDiff()">Calculate</button>
+              <button class="btn btn-secondary" onclick="clearTimeDiff()">Clear</button>
+            </div>
+            <div id="diff-result" style="margin-top: 0.75rem;"></div>
+          </div>
         </div>
       </div>
 
