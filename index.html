@@ -251,8 +251,9 @@
   <script>
     (function() {
       const canvas = document.getElementById('galaxyCanvas');
-      const ctx = canvas.getContext('2d');
+      if (!canvas) return;
 
+      const ctx = canvas.getContext('2d');
       let width, height;
       let stars = [];
       let animationId;
@@ -375,8 +376,10 @@
       }
 
       function initCanvas() {
-        width = canvas.width = canvas.offsetWidth;
-        height = canvas.height = canvas.offsetHeight;
+        const parent = canvas.parentElement;
+        const rect = parent.getBoundingClientRect();
+        width = canvas.width = rect.width;
+        height = canvas.height = rect.height;
       }
 
       function initStars() {
@@ -422,9 +425,18 @@
       }
 
       // 初始化
-      initCanvas();
-      initStars();
-      animate();
+      function init() {
+        initCanvas();
+        initStars();
+        animate();
+      }
+
+      // 等待 DOM 完全加载后初始化
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
 
       // 响应式调整
       window.addEventListener('resize', handleResize);
