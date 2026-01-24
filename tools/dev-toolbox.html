@@ -545,28 +545,92 @@
         <!-- 时间戳转换 -->
         <div class="tool-item">
           <h3><span class="icon">⏰</span> 时间戳转换</h3>
-          <div class="io-group">
-            <div class="io-section">
-              <label>当前时间戳</label>
+
+          <!-- 当前时间显示 -->
+          <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="margin-bottom: 0.75rem;">
+              <label style="display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-secondary);">当前时间字符串</label>
               <div class="result-box with-copy">
-                <span id="current-timestamp">0</span>
-                <button class="copy-btn" onclick="copyTimestamp()">复制</button>
+                <span id="current-datetime-str" style="font-size: 0.9rem;">-</span>
+                <button class="copy-btn btn-sm" onclick="copyCurrentDateStr()">复制</button>
+              </div>
+            </div>
+            <div class="io-group two-columns">
+              <div style="margin-bottom: 0;">
+                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-secondary);">时间戳（毫秒）</label>
+                <div class="result-box with-copy">
+                  <span id="current-timestamp-ms">0</span>
+                  <button class="copy-btn btn-sm" onclick="copyText(document.getElementById('current-timestamp-ms').textContent, event.target)">复制</button>
+                </div>
+              </div>
+              <div style="margin-bottom: 0;">
+                <label style="display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-secondary);">时间戳（秒）</label>
+                <div class="result-box with-copy">
+                  <span id="current-timestamp-s">0</span>
+                  <button class="copy-btn btn-sm" onclick="copyText(document.getElementById('current-timestamp-s').textContent, event.target)">复制</button>
+                </div>
               </div>
             </div>
           </div>
-          <div class="io-group two-columns" style="margin-top: 1rem;">
-            <div class="io-section">
-              <label>时间戳（毫秒）</label>
-              <input type="number" id="timestamp-input" placeholder="输入时间戳">
-              <button class="btn" style="margin-top: 0.5rem;" onclick="timestampToDate()">转换为日期</button>
+
+          <!-- 时间戳转日期 -->
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">时间戳 → 日期</label>
+            <div class="io-group two-columns">
+              <div class="io-section">
+                <input type="number" id="timestamp-input" placeholder="输入时间戳（毫秒或秒）">
+              </div>
+              <div class="io-section">
+                <div class="btn-group">
+                  <button class="btn" onclick="timestampToDate()">转换</button>
+                  <button class="btn btn-secondary btn-sm" onclick="useCurrentTimestamp()">使用当前</button>
+                </div>
+              </div>
             </div>
-            <div class="io-section">
-              <label>日期时间</label>
-              <input type="datetime-local" id="datetime-input">
-              <button class="btn" style="margin-top: 0.5rem;" onclick="dateToTimestamp()">转换为时间戳</button>
-            </div>
+            <div id="timestamp-result" style="margin-top: 0.75rem;"></div>
           </div>
-          <div id="timestamp-result" style="margin-top: 1rem;"></div>
+
+          <!-- 日期转时间戳 -->
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">日期 → 时间戳</label>
+            <div class="io-group">
+              <div class="io-section">
+                <label>选择日期时间</label>
+                <input type="datetime-local" id="datetime-input">
+              </div>
+              <div class="io-section">
+                <label>或输入日期字符串</label>
+                <input type="text" id="datestr-input" placeholder="例: 2024-01-01 12:00:00">
+              </div>
+            </div>
+            <div class="btn-group" style="margin-top: 0.5rem;">
+              <button class="btn" onclick="dateToTimestamp()">转换</button>
+              <button class="btn btn-secondary" onclick="clearDateInput()">清空</button>
+            </div>
+            <div id="date-result" style="margin-top: 0.75rem;"></div>
+          </div>
+
+          <!-- 时间差值计算 -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">⏱️ 时间差值计算</label>
+            <div class="io-group two-columns">
+              <div class="io-section">
+                <label>开始时间</label>
+                <input type="datetime-local" id="diff-start">
+                <input type="number" id="diff-start-ts" placeholder="或输入时间戳" style="margin-top: 0.5rem;">
+              </div>
+              <div class="io-section">
+                <label>结束时间</label>
+                <input type="datetime-local" id="diff-end">
+                <input type="number" id="diff-end-ts" placeholder="或输入时间戳" style="margin-top: 0.5rem;">
+              </div>
+            </div>
+            <div class="btn-group" style="margin-top: 0.5rem;">
+              <button class="btn" onclick="calculateTimeDiff()">计算差值</button>
+              <button class="btn btn-secondary" onclick="clearTimeDiff()">清空</button>
+            </div>
+            <div id="diff-result" style="margin-top: 0.75rem;"></div>
+          </div>
         </div>
       </div>
 
@@ -1029,20 +1093,47 @@
     }
 
     // ==================== 时间戳工具 ====================
+    // 更新当前时间显示
     function updateCurrentTimestamp() {
-      document.getElementById('current-timestamp').textContent = Date.now();
+      const now = Date.now();
+      const nowDate = new Date(now);
+
+      document.getElementById('current-timestamp-ms').textContent = now;
+      document.getElementById('current-timestamp-s').textContent = Math.floor(now / 1000);
+      document.getElementById('current-datetime-str').textContent = nowDate.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
     }
 
     setInterval(updateCurrentTimestamp, 1000);
     updateCurrentTimestamp();
 
-    function copyTimestamp() {
-      const timestamp = document.getElementById('current-timestamp').textContent;
-      copyToClipboard(timestamp, event.target);
+    // 复制当前日期字符串
+    function copyCurrentDateStr() {
+      const text = document.getElementById('current-datetime-str').textContent;
+      copyToClipboard(text, event.target);
     }
 
+    // 通用复制文本函数
+    function copyText(text, button) {
+      copyToClipboard(text, button);
+    }
+
+    // 使用当前时间戳
+    function useCurrentTimestamp() {
+      document.getElementById('timestamp-input').value = Date.now();
+      timestampToDate();
+    }
+
+    // 时间戳转日期
     function timestampToDate() {
-      const timestamp = parseInt(document.getElementById('timestamp-input').value);
+      let timestamp = parseInt(document.getElementById('timestamp-input').value);
       const result = document.getElementById('timestamp-result');
 
       if (isNaN(timestamp)) {
@@ -1050,32 +1141,150 @@
         return;
       }
 
+      // 自动识别秒级时间戳（10位）和毫秒级时间戳（13位）
+      if (timestamp.toString().length === 10) {
+        timestamp = timestamp * 1000;
+      }
+
       const date = new Date(timestamp);
+
+      if (isNaN(date.getTime())) {
+        result.innerHTML = '<div class="error">无效的时间戳</div>';
+        return;
+      }
+
       result.innerHTML = `
-        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; position: relative; padding-right: 4rem;">
           <strong>本地时间:</strong> ${date.toLocaleString('zh-CN')}<br>
           <strong>UTC时间:</strong> ${date.toUTCString()}<br>
-          <strong>ISO格式:</strong> ${date.toISOString()}
+          <strong>ISO格式:</strong> ${date.toISOString()}<br>
+          <strong>日期:</strong> ${date.toLocaleDateString('zh-CN')}<br>
+          <strong>时间:</strong> ${date.toLocaleTimeString('zh-CN')}
+          <button class="copy-btn" onclick="copyText('${date.toLocaleString('zh-CN')}', this)">复制</button>
         </div>
       `;
     }
 
+    // 日期转时间戳
     function dateToTimestamp() {
-      const datetime = document.getElementById('datetime-input').value;
-      const result = document.getElementById('timestamp-result');
+      const datetimeInput = document.getElementById('datetime-input').value;
+      const datestrInput = document.getElementById('datestr-input').value.trim();
+      const result = document.getElementById('date-result');
 
-      if (!datetime) {
-        result.innerHTML = '<div class="error">请选择日期时间</div>';
+      let timestamp;
+
+      if (datestrInput) {
+        // 优先使用字符串输入
+        const date = new Date(datestrInput);
+        if (isNaN(date.getTime())) {
+          result.innerHTML = '<div class="error">无效的日期格式，请使用类似 "2024-01-01 12:00:00" 的格式</div>';
+          return;
+        }
+        timestamp = date.getTime();
+      } else if (datetimeInput) {
+        // 使用datetime-local输入
+        timestamp = new Date(datetimeInput).getTime();
+      } else {
+        result.innerHTML = '<div class="error">请选择日期时间或输入日期字符串</div>';
         return;
       }
 
-      const timestamp = new Date(datetime).getTime();
       result.innerHTML = `
         <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
-          <strong>时间戳（毫秒）:</strong> ${timestamp}<br>
-          <strong>时间戳（秒）:</strong> ${Math.floor(timestamp / 1000)}
+          <div style="margin-bottom: 0.5rem;">
+            <strong>时间戳（毫秒）:</strong>
+            <code style="margin-left: 0.5rem;">${timestamp}</code>
+            <button class="btn btn-sm" style="margin-left: 0.5rem;" onclick="copyText('${timestamp}', this)">复制</button>
+          </div>
+          <div>
+            <strong>时间戳（秒）:</strong>
+            <code style="margin-left: 0.5rem;">${Math.floor(timestamp / 1000)}</code>
+            <button class="btn btn-sm" style="margin-left: 0.5rem;" onclick="copyText('${Math.floor(timestamp / 1000)}', this)">复制</button>
+          </div>
         </div>
       `;
+    }
+
+    // 清空日期输入
+    function clearDateInput() {
+      document.getElementById('datetime-input').value = '';
+      document.getElementById('datestr-input').value = '';
+      document.getElementById('date-result').innerHTML = '';
+    }
+
+    // 计算时间差值
+    function calculateTimeDiff() {
+      const startDate = document.getElementById('diff-start').value;
+      const endDate = document.getElementById('diff-end').value;
+      let startTs = parseInt(document.getElementById('diff-start-ts').value);
+      let endTs = parseInt(document.getElementById('diff-end-ts').value);
+      const result = document.getElementById('diff-result');
+
+      // 确定开始时间
+      let startTime;
+      if (!isNaN(startTs)) {
+        // 自动识别秒/毫秒
+        if (startTs.toString().length === 10) startTs *= 1000;
+        startTime = startTs;
+      } else if (startDate) {
+        startTime = new Date(startDate).getTime();
+      } else {
+        result.innerHTML = '<div class="error">请输入开始时间</div>';
+        return;
+      }
+
+      // 确定结束时间
+      let endTime;
+      if (!isNaN(endTs)) {
+        // 自动识别秒/毫秒
+        if (endTs.toString().length === 10) endTs *= 1000;
+        endTime = endTs;
+      } else if (endDate) {
+        endTime = new Date(endDate).getTime();
+      } else {
+        result.innerHTML = '<div class="error">请输入结束时间</div>';
+        return;
+      }
+
+      // 计算差值
+      const diff = Math.abs(endTime - startTime);
+      const isNegative = endTime < startTime;
+
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      const remainSeconds = seconds % 60;
+      const remainMinutes = minutes % 60;
+      const remainHours = hours % 24;
+
+      result.innerHTML = `
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--accent-color); font-weight: 600;">
+            ${isNegative ? '⬅️ ' : '➡️ '} 时间差值
+          </div>
+          <div style="margin-bottom: 0.5rem;"><strong>总毫秒:</strong> ${diff.toLocaleString()} ms</div>
+          <div style="margin-bottom: 0.5rem;"><strong>总秒数:</strong> ${seconds.toLocaleString()} 秒</div>
+          <div style="margin-bottom: 0.5rem;"><strong>总分钟:</strong> ${minutes.toLocaleString()} 分钟</div>
+          <div style="margin-bottom: 0.5rem;"><strong>总小时:</strong> ${hours.toLocaleString()} 小时</div>
+          <div style="margin-bottom: 0.75rem;"><strong>总天数:</strong> ${days.toLocaleString()} 天</div>
+          <div style="padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+            <strong>详细差值:</strong>
+            ${days > 0 ? `${days} 天 ` : ''}${remainHours} 小时 ${remainMinutes} 分钟 ${remainSeconds} 秒
+          </div>
+          ${isNegative ? '<div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">提示: 结束时间早于开始时间</div>' : ''}
+        </div>
+      `;
+    }
+
+    // 清空时间差值
+    function clearTimeDiff() {
+      document.getElementById('diff-start').value = '';
+      document.getElementById('diff-end').value = '';
+      document.getElementById('diff-start-ts').value = '';
+      document.getElementById('diff-end-ts').value = '';
+      document.getElementById('diff-result').innerHTML = '';
     }
 
     // ==================== 哈希生成 ====================
