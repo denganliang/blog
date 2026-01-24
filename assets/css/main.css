@@ -181,20 +181,20 @@ a:hover {
 
 /* Hero区域 */
 .hero {
-  min-height: 80vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 6rem 2rem;
+  padding: 4rem 2rem;
   margin-top: 70px;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
 .hero-title {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -202,9 +202,9 @@ a:hover {
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--text-secondary);
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -255,18 +255,34 @@ a:hover {
 
 /* 内容区域 */
 .main-content {
-  margin-top: 70px;
+  margin-top: 0;
   min-height: calc(100vh - 70px);
-  padding: 4rem 0;
 }
 
 .section {
-  padding: 4rem 0;
+  padding: 3rem 0;
+}
+
+.section-alt {
+  background: var(--bg-secondary);
 }
 
 .section-title {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+}
+
+.section-cta {
+  text-align: center;
+  margin-top: 2.5rem;
 }
 
 /* 页脚 */
