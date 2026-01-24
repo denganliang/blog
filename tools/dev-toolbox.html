@@ -476,7 +476,7 @@
         </div>
 
         <!-- URL 编解码 -->
-        <div class="tool-item">
+        <div class="tool-item" id="url-encode">
           <h3><span class="icon">🔗</span> URL 编解码</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -496,7 +496,7 @@
         </div>
 
         <!-- HTML 实体转换 -->
-        <div class="tool-item">
+        <div class="tool-item" id="html-entity">
           <h3><span class="icon">📝</span> HTML 实体转换</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -516,7 +516,7 @@
         </div>
 
         <!-- Unicode 转换 -->
-        <div class="tool-item">
+        <div class="tool-item" id="unicode">
           <h3><span class="icon">🈯</span> Unicode 转换</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -536,7 +536,7 @@
         </div>
 
         <!-- 文本对比 -->
-        <div class="tool-item">
+        <div class="tool-item" id="text-diff">
           <h3><span class="icon">📊</span> 文本对比</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -559,7 +559,7 @@
       <!-- 数据工具面板 -->
       <div class="tool-panel" id="data-tools">
         <!-- JSON 格式化 -->
-        <div class="tool-item">
+        <div class="tool-item" id="json">
           <h3><span class="icon">{ }</span> JSON 格式化</h3>
           <div class="io-group">
             <div class="io-section">
@@ -580,7 +580,7 @@
         </div>
 
         <!-- JWT 解析 -->
-        <div class="tool-item">
+        <div class="tool-item" id="jwt">
           <h3><span class="icon">🔐</span> JWT 解析</h3>
           <div class="io-group">
             <div class="io-section">
@@ -600,7 +600,7 @@
         </div>
 
         <!-- UUID 生成 -->
-        <div class="tool-item">
+        <div class="tool-item" id="uuid">
           <h3><span class="icon">🆔</span> UUID 生成器</h3>
           <div class="io-group">
             <div class="io-section">
@@ -619,7 +619,7 @@
         </div>
 
         <!-- 时间戳转换 -->
-        <div class="tool-item">
+        <div class="tool-item" id="timestamp">
           <h3><span class="icon">⏰</span> 时间戳转换</h3>
 
           <!-- 当前时间显示 -->
@@ -713,7 +713,7 @@
       <!-- 加密工具面板 -->
       <div class="tool-panel" id="crypto-tools">
         <!-- 哈希生成 -->
-        <div class="tool-item">
+        <div class="tool-item" id="hash">
           <h3><span class="icon">🔒</span> 哈希生成</h3>
           <div class="io-group">
             <div class="io-section">
@@ -732,7 +732,7 @@
         </div>
 
         <!-- 二维码生成 -->
-        <div class="tool-item">
+        <div class="tool-item" id="qr-gen">
           <h3><span class="icon">📱</span> 二维码生成</h3>
           <div class="io-group">
             <div class="io-section">
@@ -751,7 +751,7 @@
         </div>
 
         <!-- 二维码解码 -->
-        <div class="tool-item">
+        <div class="tool-item" id="qr-decode">
           <h3><span class="icon">📷</span> 二维码解码</h3>
           <div class="file-upload" onclick="document.getElementById('qr-file').click()">
             <input type="file" id="qr-file" accept="image/*" onchange="decodeQRCode(event)">
@@ -765,7 +765,7 @@
       <!-- 开发工具面板 -->
       <div class="tool-panel" id="dev-tools">
         <!-- 正则表达式 -->
-        <div class="tool-item">
+        <div class="tool-item" id="regex">
           <h3><span class="icon">🔍</span> 正则表达式测试</h3>
           <div class="io-group">
             <div class="io-section">
@@ -813,7 +813,7 @@
         </div>
 
         <!-- 颜色转换 -->
-        <div class="tool-item">
+        <div class="tool-item" id="color">
           <h3><span class="icon">🎨</span> 颜色转换</h3>
           <div class="color-preview" id="color-preview"></div>
           <div class="io-group">
@@ -836,7 +836,7 @@
         </div>
 
         <!-- 进制转换 -->
-        <div class="tool-item">
+        <div class="tool-item" id="base-convert">
           <h3><span class="icon">🔢</span> 进制转换</h3>
           <div class="io-group">
             <div class="io-section">
