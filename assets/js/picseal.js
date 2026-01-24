@@ -23,7 +23,8 @@ const DEFAULT_EXIF = {
     showGps: true,
     watermarkText: '',
     watermarkSize: 24,
-    watermarkOpacity: 0.8
+    watermarkOpacity: 0.8,
+    removeExif: true
 };
 
 const FONT_FAMILIES = {
@@ -52,6 +53,7 @@ if (savedSettings) {
 }
 
 let originalFile = null;
+let originalExifData = null;
 
 // DOM Elements
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,7 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) {
         Object.keys(currentState).forEach(key => {
             if (form[key]) {
-                form[key].value = currentState[key];
+                if (form[key].type === 'checkbox') {
+                    form[key].checked = currentState[key];
+                } else {
+                    form[key].value = currentState[key];
+                }
             }
         });
     }
@@ -176,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             watermarkText: currentState.watermarkText,
             watermarkSize: currentState.watermarkSize,
             watermarkOpacity: currentState.watermarkOpacity,
+            removeExif: currentState.removeExif,
             xOffset: currentState.xOffset,
             yOffset: currentState.yOffset
         };
@@ -185,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form sync
     form.addEventListener('input', (e) => {
         const name = e.target.name;
-        const value = e.target.value;
+        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         currentState[name] = value;
         saveSettings();
         updatePreview();
@@ -231,10 +238,12 @@ async function handleFileUpload(e) {
         });
 
         if (exif) {
+            originalExifData = exif;
             parseExif(exif);
         }
     } catch (err) {
         console.error('EXIF parsing failed:', err);
+        originalExifData = null;
     }
 
     updatePreview();
@@ -385,7 +394,7 @@ async function handleDownload(includeWatermark) {
         const rect = preview.getBoundingClientRect();
 
         // Use a higher scale if needed, but for now match the dimensions exactly
-        const dataUrl = await domtoimage.toJpeg(preview, {
+        let dataUrl = await domtoimage.toJpeg(preview, {
             quality: 0.95,
             width: rect.width,
             height: rect.height,
@@ -398,13 +407,56 @@ async function handleDownload(includeWatermark) {
             }
         });
 
+        // If user wants to keep EXIF and we have original EXIF data
+        if (!currentState.removeExif && originalExifData && typeof piexif !== 'undefined') {
+            try {
+                // Create a minimal EXIF object with key metadata
+                const zeroth = {};
+                const exifObj = {};
+                const gpsObj = {};
+
+                // Add basic metadata
+                if (originalExifData.Make) zeroth[piexif.ImageIFD.Make] = originalExifData.Make;
+                if (originalExifData.Model) zeroth[piexif.ImageIFD.Model] = originalExifData.Model;
+                if (originalExifData.Software) zeroth[piexif.ImageIFD.Software] = originalExifData.Software;
+
+                // Add EXIF data
+                if (originalExifData.DateTimeOriginal) {
+                    const dateStr = formatDateForExif(originalExifData.DateTimeOriginal);
+                    exifObj[piexif.ExifIFD.DateTimeOriginal] = dateStr;
+                }
+                if (originalExifData.FNumber) exifObj[piexif.ExifIFD.FNumber] = [Math.round(originalExifData.FNumber * 10), 10];
+                if (originalExifData.ExposureTime) exifObj[piexif.ExifIFD.ExposureTime] = [1, Math.round(1 / originalExifData.ExposureTime)];
+                if (originalExifData.ISO) exifObj[piexif.ExifIFD.ISOSpeedRatings] = originalExifData.ISO;
+                if (originalExifData.FocalLength) exifObj[piexif.ExifIFD.FocalLength] = [Math.round(originalExifData.FocalLength * 10), 10];
+
+                // Add GPS data if available
+                if (originalExifData.latitude && originalExifData.longitude) {
+                    const lat = Math.abs(originalExifData.latitude);
+                    const lng = Math.abs(originalExifData.longitude);
+
+                    gpsObj[piexif.GPSIFD.GPSLatitudeRef] = originalExifData.latitude >= 0 ? 'N' : 'S';
+                    gpsObj[piexif.GPSIFD.GPSLatitude] = degToDmsRational(lat);
+                    gpsObj[piexif.GPSIFD.GPSLongitudeRef] = originalExifData.longitude >= 0 ? 'E' : 'W';
+                    gpsObj[piexif.GPSIFD.GPSLongitude] = degToDmsRational(lng);
+                }
+
+                const exifDict = { "0th": zeroth, "Exif": exifObj, "GPS": gpsObj };
+                const exifBytes = piexif.dump(exifDict);
+                dataUrl = piexif.insert(exifBytes, dataUrl);
+            } catch (exifError) {
+                console.warn('Failed to embed EXIF data:', exifError);
+                // Continue with image without EXIF
+            }
+        }
+
         const link = document.createElement('a');
         link.download = `picseal_${includeWatermark ? 'w_' : ''}${Date.now()}.jpg`;
         link.href = dataUrl;
         link.click();
     } catch (err) {
         console.error('Export failed:', err);
-        alert('导出失败，请重试');
+        alert('导出失败,请重试');
     } finally {
         // Restore watermark state
         if (wasWatermarkActive) {
@@ -412,4 +464,27 @@ async function handleDownload(includeWatermark) {
         }
         loading.style.display = 'none';
     }
+}
+
+// Helper function to format date for EXIF
+function formatDateForExif(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const seconds = String(d.getSeconds()).padStart(2, '0');
+    return `${year}:${month}:${day} ${hours}:${minutes}:${seconds}`;
+}
+
+// Helper function to convert decimal degrees to DMS rational
+function degToDmsRational(deg) {
+    const d = Math.floor(deg);
+    const minFloat = (deg - d) * 60;
+    const m = Math.floor(minFloat);
+    const secFloat = (minFloat - m) * 60;
+    const s = Math.round(secFloat * 100);
+
+    return [[d, 1], [m, 1], [s, 100]];
 }
