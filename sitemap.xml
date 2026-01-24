@@ -221,6 +221,24 @@
 
   <!-- 博客文章 -->
   <url>
+    <loc>https://denganliang.com/blog/post/relationship-radar.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/relationship-radar.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/relationship-radar.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/blog/post/relationship-radar.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/blog/post/relationship-radar.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/blog/post/relationship-radar.html"/>
+  </url>
+
+  <url>
     <loc>https://denganliang.com/blog/post/pomodoro-technique.html</loc>
     <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
