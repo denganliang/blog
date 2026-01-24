@@ -345,10 +345,14 @@ function updatePreview() {
 
     // Update Brand Icon
     const infoBrand = document.getElementById('infoBrand');
+    const infoSplit = document.querySelector('.preview-info-split');
+
     if (currentState.brand && currentState.brand !== 'unknow' && currentState.brand !== 'leica') {
         infoBrand.innerHTML = `<img src="/assets/images/brands/${currentState.brand}.svg" alt="${currentState.brand}">`;
+        if (infoSplit) infoSplit.style.display = 'block';
     } else {
         infoBrand.innerHTML = '';
+        if (infoSplit) infoSplit.style.display = 'none';
     }
 
     // Update Watermark

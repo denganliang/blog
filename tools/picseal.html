@@ -66,6 +66,7 @@
       line-height: 0;
       position: relative;
       overflow: hidden;
+      font-size: 0; /* 彻底消除行内元素间隙 */
     }
 
     .watermark-overlay {
@@ -106,6 +107,7 @@
       color: #000;
       line-height: 1;
       position: relative;
+      margin-bottom: -1px; /* 消除可能存在的缝隙 */
     }
 
     .preview-info-left {
