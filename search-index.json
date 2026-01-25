@@ -278,5 +278,33 @@
     "excerpt_en": "Integrated developer toolbox with 15+ utilities including encoding, JSON formatting, regex testing, hashing, and more. Pure front-end, your data stays secure.",
     "url": "/en/tools/dev-toolbox.html",
     "lang": "en"
+  },
+  {
+    "slug": "audio-toolbox",
+    "title": "音频工具箱",
+    "title_en": "Audio Toolbox",
+    "date": "2026-01-25",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["音频工具", "音频合并", "MP3合并"],
+    "tags_en": ["Audio Tools", "Audio Merger", "MP3 Merger"],
+    "excerpt": "集成音频合并等实用功能。支持批量上传合并，纯前端处理，保护隐私。",
+    "excerpt_en": "Integrated audio merger tool. Supports batch upload and merge. Pure frontend processing for privacy.",
+    "url": "/tools/audio-toolbox.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "audio-toolbox",
+    "title": "Audio Toolbox",
+    "title_en": "Audio Toolbox",
+    "date": "2026-01-25",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["Audio Tools", "Audio Merger", "MP3 Merger"],
+    "tags_en": ["Audio Tools", "Audio Merger", "MP3 Merger"],
+    "excerpt": "Integrated audio merger tool. Supports batch upload and merge. Pure frontend processing for privacy.",
+    "excerpt_en": "Integrated audio merger tool. Supports batch upload and merge. Pure frontend processing for privacy.",
+    "url": "/en/tools/audio-toolbox.html",
+    "lang": "en"
   }
 ]
