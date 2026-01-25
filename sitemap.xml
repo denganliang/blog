@@ -183,6 +183,24 @@
   </url>
 
   <url>
+    <loc>https://denganliang.com/tools/audio-toolbox.html</loc>
+    <lastmod>2026-01-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/audio-toolbox.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/audio-toolbox.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/audio-toolbox.html</loc>
+    <lastmod>2026-01-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/audio-toolbox.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/audio-toolbox.html"/>
+  </url>
+
+  <url>
     <loc>https://denganliang.com/tools/markdown-editor.html</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>

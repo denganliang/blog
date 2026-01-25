@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="音频工具箱 - 在线音频处理工具集合，包含音频合并等实用工具。">
+  <meta name="keywords" content="音频工具,音频合并,MP3合并,在线工具,音频剪辑">
+  <title>音频工具箱 - 邓安良</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <!-- Alternate language -->
+  <link rel="alternate" hreflang="en" href="/en/tools/audio-toolbox.html">
+  <link rel="alternate" hreflang="zh" href="/tools/audio-toolbox.html">
+
+  <style>
+    .toolbox-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .toolbox-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .toolbox-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .toolbox-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Tab导航 */
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-color);
+      border-bottom-color: var(--accent-color);
+    }
+
+    /* 工具面板 */
+    .tool-panel {
+      display: none;
+    }
+
+    .tool-panel.active {
+      display: block;
+    }
+
+    /* 工具卡片 */
+    .tool-item {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-item h3 {
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tool-item h3 .icon {
+      font-size: 1.3rem;
+    }
+
+    /* 按钮组 */
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    /* 文件上传区域 */
+    .file-upload {
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .file-upload:hover, .file-upload.drag-over {
+      border-color: var(--accent-color);
+      background: var(--bg-secondary);
+    }
+
+    .file-upload input[type="file"] {
+      display: none;
+    }
+
+    /* 文件列表 */
+    .file-list {
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .file-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .file-list-item .file-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 1rem;
+    }
+
+    .file-list-item .remove-btn {
+      color: #ef4444;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+    }
+
+    /* 进度条 */
+    .progress-container {
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .progress-bar-bg {
+      height: 10px;
+      background: var(--bg-secondary);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-color);
+      transition: width 0.3s;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .success-text {
+      color: #10b981;
+    }
+
+    .error {
+      color: #ef4444;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .toolbox-header h1 {
+        font-size: 2rem;
+      }
+
+      .tab-nav {
+        justify-content: flex-start;
+      }
+
+      .tool-item {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="navbar-logo">邓安良</a>
+
+      <ul class="navbar-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/about/">关于我</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+        <li><a href="/blog/">博客</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <button class="lang-toggle" aria-label="切换语言">English</button>
+        <button class="theme-toggle" aria-label="切换主题"></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主要内容 -->
+  <main class="main-content">
+    <div class="toolbox-container">
+      <!-- 页面标题 -->
+      <div class="toolbox-header">
+        <h1>🎵 音频工具箱</h1>
+        <p>集成音频合并、格式转换等实用工具，纯前端处理，保护隐私</p>
+      </div>
+
+      <!-- Tab导航 -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="merge-tools">音频合并</button>
+        <!-- 预留未来扩展 -->
+        <!-- <button class="tab-btn" data-tab="convert-tools">音频转换</button> -->
+      </div>
+
+      <!-- 合并工具面板 -->
+      <div class="tool-panel active" id="merge-tools">
+        <div class="tool-item">
+          <h3><span class="icon">🔗</span> 音频合并工具</h3>
+
+          <div class="file-upload" id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <input type="file" id="file-input" accept="audio/*" multiple onchange="handleFileSelect(event)">
+            <div id="upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">点击或拖拽上传音频文件</p>
+              <p class="hint">支持 MP3, WAV, OGG, AAC 等常见格式 (支持多选)</p>
+            </div>
+
+            <div id="file-list-container" class="file-list" style="display: none;">
+              <!-- 文件列表将在这里生成 -->
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="merge-btn" onclick="startMerge()" disabled>开始合并</button>
+            <button class="btn btn-secondary" onclick="resetMerger()">重置</button>
+            <a id="download-link" class="btn" style="display: none; background: #10b981;" download>下载音频</a>
+          </div>
+
+          <div id="progress-container" class="progress-container">
+            <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+              <span id="status-text">初始化引擎...</span>
+              <span id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="log-text" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+          </div>
+
+          <div id="error-msg" class="error"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-social">
+        <a href="mailto:i@denganliang.com" aria-label="Email">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+          </svg>
+        </a>
+        <a href="https://github.com/denganliang" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <a href="https://twitter.com/denganliang" target="_blank" rel="noopener" aria-label="Twitter">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057a3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+          </svg>
+        </a>
+      </div>
+
+      <ul class="footer-links">
+        <li><a href="/about/">关于</a></li>
+        <li><a href="/blog/">博客</a></li>
+        <li><a href="/projects/">项目</a></li>
+        <li><a href="/tools/">工具</a></li>
+      </ul>
+
+      <p style="margin-bottom: 0.5rem;">联系方式: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
+      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+
+  <script>
+    // ==================== Single Threaded FFmpeg Workaround ====================
+    // GitHub Pages doesn't support COOP/COEP headers required for SharedArrayBuffer
+    // We must use a single-threaded version of FFmpeg core
+    const FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
+
+    // ==================== 拖拽上传处理 ====================
+    const dropZone = document.getElementById('drop-zone');
+    let uploadedFiles = [];
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      dropZone.classList.add('drag-over');
+    }
+
+    function unhighlight(e) {
+      dropZone.classList.remove('drag-over');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      handleFiles(files);
+      // Reset input so same file can be selected again if needed
+      e.target.value = '';
+    }
+
+    function handleFiles(files) {
+      if (files.length === 0) return;
+
+      const newFiles = Array.from(files).filter(file => file.type.startsWith('audio/'));
+
+      if (newFiles.length === 0) {
+        alert('请选择有效的音频文件');
+        return;
+      }
+
+      uploadedFiles = [...uploadedFiles, ...newFiles];
+      updateFileList();
+    }
+
+    function updateFileList() {
+      const listContainer = document.getElementById('file-list-container');
+      const uploadText = document.getElementById('upload-text');
+      const mergeBtn = document.getElementById('merge-btn');
+
+      if (uploadedFiles.length > 0) {
+        listContainer.style.display = 'block';
+        uploadText.style.display = 'none';
+
+        listContainer.innerHTML = '';
+        uploadedFiles.forEach((file, index) => {
+          const item = document.createElement('div');
+          item.className = 'file-list-item';
+          item.innerHTML = `
+            <span class="file-name">${index + 1}. ${file.name} (${formatSize(file.size)})</span>
+            <span class="remove-btn" onclick="removeFile(${index})">✕</span>
+          `;
+          listContainer.appendChild(item);
+        });
+
+        mergeBtn.disabled = uploadedFiles.length < 2;
+        if(uploadedFiles.length < 2) {
+             // Optional: Show hint that at least 2 files are needed
+        }
+      } else {
+        listContainer.style.display = 'none';
+        uploadText.style.display = 'block';
+        mergeBtn.disabled = true;
+      }
+    }
+
+    function removeFile(index) {
+      // Stop event propagation if needed, though here it's click on span
+      event.stopPropagation();
+      uploadedFiles.splice(index, 1);
+      updateFileList();
+    }
+
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // ==================== 音频合并逻辑 ====================
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    let ffmpeg = null;
+
+    async function startMerge() {
+      if (uploadedFiles.length < 2) return;
+
+      const btn = document.getElementById('merge-btn');
+      btn.disabled = true;
+      btn.textContent = '合并中...';
+
+      document.getElementById('progress-container').style.display = 'block';
+      document.getElementById('error-msg').textContent = '';
+      document.getElementById('download-link').style.display = 'none';
+
+      try {
+        if (!ffmpeg) {
+          updateStatus('加载 FFmpeg 核心...', 0);
+          ffmpeg = createFFmpeg({
+            log: true,
+            corePath: FFMPEG_CORE_URL,
+            mainName: 'main'
+          });
+
+          ffmpeg.setLogger(({ type, message }) => {
+            document.getElementById('log-text').textContent = message;
+            // FFmpeg progress parsing logic if needed
+          });
+
+          await ffmpeg.load();
+        }
+
+        updateStatus('写入文件...', 10);
+
+        // Write all files to FFmpeg FS
+        const inputFiles = [];
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          // Clean filename to avoid issues with special characters in ffmpeg
+          const ext = uploadedFiles[i].name.split('.').pop();
+          const safeName = `input_${i}.${ext}`;
+          await ffmpeg.FS('writeFile', safeName, await fetchFile(uploadedFiles[i]));
+          inputFiles.push(safeName);
+        }
+
+        // Create concat list file
+        // format: file 'filename'
+        const listContent = inputFiles.map(f => `file '${f}'`).join('\n');
+        await ffmpeg.FS('writeFile', 'list.txt', listContent);
+
+        updateStatus('正在合并...', 30);
+
+        // Run ffmpeg command
+        // -f concat -safe 0 -i list.txt -c copy output.mp3 (if formats are same)
+        // To be safe, we re-encode to mp3
+        await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'list.txt', 'output.mp3');
+
+        updateStatus('读取结果...', 90);
+        const data = ffmpeg.FS('readFile', 'output.mp3');
+
+        // Clean up
+        for (const f of inputFiles) {
+          ffmpeg.FS('unlink', f);
+        }
+        ffmpeg.FS('unlink', 'list.txt');
+        ffmpeg.FS('unlink', 'output.mp3');
+
+        // Create download link
+        const blob = new Blob([data.buffer], { type: 'audio/mp3' });
+        const url = URL.createObjectURL(blob);
+
+        const downloadLink = document.getElementById('download-link');
+        downloadLink.href = url;
+        downloadLink.download = `merged_${Date.now()}.mp3`;
+        downloadLink.style.display = 'inline-block';
+
+        updateStatus('合并完成！', 100);
+        btn.textContent = '开始合并';
+        btn.disabled = false;
+
+      } catch (e) {
+        console.error(e);
+        document.getElementById('error-msg').textContent = '错误: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = '开始合并';
+      }
+    }
+
+    function updateStatus(text, percent) {
+      document.getElementById('status-text').textContent = text;
+      document.getElementById('progress-text').textContent = percent + '%';
+      document.getElementById('progress-bar').style.width = percent + '%';
+    }
+
+    function resetMerger() {
+      uploadedFiles = [];
+      updateFileList();
+      document.getElementById('progress-container').style.display = 'none';
+      document.getElementById('download-link').style.display = 'none';
+      document.getElementById('error-msg').textContent = '';
+      if(ffmpeg) {
+        try {
+            // Clean up if needed
+        } catch(e) {}
+      }
+    }
+  </script>
+</body>
+</html>
