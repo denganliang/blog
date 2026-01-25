@@ -351,9 +351,8 @@
 
       <!-- Tab Nav -->
       <div class="tab-nav">
-        <button class="tab-btn active" data-tab="merge-tools">Audio Merger</button>
-        <!-- Reserved for future extension -->
-        <!-- <button class="tab-btn" data-tab="convert-tools">Audio Converter</button> -->
+        <button class="tab-btn active" data-tab="merge-tools" onclick="switchTab('merge-tools')">Audio Merger</button>
+        <button class="tab-btn" data-tab="tts-tools" onclick="switchTab('tts-tools')">SRT to Audio</button>
       </div>
 
       <!-- Merger Tool Panel -->
@@ -399,6 +398,54 @@
           </div>
 
           <div id="error-msg" class="error"></div>
+        </div>
+      </div>
+
+      <!-- SRT TTS Tool Panel -->
+      <div class="tool-panel" id="tts-tools">
+        <div class="tool-item">
+          <h3><span class="icon">🗣️</span> SRT to Speech</h3>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">TTS Server URL</label>
+            <input type="text" id="tts-url" placeholder="e.g. http://127.0.0.1:8000" style="width:100%; padding:0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary); color:var(--text-primary);">
+            <p class="hint" style="margin-top:0.3rem; font-size: 0.85rem; color: var(--text-secondary);">Requires Index TTS backend. Use HTTPS if your site is on HTTPS, or use localhost.</p>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Reference Audio (Voice Clone)</label>
+            <input type="file" id="ref-audio-input" accept="audio/*" onchange="handleRefAudio(event)">
+            <audio id="ref-audio-preview" controls style="width:100%; margin-top:0.5rem; display:none; height: 40px;"></audio>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">SRT Subtitle File</label>
+            <input type="file" id="srt-input" accept=".srt" onchange="handleSrtFile(event)">
+            <div id="srt-preview" style="margin-top:0.5rem; max-height:200px; overflow-y:auto; background:var(--bg-primary); padding:0.8rem; border-radius:6px; display:none; white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; border: 1px solid var(--border-color); color: var(--text-secondary);"></div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="tts-start-btn" onclick="startTTS()">Start Generation</button>
+            <a id="tts-download-link" class="btn" style="display: none; background: #10b981;" download>Download Audio</a>
+          </div>
+
+          <div id="tts-progress-container" class="progress-container">
+            <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+              <span id="tts-status-text">Ready</span>
+              <span id="tts-progress-text">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="tts-progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="tts-log-text" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+          </div>
+
+          <div id="tts-result-container" class="audio-player-container">
+            <h4>Generation Result Preview</h4>
+            <audio id="tts-result-player" controls></audio>
+          </div>
+
+          <div id="tts-error-msg" class="error"></div>
         </div>
       </div>
     </div>
@@ -822,6 +869,314 @@
         try {
             // Clean up if needed
         } catch(e) {}
+      }
+    }
+
+    // ==================== Tab Switching ====================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.tool-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === tabId);
+      });
+    }
+
+    // ==================== TTS Logic ====================
+    let refAudioFile = null;
+    let srtSegments = [];
+
+    // Load saved URL
+    const savedUrl = localStorage.getItem('tts_api_url');
+    if (savedUrl) {
+      document.getElementById('tts-url').value = savedUrl;
+    }
+
+    function handleRefAudio(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      refAudioFile = file;
+
+      const audio = document.getElementById('ref-audio-preview');
+      audio.src = URL.createObjectURL(file);
+      audio.style.display = 'block';
+    }
+
+    function handleSrtFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        document.getElementById('srt-preview').textContent = text;
+        document.getElementById('srt-preview').style.display = 'block';
+        srtSegments = parseSrt(text);
+        console.log(`Parsed ${srtSegments.length} segments`);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseTime(timeStr) {
+      // 00:00:00,000 -> seconds
+      try {
+        const [hms, ms] = timeStr.split(',');
+        const [h, m, s] = hms.split(':').map(Number);
+        return h * 3600 + m * 60 + s + parseInt(ms) / 1000;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function parseSrt(content) {
+      const segments = [];
+      const blocks = content.trim().split(/\n\s*\n/);
+
+      for (const block of blocks) {
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+        if (lines.length < 2) continue;
+
+        // Find timestamp line (-->)
+        let timeLineIdx = -1;
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes('-->')) {
+            timeLineIdx = i;
+            break;
+          }
+        }
+
+        if (timeLineIdx === -1) continue;
+
+        const timeLine = lines[timeLineIdx];
+        const text = lines.slice(timeLineIdx + 1).join(' ').replace(/<[^>]+>/g, ''); // strip html tags
+
+        try {
+          const [startStr, endStr] = timeLine.split(' --> ');
+          segments.push({
+            start: parseTime(startStr),
+            end: parseTime(endStr),
+            text: text
+          });
+        } catch (e) {
+          console.error("Error parsing block", block);
+        }
+      }
+      return segments;
+    }
+
+    async function startTTS() {
+      const urlInput = document.getElementById('tts-url');
+      const apiUrl = urlInput.value.replace(/\/$/, '');
+
+      if (!apiUrl) {
+        alert('Please enter TTS Server URL');
+        return;
+      }
+
+      if (!refAudioFile) {
+        alert('Please upload reference audio');
+        return;
+      }
+
+      if (srtSegments.length === 0) {
+        alert('Please upload a valid SRT file');
+        return;
+      }
+
+      // Save URL
+      localStorage.setItem('tts_api_url', apiUrl);
+
+      const btn = document.getElementById('tts-start-btn');
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+
+      const statusText = document.getElementById('tts-status-text');
+      const progressText = document.getElementById('tts-progress-text');
+      const progressBar = document.getElementById('tts-progress-bar');
+      const logText = document.getElementById('tts-log-text');
+      const errorMsg = document.getElementById('tts-error-msg');
+      const downloadLink = document.getElementById('tts-download-link');
+      const resultPlayerContainer = document.getElementById('tts-result-container');
+
+      document.getElementById('tts-progress-container').style.display = 'block';
+      errorMsg.textContent = '';
+      downloadLink.style.display = 'none';
+      resultPlayerContainer.style.display = 'none';
+
+      try {
+        // 1. Upload Ref Audio
+        logText.textContent = "Uploading reference audio...";
+        const formData = new FormData();
+        formData.append('audio', refAudioFile);
+        formData.append('full_path', refAudioFile.name);
+
+        const uploadResp = await fetch(`${apiUrl}/v1/upload_audio`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!uploadResp.ok) {
+           throw new Error(`Upload failed: ${uploadResp.status} ${uploadResp.statusText}`);
+        }
+
+        // 2. Synthesize Segments
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffers = [];
+
+        let nextAvailableTime = 0;
+
+        for (let i = 0; i < srtSegments.length; i++) {
+          const seg = srtSegments[i];
+          const progress = Math.round(((i) / srtSegments.length) * 80);
+          progressBar.style.width = `${progress}%`;
+          progressText.textContent = `${progress}%`;
+          statusText.textContent = `Generating line ${i+1}/${srtSegments.length}`;
+          logText.textContent = seg.text.substring(0, 30) + '...';
+
+          const synthResp = await fetch(`${apiUrl}/v2/synthesize`, {
+             method: 'POST',
+             headers: {'Content-Type': 'application/json'},
+             body: JSON.stringify({
+               text: seg.text,
+               audio_path: refAudioFile.name // Matches what we uploaded
+             })
+          });
+
+          if (!synthResp.ok) {
+             console.warn(`Failed to synthesize line ${i+1}: ${synthResp.status}`);
+             continue;
+          }
+
+          const audioBlob = await synthResp.blob();
+          const arrayBuffer = await audioBlob.arrayBuffer();
+          const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+          // Calculate Timing (Auto-Flow)
+          let startTime = seg.start;
+          if (startTime < nextAvailableTime) {
+             startTime = nextAvailableTime;
+             console.log(`Shifted segment ${i} to ${startTime}`);
+          }
+
+          audioBuffers.push({
+             buffer: audioBuffer,
+             startTime: startTime
+          });
+
+          nextAvailableTime = startTime + audioBuffer.duration;
+        }
+
+        // 3. Render / Mix
+        statusText.textContent = "Mixing...";
+        progressBar.style.width = '90%';
+        progressText.textContent = '90%';
+
+        if (audioBuffers.length === 0) {
+           throw new Error("No audio generated");
+        }
+
+        const totalDuration = nextAvailableTime + 1; // Add 1s padding
+        const offlineCtx = new OfflineAudioContext(1, totalDuration * 44100, 44100);
+
+        audioBuffers.forEach(({buffer, startTime}) => {
+           const source = offlineCtx.createBufferSource();
+           source.buffer = buffer;
+
+           // Fade In/Out (50ms)
+           const fadeDuration = 0.05;
+           const gainNode = offlineCtx.createGain();
+
+           gainNode.gain.setValueAtTime(0, startTime);
+           gainNode.gain.linearRampToValueAtTime(1, startTime + fadeDuration);
+           gainNode.gain.setValueAtTime(1, startTime + buffer.duration - fadeDuration);
+           gainNode.gain.linearRampToValueAtTime(0, startTime + buffer.duration);
+
+           source.connect(gainNode);
+           gainNode.connect(offlineCtx.destination);
+
+           source.start(startTime);
+        });
+
+        const renderedBuffer = await offlineCtx.startRendering();
+
+        // 4. Encode to WAV
+        statusText.textContent = "Exporting...";
+        const wavBlob = bufferToWave(renderedBuffer, renderedBuffer.length);
+        const wavUrl = URL.createObjectURL(wavBlob);
+
+        const resultPlayer = document.getElementById('tts-result-player');
+        resultPlayer.src = wavUrl;
+        resultPlayerContainer.style.display = 'block';
+
+        downloadLink.href = wavUrl;
+        downloadLink.download = `tts_output_${Date.now()}.wav`;
+        downloadLink.style.display = 'inline-block';
+
+        statusText.textContent = "Complete!";
+        progressBar.style.width = '100%';
+        progressText.textContent = '100%';
+        btn.disabled = false;
+        btn.textContent = 'Start Generation';
+
+      } catch (e) {
+        console.error(e);
+        errorMsg.textContent = 'Error: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = 'Start Generation';
+      }
+    }
+
+    // Helper: Convert AudioBuffer to WAV Blob
+    function bufferToWave(abuffer, len) {
+      let numOfChan = abuffer.numberOfChannels,
+          length = len * numOfChan * 2 + 44,
+          buffer = new ArrayBuffer(length),
+          view = new DataView(buffer),
+          channels = [], i, sample,
+          offset = 0,
+          pos = 0;
+
+      // write WAVE header
+      setUint32(0x46464952);                         // "RIFF"
+      setUint32(length - 8);                         // file length - 8
+      setUint32(0x45564157);                         // "WAVE"
+
+      setUint32(0x20746d66);                         // "fmt " chunk
+      setUint32(16);                                 // length = 16
+      setUint16(1);                                  // PCM (uncompressed)
+      setUint16(numOfChan);
+      setUint32(abuffer.sampleRate);
+      setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+      setUint16(numOfChan * 2);                      // block-align
+      setUint16(16);                                 // 16-bit (hardcoded in this example)
+
+      setUint32(0x61746164);                         // "data" - chunk
+      setUint32(length - pos - 4);                   // chunk length
+
+      // write interleaved data
+      for(i = 0; i < abuffer.numberOfChannels; i++)
+        channels.push(abuffer.getChannelData(i));
+
+      while(pos < len) {
+        for(i = 0; i < numOfChan; i++) {             // interleave channels
+          sample = Math.max(-1, Math.min(1, channels[i][pos])); // clamp
+          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
+          view.setInt16(44 + offset, sample, true);          // write 16-bit sample
+          offset += 2;
+        }
+        pos++;
+      }
+
+      return new Blob([buffer], {type: "audio/wav"});
+
+      function setUint16(data) {
+        view.setUint16(pos, data, true);
+        pos += 2;
+      }
+
+      function setUint32(data) {
+        view.setUint32(pos, data, true);
+        pos += 4;
       }
     }
   </script>
