@@ -172,25 +172,98 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.5rem;
+      padding: 0.75rem;
       background: var(--bg-secondary);
       border-radius: 6px;
       margin-bottom: 0.5rem;
       font-size: 0.9rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
     }
 
-    .file-list-item .file-name {
+    .file-list-item.dragging {
+      opacity: 0.5;
+      background: var(--bg-primary);
+      border: 1px dashed var(--accent-color);
+    }
+
+    .file-info-group {
+      display: flex;
+      align-items: center;
       flex: 1;
+      overflow: hidden;
+      gap: 0.5rem;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: var(--text-secondary);
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .file-name {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-right: 1rem;
+      font-weight: 500;
     }
 
-    .file-list-item .remove-btn {
-      color: #ef4444;
+    .file-meta {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
       cursor: pointer;
-      padding: 0.2rem 0.5rem;
+      color: var(--text-secondary);
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-primary);
+      background: rgba(0,0,0,0.05);
+    }
+
+    .icon-btn.play-btn {
+      color: var(--accent-color);
+    }
+
+    .icon-btn.remove-btn {
+      color: #ef4444;
+    }
+
+    /* 播放器区域 */
+    .audio-player-container {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .audio-player-container h4 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    audio {
+      width: 100%;
+      outline: none;
     }
 
     /* 进度条 */
@@ -298,12 +371,20 @@
             <div id="file-list-container" class="file-list" style="display: none;">
               <!-- 文件列表将在这里生成 -->
             </div>
+
+            <!-- Hidden audio element for preview logic -->
+            <audio id="preview-player" style="display:none;"></audio>
           </div>
 
           <div class="btn-group">
             <button class="btn" id="merge-btn" onclick="startMerge()" disabled>开始合并</button>
             <button class="btn btn-secondary" onclick="resetMerger()">重置</button>
             <a id="download-link" class="btn" style="display: none; background: #10b981;" download>下载音频</a>
+          </div>
+
+          <div id="result-player-container" class="audio-player-container">
+            <h4>合并结果预览</h4>
+            <audio id="result-player" controls></audio>
           </div>
 
           <div id="progress-container" class="progress-container">
@@ -370,7 +451,8 @@
 
     // ==================== 拖拽上传处理 ====================
     const dropZone = document.getElementById('drop-zone');
-    let uploadedFiles = [];
+    let uploadedFiles = []; // Array of { file, duration, id, isPlaying }
+    let currentPlayingId = null;
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       dropZone.addEventListener(eventName, preventDefaults, false);
@@ -412,7 +494,7 @@
       e.target.value = '';
     }
 
-    function handleFiles(files) {
+    async function handleFiles(files) {
       if (files.length === 0) return;
 
       const newFiles = Array.from(files).filter(file => file.type.startsWith('audio/'));
@@ -422,8 +504,106 @@
         return;
       }
 
-      uploadedFiles = [...uploadedFiles, ...newFiles];
+      // Process new files to get duration
+      for (const file of newFiles) {
+         try {
+           const duration = await getAudioDuration(file);
+           uploadedFiles.push({
+             file: file,
+             duration: duration,
+             id: Math.random().toString(36).substr(2, 9),
+             isPlaying: false
+           });
+         } catch (e) {
+           console.error("Failed to load audio metadata", e);
+           uploadedFiles.push({
+             file: file,
+             duration: 0,
+             id: Math.random().toString(36).substr(2, 9),
+             isPlaying: false
+           });
+         }
+      }
+
       updateFileList();
+    }
+
+    function getAudioDuration(file) {
+      return new Promise((resolve, reject) => {
+        const audio = document.createElement('audio');
+        const url = URL.createObjectURL(file);
+        audio.src = url;
+
+        audio.onloadedmetadata = () => {
+           URL.revokeObjectURL(url);
+           resolve(audio.duration);
+        };
+
+        audio.onerror = () => {
+           URL.revokeObjectURL(url);
+           resolve(0); // Fail gracefully
+        };
+      });
+    }
+
+    function formatDuration(seconds) {
+       if (!seconds) return '00:00';
+       const m = Math.floor(seconds / 60);
+       const s = Math.floor(seconds % 60);
+       return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // Drag and Drop Logic
+    let dragSrcEl = null;
+
+    function handleDragStart(e) {
+       dragSrcEl = this; // 'this' is the row
+       e.dataTransfer.effectAllowed = 'move';
+       e.dataTransfer.setData('text/html', this.outerHTML);
+       this.classList.add('dragging');
+    }
+
+    function handleDragOver(e) {
+       if (e.preventDefault) {
+          e.preventDefault();
+       }
+       e.dataTransfer.dropEffect = 'move';
+       return false;
+    }
+
+    function handleDragEnter(e) {
+       this.classList.add('over');
+    }
+
+    function handleDragLeave(e) {
+       this.classList.remove('over');
+    }
+
+    function handleDropItem(e) {
+       if (e.stopPropagation) {
+          e.stopPropagation();
+       }
+
+       if (dragSrcEl !== this) {
+          const sourceIndex = parseInt(dragSrcEl.getAttribute('data-index'));
+          const targetIndex = parseInt(this.getAttribute('data-index'));
+
+          // Reorder array
+          const movedItem = uploadedFiles[sourceIndex];
+          uploadedFiles.splice(sourceIndex, 1);
+          uploadedFiles.splice(targetIndex, 0, movedItem);
+          updateFileList();
+       }
+
+       return false;
+    }
+
+    function handleDragEnd(e) {
+       this.classList.remove('dragging');
+       // Remove 'over' from all items
+       document.querySelectorAll('.file-list-item').forEach(item => {
+          item.classList.remove('over');
+       });
     }
 
     function updateFileList() {
@@ -436,20 +616,38 @@
         uploadText.style.display = 'none';
 
         listContainer.innerHTML = '';
-        uploadedFiles.forEach((file, index) => {
-          const item = document.createElement('div');
-          item.className = 'file-list-item';
-          item.innerHTML = `
-            <span class="file-name">${index + 1}. ${file.name} (${formatSize(file.size)})</span>
-            <span class="remove-btn" onclick="removeFile(${index})">✕</span>
+        uploadedFiles.forEach((item, index) => {
+          const div = document.createElement('div');
+          div.className = 'file-list-item';
+          div.setAttribute('draggable', 'true');
+          div.setAttribute('data-index', index);
+          div.setAttribute('data-id', item.id);
+
+          // Drag events
+          div.addEventListener('dragstart', handleDragStart, false);
+          div.addEventListener('dragenter', handleDragEnter, false);
+          div.addEventListener('dragover', handleDragOver, false);
+          div.addEventListener('dragleave', handleDragLeave, false);
+          div.addEventListener('drop', handleDropItem, false);
+          div.addEventListener('dragend', handleDragEnd, false);
+
+          const playIcon = item.isPlaying ? '⏸️' : '▶️';
+
+          div.innerHTML = `
+            <div class="drag-handle">☰</div>
+            <div class="file-info-group">
+                <div class="file-name">${index + 1}. ${item.file.name}</div>
+                <div class="file-meta">(${formatDuration(item.duration)} - ${formatSize(item.file.size)})</div>
+            </div>
+            <div class="action-group">
+                <button class="icon-btn play-btn" onclick="togglePlay('${item.id}')" title="预览播放">${playIcon}</button>
+                <button class="icon-btn remove-btn" onclick="removeFile(${index})" title="移除">✕</button>
+            </div>
           `;
-          listContainer.appendChild(item);
+          listContainer.appendChild(div);
         });
 
         mergeBtn.disabled = uploadedFiles.length < 2;
-        if(uploadedFiles.length < 2) {
-             // Optional: Show hint that at least 2 files are needed
-        }
       } else {
         listContainer.style.display = 'none';
         uploadText.style.display = 'block';
@@ -457,9 +655,47 @@
       }
     }
 
+    // Playback Logic
+    const previewPlayer = document.getElementById('preview-player');
+
+    previewPlayer.onended = () => {
+       if (currentPlayingId) {
+          const item = uploadedFiles.find(f => f.id === currentPlayingId);
+          if (item) item.isPlaying = false;
+          currentPlayingId = null;
+          updateFileList();
+       }
+    };
+
+    function togglePlay(id) {
+       const item = uploadedFiles.find(f => f.id === id);
+       if (!item) return;
+
+       if (item.isPlaying) {
+          // Pause
+          previewPlayer.pause();
+          item.isPlaying = false;
+          currentPlayingId = null;
+       } else {
+          // Stop others
+          uploadedFiles.forEach(f => f.isPlaying = false);
+
+          // Play new
+          const url = URL.createObjectURL(item.file);
+          previewPlayer.src = url;
+          previewPlayer.play();
+          item.isPlaying = true;
+          currentPlayingId = id;
+       }
+       updateFileList();
+    }
+
     function removeFile(index) {
-      // Stop event propagation if needed, though here it's click on span
-      event.stopPropagation();
+      const item = uploadedFiles[index];
+      if (item.id === currentPlayingId) {
+          previewPlayer.pause();
+          currentPlayingId = null;
+      }
       uploadedFiles.splice(index, 1);
       updateFileList();
     }
@@ -486,6 +722,7 @@
       document.getElementById('progress-container').style.display = 'block';
       document.getElementById('error-msg').textContent = '';
       document.getElementById('download-link').style.display = 'none';
+      document.getElementById('result-player-container').style.display = 'none';
 
       try {
         if (!ffmpeg) {
@@ -510,9 +747,9 @@
         const inputFiles = [];
         for (let i = 0; i < uploadedFiles.length; i++) {
           // Clean filename to avoid issues with special characters in ffmpeg
-          const ext = uploadedFiles[i].name.split('.').pop();
+          const ext = uploadedFiles[i].file.name.split('.').pop();
           const safeName = `input_${i}.${ext}`;
-          await ffmpeg.FS('writeFile', safeName, await fetchFile(uploadedFiles[i]));
+          await ffmpeg.FS('writeFile', safeName, await fetchFile(uploadedFiles[i].file));
           inputFiles.push(safeName);
         }
 
@@ -547,6 +784,11 @@
         downloadLink.download = `merged_${Date.now()}.mp3`;
         downloadLink.style.display = 'inline-block';
 
+        // Update Result Player
+        const resultPlayer = document.getElementById('result-player');
+        resultPlayer.src = url;
+        document.getElementById('result-player-container').style.display = 'block';
+
         updateStatus('合并完成！', 100);
         btn.textContent = '开始合并';
         btn.disabled = false;
@@ -567,9 +809,14 @@
 
     function resetMerger() {
       uploadedFiles = [];
+      currentPlayingId = null;
+      previewPlayer.pause();
+      previewPlayer.src = '';
+
       updateFileList();
       document.getElementById('progress-container').style.display = 'none';
       document.getElementById('download-link').style.display = 'none';
+      document.getElementById('result-player-container').style.display = 'none';
       document.getElementById('error-msg').textContent = '';
       if(ffmpeg) {
         try {

@@ -172,25 +172,98 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.5rem;
+      padding: 0.75rem;
       background: var(--bg-secondary);
       border-radius: 6px;
       margin-bottom: 0.5rem;
       font-size: 0.9rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
     }
 
-    .file-list-item .file-name {
+    .file-list-item.dragging {
+      opacity: 0.5;
+      background: var(--bg-primary);
+      border: 1px dashed var(--accent-color);
+    }
+
+    .file-info-group {
+      display: flex;
+      align-items: center;
       flex: 1;
+      overflow: hidden;
+      gap: 0.5rem;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: var(--text-secondary);
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .file-name {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-right: 1rem;
+      font-weight: 500;
     }
 
-    .file-list-item .remove-btn {
-      color: #ef4444;
+    .file-meta {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
       cursor: pointer;
-      padding: 0.2rem 0.5rem;
+      color: var(--text-secondary);
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-primary);
+      background: rgba(0,0,0,0.05);
+    }
+
+    .icon-btn.play-btn {
+      color: var(--accent-color);
+    }
+
+    .icon-btn.remove-btn {
+      color: #ef4444;
+    }
+
+    /* Player Area */
+    .audio-player-container {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .audio-player-container h4 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    audio {
+      width: 100%;
+      outline: none;
     }
 
     /* Progress Bar */
@@ -298,12 +371,20 @@
             <div id="file-list-container" class="file-list" style="display: none;">
               <!-- File list generated here -->
             </div>
+
+            <!-- Hidden audio element for preview logic -->
+            <audio id="preview-player" style="display:none;"></audio>
           </div>
 
           <div class="btn-group">
             <button class="btn" id="merge-btn" onclick="startMerge()" disabled>Start Merge</button>
             <button class="btn btn-secondary" onclick="resetMerger()">Reset</button>
             <a id="download-link" class="btn" style="display: none; background: #10b981;" download>Download Audio</a>
+          </div>
+
+          <div id="result-player-container" class="audio-player-container">
+            <h4>Merge Result Preview</h4>
+            <audio id="result-player" controls></audio>
           </div>
 
           <div id="progress-container" class="progress-container">
