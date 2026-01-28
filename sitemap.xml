@@ -75,6 +75,24 @@
   </url>
 
   <url>
+    <loc>https://denganliang.com/tools/nano-banana.html</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/nano-banana.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/nano-banana.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/tools/nano-banana.html</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/tools/nano-banana.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/nano-banana.html"/>
+  </url>
+
+  <url>
     <loc>https://denganliang.com/tools/photosign.html</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>

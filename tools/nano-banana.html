@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NanoBanana - 上传图片，施展 AI 魔法，创造精美手办风格或深夜食堂氛围图。">
+  <meta name="keywords" content="NanoBanana, AI 画图, 图片生成, Gemini, OpenRouter, 手办风格, 深夜食堂">
+  <title>NanoBanana - 邓安良</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <!-- Tailwind CDN for NanoBanana Styles -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      corePlugins: {
+        preflight: false,
+      }
+    }
+  </script>
+
+  <!-- Alternate language -->
+  <link rel="alternate" hreflang="en" href="/en/tools/nano-banana.html">
+  <link rel="alternate" hreflang="zh" href="/tools/nano-banana.html">
+
+  <style>
+    /* Reset some conflicts between blog CSS and Tailwind */
+    .nano-banana-app button { text-transform: none; }
+    .nano-banana-app select { background-image: none; }
+    .nano-banana-app textarea { color: #1a202c; }
+    .nano-banana-app input { color: #1a202c; }
+
+    [data-theme="dark"] .nano-banana-app .bg-white { background-color: #ffffff !important; color: #1a202c !important; }
+    [data-theme="dark"] .nano-banana-app .text-gray-900 { color: #1a202c !important; }
+    [data-theme="dark"] .nano-banana-app .text-gray-800 { color: #1a202c !important; }
+    [data-theme="dark"] .nano-banana-app .text-gray-600 { color: #4a5568 !important; }
+    [data-theme="dark"] .nano-banana-app .bg-gray-50 { background-color: #f7fafc !important; }
+    [data-theme="dark"] .nano-banana-app .bg-gray-100 { background-color: #edf2f7 !important; }
+
+    .animate-spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .breadcrumb { margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="navbar-logo">邓安良</a>
+      <ul class="navbar-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/tools/">工具</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="lang-toggle">English</button>
+        <button class="theme-toggle"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/tools/">工具</a>
+        <span class="breadcrumb-separator">/</span>
+        <span>NanoBanana</span>
+      </div>
+
+      <div id="app" class="nano-banana-app">
+        <div class="min-h-screen bg-gradient-to-br from-yellow-200 via-yellow-300 to-orange-200 text-gray-900 relative overflow-hidden rounded-xl border-4 border-black mb-8">
+            <!-- 香蕉装饰元素 -->
+            <div class="absolute top-10 left-10 text-6xl opacity-20 animate-bounce">🍌</div>
+            <div class="absolute top-32 right-20 text-4xl opacity-30 animate-pulse">🍌</div>
+            <div class="absolute bottom-20 left-32 text-5xl opacity-25 animate-bounce delay-1000">🍌</div>
+            <div class="absolute bottom-40 right-10 text-3xl opacity-20 animate-pulse delay-500">🍌</div>
+
+            <div class="mx-auto px-3 py-4 relative z-10">
+                <!-- Header -->
+                <div class="relative mb-6">
+                    <div class="bg-gradient-to-r from-orange-400 to-yellow-500 rounded-lg p-6 border-4 border-black shadow-lg">
+                        <div class="text-center">
+                            <h1 class="text-4xl font-black text-white mb-1 flex items-center justify-center gap-2">
+                                🍌 Nano<br />
+                                <span class="text-yellow-100 text-5xl">Banana</span>
+                            </h1>
+                            <p class="text-white text-base font-medium">上传你的图片，我来创造艺术！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API设置区域 -->
+                <div class="mb-6">
+                    <div class="flex justify-center">
+                        <button
+                            @click="showApiSettings = !showApiSettings"
+                            :class="[
+                                'px-6 py-3 rounded-lg border-4 border-black font-bold text-sm transition-all flex items-center gap-2 shadow-lg',
+                                apiKey ? 'bg-green-400 text-white hover:bg-green-500' : 'bg-red-400 text-white hover:bg-red-500 animate-pulse'
+                            ]"
+                        >
+                            <span>🔑</span>
+                            <span v-if="!apiKey">需要配置API密钥</span>
+                            <span v-else>API密钥已配置</span>
+                            <svg :class="['w-4 h-4 transition-transform', showApiSettings ? 'rotate-180' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- API设置面板 -->
+                    <div v-if="showApiSettings" class="mt-4 max-w-2xl mx-auto">
+                        <div class="bg-white border-4 border-black rounded-lg p-3 shadow-lg">
+                            <div class="mb-2">
+                                <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2">
+                                    🔑 API 配置
+                                    <span v-if="apiKey" class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">密钥已保存</span>
+                                </h3>
+                                <p class="text-sm text-gray-600">可自定义 API 密钥与端点，默认使用 OpenRouter</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">API 密钥</label>
+                                    <div class="flex gap-2">
+                                        <input
+                                            type="password"
+                                            v-model="apiKey"
+                                            placeholder="输入你的 OpenRouter API 密钥..."
+                                            class="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                                        />
+                                        <button
+                                            v-if="apiKey"
+                                            @click="clearApiKey"
+                                            class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                                            title="清除缓存的API密钥"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between mt-1">
+                                        <p class="text-xs text-gray-500">
+                                            从 <a href="https://openrouter.ai/" target="_blank" class="text-orange-500 hover:underline font-medium">OpenRouter.ai</a> 获取你的 API 密钥
+                                        </p>
+                                        <p v-if="apiKey" class="text-xs text-green-600 flex items-center gap-1">💾 已自动保存到本地</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">API 端点</label>
+                                    <div class="flex gap-2">
+                                        <input
+                                            type="text"
+                                            v-model="apiEndpoint"
+                                            placeholder="例如 https://openrouter.ai/api/v1/chat/completions"
+                                            class="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                                        />
+                                        <button
+                                            v-if="apiEndpoint !== 'https://openrouter.ai/api/v1/chat/completions'"
+                                            @click="apiEndpoint = 'https://openrouter.ai/api/v1/chat/completions'"
+                                            class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                                            title="恢复默认端点"
+                                        >
+                                            ♻️
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                        <button
+                                            @click="handleFetchModels"
+                                            :disabled="!apiKey || isFetchingModels"
+                                            :class="[
+                                                'px-3 py-2 rounded-lg border-2 border-black font-semibold text-sm transition-colors shadow-sm flex items-center justify-center gap-2',
+                                                isFetchingModels
+                                                    ? 'bg-gray-300 text-gray-600 cursor-wait'
+                                                    : apiKey
+                                                      ? 'bg-purple-500 text-white hover:bg-purple-600'
+                                                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                            ]"
+                                        >
+                                            <span v-if="isFetchingModels">⏳ 正在获取...</span>
+                                            <span v-else>📥 获取模型列表</span>
+                                        </button>
+                                        <span v-if="modelOptions.length" class="text-xs text-gray-600">已载入 {{ modelOptions.length }} 个模型</span>
+                                    </div>
+                                    <p v-if="modelsError" class="text-xs text-red-600 mt-2">⚠️ {{ modelsError }}</p>
+
+                                    <div class="mt-3">
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">选择文生图模型</label>
+                                        <select
+                                            v-model="selectedModel"
+                                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                                        >
+                                            <option v-for="item in modelOptions" :key="item.id" :value="item.id">
+                                                {{ item.supportsImages ? '🖼️ ' : '' }}{{ item.label }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 功能布局 -->
+                <div class="grid lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:items-start">
+                    <!-- 灵感工坊 -->
+                    <div class="flex flex-col h-full gap-4">
+                        <div class="flex flex-col h-full">
+                            <div class="bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold px-4 py-2 rounded-t-lg border-4 border-black border-b-0 flex items-center gap-2">
+                                ✨ 文生图 · 灵感工坊
+                            </div>
+                            <div class="bg-white border-4 border-black border-t-0 rounded-b-lg p-5 shadow-lg flex flex-col h-full gap-4">
+                                <div class="flex flex-col gap-3 flex-1">
+                                    <label class="font-bold flex items-center gap-2 text-base">🍌 输入你的创意描述：</label>
+                                    <textarea
+                                        v-model="textToImagePrompt"
+                                        placeholder="例如：阳光洒在香蕉形热气球上，漂浮在糖果色的天空中"
+                                        class="w-full px-4 py-3 border-2 border-black rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent min-h-[160px] flex-1"
+                                    ></textarea>
+                                </div>
+
+                                <p class="text-sm text-gray-600 font-medium flex items-center gap-2">
+                                    <span>💡</span>
+                                    <span>填写描述后，使用下方按钮开始创作，生成的图片会展示在下方结果区。</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 宽高比选择器 -->
+                        <div v-if="showAspectRatioSelector" class="flex flex-col">
+                            <div class="bg-gradient-to-r from-purple-400 to-pink-500 text-white font-bold px-4 py-2 rounded-t-lg border-4 border-black border-b-0 flex items-center gap-2">
+                                📐 图像宽高比
+                            </div>
+                            <div class="bg-white border-4 border-black border-t-0 rounded-b-lg p-4 shadow-lg">
+                                <select
+                                    v-model="selectedAspectRatio"
+                                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-medium"
+                                >
+                                    <option v-for="option in aspectRatioOptions" :key="option.value" :value="option.value">
+                                        {{ option.label }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Gemini 3 Pro Image 配置 -->
+                        <div v-if="showGemini3ProConfig" class="flex flex-col">
+                            <div class="bg-gradient-to-r from-indigo-400 to-purple-500 text-white font-bold px-4 py-2 rounded-t-lg border-4 border-black border-b-0 flex items-center gap-2">
+                                🚀 Gemini 3 Pro Image 配置
+                            </div>
+                            <div class="bg-white border-4 border-black border-t-0 rounded-b-lg p-4 shadow-lg space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-800 mb-2">📏 图像尺寸</label>
+                                    <select v-model="gemini3ImageSize" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-medium">
+                                        <option value="1K">1K - 标准清晰度</option>
+                                        <option value="2K">2K - 高清晰度</option>
+                                        <option value="4K">4K - 超高清晰度</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" v-model="gemini3EnableGoogleSearch" class="w-4 h-4 text-purple-600 border-2 border-gray-300 rounded" />
+                                        <span class="text-sm font-bold text-gray-800">🔍 启用谷歌搜索</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图文生图流程 -->
+                    <div class="flex flex-col gap-4 h-full">
+                        <div class="flex flex-col h-full">
+                            <div class="bg-pink-400 text-white font-bold px-4 py-2 rounded-t-lg border-4 border-black border-b-0 flex items-center gap-2">🍌 图文生图 · 上传图片</div>
+                            <div class="bg-white border-4 border-black border-t-0 rounded-b-lg p-4 shadow-lg h-full flex flex-col min-h-[200px]">
+                                <div
+                                    @click="$refs.fileInput.click()"
+                                    @dragover.prevent="isDragOver = true"
+                                    @dragleave.prevent="isDragOver = false"
+                                    @drop.prevent="handleDrop"
+                                    :class="['border-4 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-300 flex-1 flex flex-col justify-center', isDragOver ? 'border-pink-400 bg-pink-50' : 'border-gray-300 bg-gray-50 hover:border-pink-400 hover:bg-pink-50']"
+                                >
+                                    <input ref="fileInput" type="file" accept="image/*" multiple class="hidden" @change="handleFileSelect" />
+                                    <div class="mb-4">
+                                        <div class="w-12 h-12 bg-black rounded-lg mx-auto flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-lg font-bold mb-2">拖拽上传</h3>
+                                    <p class="text-sm text-gray-500">支持多张图片 (最大 5MB)</p>
+                                </div>
+                                <div v-if="selectedImages.length > 0" class="grid grid-cols-4 gap-3 mt-4">
+                                    <div v-for="(thumbnail, index) in selectedImages" :key="index" class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group border-2 border-black">
+                                        <img :src="thumbnail" class="w-full h-full object-cover" />
+                                        <button @click="removeThumbnail(index)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col h-full">
+                            <div class="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold px-4 py-2 rounded-t-lg border-4 border-black border-b-0 flex items-center gap-2">
+                                🎨 图文生图 · 选择风格或自定义提示词
+                            </div>
+                            <div class="bg-white border-4 border-black border-t-0 rounded-b-lg p-4 shadow-lg h-full flex flex-col">
+                                <div class="flex mb-4 bg-gray-100 rounded-lg p-1 border-2 border-black">
+                                    <button @click="activeStyleTab = 'style'" :class="['flex-1 py-2 px-3 rounded-md font-bold transition-all', activeStyleTab === 'style' ? 'bg-yellow-300 text-black' : 'text-gray-600']">🎨 预设风格</button>
+                                    <button @click="activeStyleTab = 'custom'" :class="['flex-1 py-2 px-3 rounded-md font-bold transition-all', activeStyleTab === 'custom' ? 'bg-yellow-300 text-black' : 'text-gray-600']">✏️ 自定义</button>
+                                </div>
+                                <div v-if="activeStyleTab === 'style'" class="space-y-2 flex-1 overflow-y-auto max-h-[300px]">
+                                    <div v-for="template in styleTemplates" :key="template.id" @click="selectStyle(template)" :class="['p-4 rounded-lg border-2 border-black cursor-pointer transition-all', selectedStyle === template.id ? 'bg-yellow-300 border-orange-500' : 'bg-yellow-50 hover:bg-yellow-100']">
+                                        <div class="flex items-start gap-3">
+                                            <img :src="template.image" class="w-20 h-20 rounded border-2 border-black object-cover flex-shrink-0" />
+                                            <div class="flex-1">
+                                                <div class="text-base font-bold mb-1">{{ template.title }}</div>
+                                                <p class="text-sm text-gray-600">{{ template.description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else class="flex flex-col gap-3 flex-1">
+                                    <textarea v-model="customPrompt" placeholder="例如：将图片转换为超现实主义风格..." class="w-full px-4 py-3 border-2 border-black rounded-lg resize-none min-h-[160px]"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生成按钮 -->
+                <div class="mb-6">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:gap-6">
+                        <button
+                            @click="handleTextToImageGenerate"
+                            :disabled="!canGenerateTextImage"
+                            :class="[
+                                'flex-1 px-6 py-4 rounded-lg font-bold text-white text-lg transition-all duration-200 flex items-center justify-center gap-3 border-4 border-black shadow-lg',
+                                canGenerateTextImage
+                                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 hover:-translate-y-1 hover:shadow-xl'
+                                    : 'bg-gray-400 cursor-not-allowed'
+                            ]"
+                        >
+                            <span v-if="!isTextToImageLoading" class="flex items-center gap-2 text-xl">🍌 施展魔法（文生图）</span>
+                            <span v-else class="flex items-center gap-2 text-xl">🍌 正在施法...</span>
+                            <div v-if="isTextToImageLoading" class="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        </button>
+                        <button
+                            @click="handleGenerate"
+                            :disabled="!canGenerate"
+                            :class="[
+                                'flex-1 px-6 py-4 rounded-lg font-bold text-white text-lg transition-all duration-200 flex items-center justify-center gap-3 border-4 border-black shadow-lg',
+                                canGenerate
+                                    ? 'bg-gradient-to-r from-orange-400 to-yellow-500 hover:from-orange-500 hover:to-yellow-600 hover:-translate-y-1 hover:shadow-xl'
+                                    : 'bg-gray-400 cursor-not-allowed'
+                            ]"
+                        >
+                            <span v-if="!isLoading" class="flex items-center gap-2 text-xl">🍌 施展魔法（图文生图）</span>
+                            <span v-else class="flex items-center gap-2 text-xl">🍌 正在施法...</span>
+                            <div v-if="isLoading" class="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 生成结果区域 -->
+                <div class="w-full">
+                    <div class="bg-black text-white font-bold px-4 py-2 rounded-t-lg border-4 border-black border-b-0 flex items-center gap-2">✨ 生成结果</div>
+                    <div class="bg-white border-4 border-black rounded-b-lg p-4 shadow-lg min-h-[400px] flex flex-col">
+                        <div class="flex-1 bg-gray-50 border-2 border-black rounded-lg p-6 flex items-center justify-center">
+                            <!-- Loading State -->
+                            <div v-if="displayLoading" class="text-center">
+                                <div class="w-12 h-12 border-4 border-yellow-300 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
+                                <p class="font-bold text-base">🍌 正在创造魔法...</p>
+                            </div>
+
+                            <!-- Error State -->
+                            <div v-else-if="displayError" class="text-center">
+                                <div class="text-red-500 text-6xl mb-4">🍌💥</div>
+                                <p class="text-red-600 font-bold">{{ displayError }}</p>
+                            </div>
+
+                            <!-- Result Images -->
+                            <div v-else-if="displayResults.length > 0" class="w-full">
+                                <div :class="['grid gap-4', displayResults.length === 1 ? 'grid-cols-1' : 'grid-cols-2']">
+                                    <div v-for="(img, index) in displayResults" :key="index" class="relative group">
+                                        <img :src="img" class="w-full rounded-lg border-2 border-black shadow-lg object-contain" />
+                                        <div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button @click="pushImageToUpload(img)" class="px-3 py-1 bg-green-300 text-black font-bold border-2 border-black rounded-lg shadow-lg hover:bg-green-400 text-sm">🎨 二次创作</button>
+                                            <button @click="handleDownloadResult(img)" class="px-3 py-1 bg-yellow-300 text-black font-bold border-2 border-black rounded-lg shadow-lg hover:bg-yellow-400 text-sm">⬇️ 下载</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div v-else class="text-center">
+                                <div class="w-12 h-12 border-4 border-gray-300 rounded-lg mx-auto mb-4 flex items-center justify-center"><span class="text-2xl">🍌</span></div>
+                                <h3 class="font-bold text-base mb-2">等待魔法开始...</h3>
+                                <p class="text-gray-600">输入想法或上传图片开始创作</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="mt-12 text-center text-gray-600 font-bold">
+                    <p>🍌 NanoBanana &copy; 2026 Crafted with Passion</p>
+                </footer>
+            </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 邓安良. 保留所有权利.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, ref, computed, onMounted, watch } = Vue;
+
+    const DEFAULT_API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
+    const DEFAULT_MODEL_ID = 'google/gemini-2.0-flash-exp:free';
+
+    const styleTemplates = [
+      {
+        id: 'figurine',
+        title: '🍌 桌面手办风格',
+        prompt: 'Using the nano-banana model,create a 1/7 scale commercialized figurine of the characters in the picture, in a realistic style, in a real environment. The figurine is placed on a computer desk. The figurine has a round transparent acrylic base, with no text on the base. The content on the computer screen is the Zbrush modeling process of this figurine. Next to the computer screen is a BANDAI-style toy packaging box printed with the original artwork., The packaging features two-dimensional flat illustrations.Maintain consistency with the image',
+        image: '/assets/images/tools/nano-banana/1.png',
+        description: '将你的角色变成精美的收藏手办，配有专业包装和制作过程展示'
+      },
+      {
+        id: 'fastfood-solitude',
+        title: '🍔 深夜食堂的孤寂',
+        prompt: 'A cinematic scene inside a fast food restaurant at night. Foreground: a lonely table with burgers and fries, and a smartphone shown large and sharp on the table, clearly displaying the uploaded anime/game character image. A hand is reaching for food, symbolizing solitude. Midground: in the blurred background, a couple is sitting together and kiss. One of them is represented as a cosplayer version of the uploaded character. The other person is an ordinary japan human, and they are showing intimate affection. Background: large glass windows, blurred neon city lights outside. Mood: melancholic, bittersweet, ironic, cinematic shallow depth of field. Image size is 585px 1024px',
+        image: '/assets/images/tools/nano-banana/2.png',
+        description: '在深夜的快餐店，将你的角色融入充满故事感的孤寂与甜蜜对比场景中'
+      }
+    ];
+
+    createApp({
+      setup() {
+        const apiKey = ref(localStorage.getItem('nano-banana-api-key') || '');
+        const apiEndpoint = ref(localStorage.getItem('nano-banana-api-endpoint') || DEFAULT_API_ENDPOINT);
+        const selectedModel = ref(localStorage.getItem('nano-banana-model-id') || DEFAULT_MODEL_ID);
+        const modelOptions = ref(JSON.parse(localStorage.getItem('nano-banana-model-cache') || '[]'));
+
+        const showApiSettings = ref(!apiKey.value);
+        const isFetchingModels = ref(false);
+        const modelsError = ref(null);
+
+        const selectedImages = ref([]);
+        const isDragOver = ref(false);
+        const activeStyleTab = ref('style');
+        const selectedStyle = ref('');
+        const customPrompt = ref('');
+
+        const textToImagePrompt = ref('');
+        const textToImageResult = ref([]);
+        const textToImageError = ref(null);
+        const isTextToImageLoading = ref(false);
+
+        const result = ref([]);
+        const error = ref(null);
+        const isLoading = ref(false);
+        const latestResultSource = ref(null);
+
+        const selectedAspectRatio = ref('1:1');
+        const gemini3ImageSize = ref('2K');
+        const gemini3EnableGoogleSearch = ref(false);
+
+        const aspectRatioOptions = [
+            { value: '1:1', label: '1:1 - 1024x1024' },
+            { value: '2:3', label: '2:3 - 832x1248' },
+            { value: '3:2', label: '3:2 - 1248x832' },
+            { value: '3:4', label: '3:4 - 864x1184' },
+            { value: '4:3', label: '4:3 - 1184x864' },
+            { value: '4:5', label: '4:5 - 896x1152' },
+            { value: '5:4', label: '5:4 - 1152x896' },
+            { value: '9:16', label: '9:16 - 768x1344' },
+            { value: '16:9', label: '16:9 - 1344x768' },
+            { value: '21:9', label: '21:9 - 1536x672' }
+        ];
+
+        watch(apiKey, val => localStorage.setItem('nano-banana-api-key', val));
+        watch(apiEndpoint, val => localStorage.setItem('nano-banana-api-endpoint', val));
+        watch(selectedModel, val => localStorage.setItem('nano-banana-model-id', val));
+
+        const clearApiKey = () => {
+          apiKey.value = '';
+          localStorage.removeItem('nano-banana-api-key');
+        };
+
+        const handleFetchModels = async () => {
+          if (!apiKey.value) return;
+          isFetchingModels.value = true;
+          modelsError.value = null;
+          try {
+            const endpoint = apiEndpoint.value.replace(/\/chat\/completions$/, '/models');
+            const response = await fetch(endpoint, {
+              headers: { 'Authorization': `Bearer ${apiKey.value}` }
+            });
+            const data = await response.json();
+            const models = data.data || data.models || [];
+            modelOptions.value = models.map(m => ({
+              id: m.id,
+              label: m.name || m.id,
+              supportsImages: /image|vision|flux|art/i.test(m.id)
+            })).sort((a, b) => (b.supportsImages - a.supportsImages));
+            localStorage.setItem('nano-banana-model-cache', JSON.stringify(modelOptions.value));
+          } catch (err) {
+            modelsError.value = '获取模型失败: ' + err.message;
+          } finally {
+            isFetchingModels.value = false;
+          }
+        };
+
+        const handleFileSelect = (e) => {
+          const files = Array.from(e.target.files);
+          files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = ev => selectedImages.value.push(ev.target.result);
+            reader.readAsDataURL(file);
+          });
+        };
+
+        const handleDrop = (e) => {
+          isDragOver.value = false;
+          const files = Array.from(e.dataTransfer.files);
+          files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = ev => selectedImages.value.push(ev.target.result);
+            reader.readAsDataURL(file);
+          });
+        };
+
+        const removeThumbnail = (index) => selectedImages.value.splice(index, 1);
+
+        const selectStyle = (template) => {
+          selectedStyle.value = template.id;
+          customPrompt.value = '';
+          activeStyleTab.value = 'style';
+        };
+
+        const showAspectRatioSelector = computed(() => {
+            const id = selectedModel.value.toLowerCase();
+            return id.includes('gemini-2.5-flash-image') || id.includes('gemini-3-pro-image');
+        });
+
+        const showGemini3ProConfig = computed(() => selectedModel.value.toLowerCase().includes('gemini-3-pro-image'));
+
+        const canGenerateTextImage = computed(() => apiKey.value && textToImagePrompt.value && !isTextToImageLoading.value);
+        const canGenerate = computed(() => apiKey.value && selectedImages.value.length > 0 && (selectedStyle.value || customPrompt.value) && !isLoading.value);
+
+        const generateImage = async (prompt, images) => {
+          const isGemini3 = selectedModel.value.toLowerCase().includes('gemini-3-pro-image');
+          const payload = {
+            model: selectedModel.value,
+            messages: [{
+              role: 'user',
+              content: images.length === 0 ? prompt : [
+                { type: 'text', text: prompt },
+                ...images.map(url => ({ type: 'image_url', image_url: { url } }))
+              ]
+            }],
+            modalities: ['image', 'text']
+          };
+
+          const imageConfig = {};
+          if (showAspectRatioSelector.value) imageConfig.aspect_ratio = selectedAspectRatio.value;
+          if (isGemini3) {
+              imageConfig.image_size = gemini3ImageSize.value;
+              if (gemini3EnableGoogleSearch.value) payload.tools = [{ google_search: {} }];
+          }
+          if (Object.keys(imageConfig).length > 0) payload.image_config = imageConfig;
+
+          const response = await fetch(apiEndpoint.value, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey.value}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) throw new Error(await response.text());
+          const data = await response.json();
+          const message = data.choices[0].message;
+          let urls = [];
+          if (Array.isArray(message.images)) urls = message.images.map(img => img.image_url.url);
+          else if (typeof message.content === 'string' && message.content.startsWith('data:image/')) {
+            const matches = message.content.match(/data:image\/[a-zA-Z0-9+]+;base64,[^\s"]+/g);
+            urls = matches || [message.content];
+          }
+          if (urls.length === 0) throw new Error('模型未返回图片');
+          return urls;
+        };
+
+        const handleTextToImageGenerate = async () => {
+          isTextToImageLoading.value = true;
+          textToImageError.value = null;
+          latestResultSource.value = 'text';
+          try {
+            textToImageResult.value = await generateImage(textToImagePrompt.value, []);
+          } catch (err) {
+            textToImageError.value = err.message;
+          } finally {
+            isTextToImageLoading.value = false;
+          }
+        };
+
+        const handleGenerate = async () => {
+          isLoading.value = true;
+          error.value = null;
+          latestResultSource.value = 'image';
+          try {
+            const prompt = selectedStyle.value ? styleTemplates.find(t => t.id === selectedStyle.value).prompt : customPrompt.value;
+            result.value = await generateImage(prompt, selectedImages.value);
+          } catch (err) {
+            error.value = err.message;
+          } finally {
+            isLoading.value = false;
+          }
+        };
+
+        const displayLoading = computed(() => latestResultSource.value === 'text' ? isTextToImageLoading.value : isLoading.value);
+        const displayResults = computed(() => latestResultSource.value === 'text' ? textToImageResult.value : result.value);
+        const displayError = computed(() => latestResultSource.value === 'text' ? textToImageError.value : error.value);
+
+        const pushImageToUpload = (img) => {
+          if (!selectedImages.value.includes(img)) selectedImages.value.push(img);
+        };
+
+        const handleDownloadResult = (img) => {
+          const link = document.createElement('a');
+          link.href = img;
+          link.download = `nanobanana-${Date.now()}.png`;
+          link.click();
+        };
+
+        return {
+          apiKey, apiEndpoint, selectedModel, modelOptions, showApiSettings, isFetchingModels, modelsError,
+          selectedImages, isDragOver, activeStyleTab, selectedStyle, customPrompt, styleTemplates,
+          textToImagePrompt, textToImageResult, textToImageError, isTextToImageLoading,
+          result, error, isLoading, latestResultSource,
+          selectedAspectRatio, gemini3ImageSize, gemini3EnableGoogleSearch,
+          aspectRatioOptions, showAspectRatioSelector, showGemini3ProConfig,
+          canGenerateTextImage, canGenerate, displayLoading, displayResults, displayError,
+          clearApiKey, handleFetchModels, handleFileSelect, handleDrop, removeThumbnail, selectStyle,
+          handleTextToImageGenerate, handleGenerate, pushImageToUpload, handleDownloadResult
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

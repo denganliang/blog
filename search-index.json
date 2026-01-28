@@ -1,5 +1,33 @@
 [
   {
+    "slug": "nano-banana",
+    "title": "NanoBanana",
+    "title_en": "NanoBanana",
+    "date": "2026-01-28",
+    "category": "工具",
+    "category_en": "Tools",
+    "tags": ["AI 绘图", "图片生成", "NanoBanana"],
+    "tags_en": ["AI Image", "Generation", "NanoBanana"],
+    "excerpt": "上传图片，施展 AI 魔法，创造精美手办风格或深夜食堂氛围图。支持多种预设风格和自定义提示词。",
+    "excerpt_en": "Upload your images, apply AI magic, and create stunning figurines or cinematic scenes. Supports various preset styles.",
+    "url": "/tools/nano-banana.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "nano-banana",
+    "title": "NanoBanana",
+    "title_en": "NanoBanana",
+    "date": "2026-01-28",
+    "category": "Tools",
+    "category_en": "Tools",
+    "tags": ["AI Image", "Generation", "NanoBanana"],
+    "tags_en": ["AI Image", "Generation", "NanoBanana"],
+    "excerpt": "Upload your images, apply AI magic, and create stunning figurines or cinematic scenes. Supports various preset styles.",
+    "excerpt_en": "Upload your images, apply AI magic, and create stunning figurines or cinematic scenes. Supports various preset styles.",
+    "url": "/en/tools/nano-banana.html",
+    "lang": "en"
+  },
+  {
     "slug": "relationship-radar",
     "title": "亲密关系排雷针：你的爱情排雷指南",
     "title_en": "Relationship Radar: Your Guide to Understanding Intimacy",
