@@ -32,7 +32,8 @@
       "Bash(python:*)",
       "Skill(playwright-skill)",
       "Bash(taskkill:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "Bash(python3:*)"
     ]
   }
 }
