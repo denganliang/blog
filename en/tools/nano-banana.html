@@ -14,21 +14,14 @@
   <link rel="stylesheet" href="/assets/css/themes.css">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/utilities.css">
 
-  <!-- Tailwind CDN for NanoBanana Styles -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      corePlugins: {
-        preflight: false,
-      }
-    }
-  </script>
-
+  <!-- Canonical -->
+  <link rel="canonical" href="https://denganliang.com/en/tools/nano-banana.html">
   <!-- Alternate language -->
-  <link rel="alternate" hreflang="en" href="/en/tools/nano-banana.html">
   <link rel="alternate" hreflang="zh" href="/tools/nano-banana.html">
+  <link rel="alternate" hreflang="en" href="/en/tools/nano-banana.html">
+  <link rel="alternate" hreflang="x-default" href="/tools/nano-banana.html">
 
   <style>
     /* Reset some conflicts between blog CSS and Tailwind */
@@ -36,6 +29,24 @@
     .nano-banana-app select { background-image: none; }
     .nano-banana-app textarea { color: #1a202c; }
     .nano-banana-app input { color: #1a202c; }
+
+    #app {
+      display: none;
+    }
+
+    html.nano-ready #app {
+      display: block;
+    }
+
+    .nano-loading {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      text-align: center;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+    }
 
     [data-theme="dark"] .nano-banana-app .bg-white { background-color: #ffffff !important; color: #1a202c !important; }
     [data-theme="dark"] .nano-banana-app .text-gray-900 { color: #1a202c !important; }
@@ -73,6 +84,7 @@
         <span>NanoBanana</span>
       </div>
 
+      <div id="nano-loading" class="nano-loading">Loading NanoBanana editor...</div>
       <div id="app" class="nano-banana-app">
         <div class="min-h-screen bg-gradient-to-br from-yellow-200 via-yellow-300 to-orange-200 text-gray-900 relative overflow-hidden rounded-xl border-4 border-black mb-8">
             <!-- Banana decoration elements -->
@@ -148,7 +160,7 @@
                                         <p class="text-xs text-gray-500">
                                             Get your API key from <a href="https://openrouter.ai/" target="_blank" class="text-orange-500 hover:underline font-medium">OpenRouter.ai</a>
                                         </p>
-                                        <p v-if="apiKey" class="text-xs text-green-600 flex items-center gap-1">💾 Saved to local storage</p>
+                                        <p v-if="apiKey" class="text-xs text-green-600 flex items-center gap-1">🔒 Stored for current session only</p>
                                     </div>
                                 </div>
 
@@ -299,7 +311,7 @@
                                 </div>
                                 <div v-if="selectedImages.length > 0" class="grid grid-cols-4 gap-3 mt-4">
                                     <div v-for="(thumbnail, index) in selectedImages" :key="index" class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group border-2 border-black">
-                                        <img :src="thumbnail" class="w-full h-full object-cover" />
+                                        <img :src="thumbnail" loading="lazy" decoding="async" class="w-full h-full object-cover" />
                                         <button @click="removeThumbnail(index)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                     </div>
                                 </div>
@@ -318,7 +330,7 @@
                                 <div v-if="activeStyleTab === 'style'" class="space-y-2 flex-1 overflow-y-auto max-h-[300px]">
                                     <div v-for="template in styleTemplates" :key="template.id" @click="selectStyle(template)" :class="['p-4 rounded-lg border-2 border-black cursor-pointer transition-all', selectedStyle === template.id ? 'bg-yellow-300 border-orange-500' : 'bg-yellow-50 hover:bg-yellow-100']">
                                         <div class="flex items-start gap-3">
-                                            <img :src="template.image" class="w-20 h-20 rounded border-2 border-black object-cover flex-shrink-0" />
+                                            <img :src="template.image" loading="lazy" decoding="async" class="w-20 h-20 rounded border-2 border-black object-cover flex-shrink-0" />
                                             <div class="flex-1">
                                                 <div class="text-base font-bold mb-1">{{ template.title }}</div>
                                                 <p class="text-sm text-gray-600">{{ template.description }}</p>
@@ -389,7 +401,7 @@
                             <div v-else-if="displayResults.length > 0" class="w-full">
                                 <div :class="['grid gap-4', displayResults.length === 1 ? 'grid-cols-1' : 'grid-cols-2']">
                                     <div v-for="(img, index) in displayResults" :key="index" class="relative group">
-                                        <img :src="img" class="w-full rounded-lg border-2 border-black shadow-lg object-contain" />
+                                        <img :src="img" loading="lazy" decoding="async" class="w-full rounded-lg border-2 border-black shadow-lg object-contain" />
                                         <div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button @click="pushImageToUpload(img)" class="px-3 py-1 bg-green-300 text-black font-bold border-2 border-black rounded-lg shadow-lg hover:bg-green-400 text-sm">🎨 Refine</button>
                                             <button @click="handleDownloadResult(img)" class="px-3 py-1 bg-yellow-300 text-black font-bold border-2 border-black rounded-lg shadow-lg hover:bg-yellow-400 text-sm">⬇️ Download</button>
@@ -428,10 +440,54 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
   <script>
-    const { createApp, ref, computed, onMounted, watch } = Vue;
+    const TAILWIND_SCRIPT_URL = 'https://cdn.tailwindcss.com';
+    const VUE_SCRIPT_URL = 'https://unpkg.com/vue@3/dist/vue.global.prod.js';
+
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      darkMode: 'class',
+      corePlugins: {
+        preflight: false,
+      }
+    };
+
+    function loadScriptOnce(src) {
+      return new Promise((resolve, reject) => {
+        const existing = Array.from(document.querySelectorAll('script')).find(script => script.src === src);
+        if (existing) {
+          if (existing.dataset.loaded === 'true') {
+            resolve();
+            return;
+          }
+
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error(`Failed to load script: ${src}`)), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = () => {
+          script.dataset.loaded = 'true';
+          resolve();
+        };
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function bootstrapNanoBanana() {
+      await loadScriptOnce(TAILWIND_SCRIPT_URL);
+      await loadScriptOnce(VUE_SCRIPT_URL);
+
+      document.documentElement.classList.add('nano-ready');
+      const loadingNode = document.getElementById('nano-loading');
+      if (loadingNode) loadingNode.style.display = 'none';
+
+      const { createApp, ref, computed, onMounted, watch } = window.Vue;
 
     const DEFAULT_API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
     const DEFAULT_MODEL_ID = 'google/gemini-2.0-flash-exp:free';
@@ -441,14 +497,14 @@
         id: 'figurine',
         title: '🍌 Desktop Figurine Style',
         prompt: 'Using the nano-banana model,create a 1/7 scale commercialized figurine of the characters in the picture, in a realistic style, in a real environment. The figurine is placed on a computer desk. The figurine has a round transparent acrylic base, with no text on the base. The content on the computer screen is the Zbrush modeling process of this figurine. Next to the computer screen is a BANDAI-style toy packaging box printed with the original artwork., The packaging features two-dimensional flat illustrations.Maintain consistency with the image',
-        image: '/assets/images/tools/nano-banana/1.png',
+        image: '/assets/images/tools/nano-banana/1.webp',
         description: 'Transform your characters into exquisite collectible figurines with professional packaging.'
       },
       {
         id: 'fastfood-solitude',
         title: '🍔 Fast Food Solitude',
         prompt: 'A cinematic scene inside a fast food restaurant at night. Foreground: a lonely table with burgers and fries, and a smartphone shown large and sharp on the table, clearly displaying the uploaded anime/game character image. A hand is reaching for food, symbolizing solitude. Midground: in the blurred background, a couple is sitting together and kiss. One of them is represented as a cosplayer version of the uploaded character. The other person is an ordinary japan human, and they are showing intimate affection. Background: large glass windows, blurred neon city lights outside. Mood: melancholic, bittersweet, ironic, cinematic shallow depth of field. Image size is 585px 1024px',
-        image: '/assets/images/tools/nano-banana/2.png',
+        image: '/assets/images/tools/nano-banana/2.webp',
         description: 'Mingle your characters into a storytelling scene of solitude and contrast in a late-night diner.'
       },
       {
@@ -462,7 +518,7 @@
 
     createApp({
       setup() {
-        const apiKey = ref(localStorage.getItem('nano-banana-api-key') || '');
+        const apiKey = ref(sessionStorage.getItem('nano-banana-api-key') || '');
         const apiEndpoint = ref(localStorage.getItem('nano-banana-api-endpoint') || DEFAULT_API_ENDPOINT);
         const selectedModel = ref(localStorage.getItem('nano-banana-model-id') || DEFAULT_MODEL_ID);
         const modelOptions = ref(JSON.parse(localStorage.getItem('nano-banana-model-cache') || '[]'));
@@ -504,13 +560,19 @@
             { value: '21:9', label: '21:9 - 1536x672' }
         ];
 
-        watch(apiKey, val => localStorage.setItem('nano-banana-api-key', val));
+        watch(apiKey, val => {
+          if (val) {
+            sessionStorage.setItem('nano-banana-api-key', val);
+          } else {
+            sessionStorage.removeItem('nano-banana-api-key');
+          }
+        });
         watch(apiEndpoint, val => localStorage.setItem('nano-banana-api-endpoint', val));
         watch(selectedModel, val => localStorage.setItem('nano-banana-model-id', val));
 
         const clearApiKey = () => {
           apiKey.value = '';
-          localStorage.removeItem('nano-banana-api-key');
+          sessionStorage.removeItem('nano-banana-api-key');
         };
 
         const handleFetchModels = async () => {
@@ -673,6 +735,16 @@
         };
       }
     }).mount('#app');
+
+    }
+
+    bootstrapNanoBanana().catch((error) => {
+      console.error('Failed to bootstrap NanoBanana:', error);
+      const loadingNode = document.getElementById('nano-loading');
+      if (loadingNode) {
+        loadingNode.textContent = 'Failed to load editor. Please refresh and try again.';
+      }
+    });
   </script>
 </body>
 </html>

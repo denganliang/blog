@@ -14,10 +14,14 @@
   <link rel="stylesheet" href="/assets/css/themes.css">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/utilities.css">
 
+  <!-- Canonical -->
+  <link rel="canonical" href="https://denganliang.com/en/tools/audio-toolbox.html">
   <!-- Alternate language -->
-  <link rel="alternate" hreflang="en" href="/en/tools/audio-toolbox.html">
   <link rel="alternate" hreflang="zh" href="/tools/audio-toolbox.html">
+  <link rel="alternate" hreflang="en" href="/en/tools/audio-toolbox.html">
+  <link rel="alternate" hreflang="x-default" href="/tools/audio-toolbox.html">
 
   <style>
     .toolbox-container {
@@ -488,13 +492,39 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
   <script>
     // ==================== Single Threaded FFmpeg Workaround ====================
     // GitHub Pages doesn't support COOP/COEP headers required for SharedArrayBuffer
     // We must use a single-threaded version of FFmpeg core
+    const FFMPEG_SCRIPT_URL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
     const FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
+    let ffmpegLibPromise = null;
+
+    function loadFfmpegLib() {
+      if (window.FFmpeg) {
+        return Promise.resolve(window.FFmpeg);
+      }
+
+      if (!ffmpegLibPromise) {
+        ffmpegLibPromise = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = FFMPEG_SCRIPT_URL;
+          script.async = true;
+          script.onload = () => {
+            if (window.FFmpeg) {
+              resolve(window.FFmpeg);
+            } else {
+              reject(new Error('FFmpeg loaded but global object not found'));
+            }
+          };
+          script.onerror = () => reject(new Error('Failed to load FFmpeg runtime'));
+          document.head.appendChild(script);
+        });
+      }
+
+      return ffmpegLibPromise;
+    }
 
     // ==================== File Upload Handling ====================
     const dropZone = document.getElementById('drop-zone');
@@ -756,7 +786,8 @@
     }
 
     // ==================== Audio Merge Logic ====================
-    const { createFFmpeg, fetchFile } = FFmpeg;
+    let createFFmpeg = null;
+    let fetchFile = null;
     let ffmpeg = null;
 
     async function startMerge() {
@@ -772,6 +803,13 @@
       document.getElementById('result-player-container').style.display = 'none';
 
       try {
+        if (!createFFmpeg || !fetchFile) {
+          updateStatus('Loading FFmpeg runtime...', 0);
+          const ffmpegLib = await loadFfmpegLib();
+          createFFmpeg = ffmpegLib.createFFmpeg;
+          fetchFile = ffmpegLib.fetchFile;
+        }
+
         if (!ffmpeg) {
           updateStatus('Loading FFmpeg core...', 0);
           ffmpeg = createFFmpeg({

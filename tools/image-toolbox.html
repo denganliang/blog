@@ -14,10 +14,14 @@
   <link rel="stylesheet" href="/assets/css/themes.css">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/utilities.css">
 
+  <!-- Canonical -->
+  <link rel="canonical" href="https://denganliang.com/tools/image-toolbox.html">
   <!-- Alternate language -->
-  <link rel="alternate" hreflang="en" href="/en/tools/image-toolbox.html">
   <link rel="alternate" hreflang="zh" href="/tools/image-toolbox.html">
+  <link rel="alternate" hreflang="en" href="/en/tools/image-toolbox.html">
+  <link rel="alternate" hreflang="x-default" href="/tools/image-toolbox.html">
 
   <style>
     .toolbox-container {
@@ -607,14 +611,77 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 
   <script>
     // ==================== Single Threaded FFmpeg Workaround ====================
     // GitHub Pages doesn't support COOP/COEP headers required for SharedArrayBuffer
     // We must use a single-threaded version of FFmpeg core
+    const FFMPEG_SCRIPT_URL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+    const GIF_SCRIPT_URL = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js';
+    const GIF_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
     const FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
+    let ffmpegLibPromise = null;
+    let gifLibPromise = null;
+
+    function loadScriptOnce(src) {
+      return new Promise((resolve, reject) => {
+        const existing = Array.from(document.querySelectorAll('script')).find(script => script.src === src);
+        if (existing) {
+          if (existing.dataset.loaded === 'true') {
+            resolve();
+            return;
+          }
+
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error(`Failed to load script: ${src}`)), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = () => {
+          script.dataset.loaded = 'true';
+          resolve();
+        };
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.appendChild(script);
+      });
+    }
+
+    function loadFfmpegLib() {
+      if (window.FFmpeg) {
+        return Promise.resolve(window.FFmpeg);
+      }
+
+      if (!ffmpegLibPromise) {
+        ffmpegLibPromise = loadScriptOnce(FFMPEG_SCRIPT_URL).then(() => {
+          if (!window.FFmpeg) {
+            throw new Error('FFmpeg runtime loaded but global not found');
+          }
+          return window.FFmpeg;
+        });
+      }
+
+      return ffmpegLibPromise;
+    }
+
+    function loadGifLib() {
+      if (window.GIF) {
+        return Promise.resolve(window.GIF);
+      }
+
+      if (!gifLibPromise) {
+        gifLibPromise = loadScriptOnce(GIF_SCRIPT_URL).then(() => {
+          if (!window.GIF) {
+            throw new Error('GIF runtime loaded but global not found');
+          }
+          return window.GIF;
+        });
+      }
+
+      return gifLibPromise;
+    }
 
     // ==================== Tab导航 ====================
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -963,12 +1030,14 @@
       updateProgress(0, '正在处理视频帧...');
 
       try {
+        const GIFRuntime = await loadGifLib();
+
         // 加载 worker blob (解决跨域问题)
-        const workerBlob = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js')
+        const workerBlob = await fetch(GIF_WORKER_URL)
           .then(r => r.blob());
         const workerUrl = URL.createObjectURL(workerBlob);
 
-        const gif = new GIF({
+        const gif = new GIFRuntime({
           workers: 2,
           quality: quality,
           width: width,
@@ -1084,7 +1153,8 @@
 
     // ==================== 视频压缩逻辑 ====================
     let vcFile = null;
-    const { createFFmpeg, fetchFile } = FFmpeg;
+    let createFFmpeg = null;
+    let fetchFile = null;
     let ffmpeg = null;
 
     function toggleVcResolution() {
@@ -1164,6 +1234,13 @@
       document.getElementById('vc-download-link').style.display = 'none';
 
       try {
+        if (!createFFmpeg || !fetchFile) {
+          updateVcStatus('加载 FFmpeg 运行时...', 0);
+          const ffmpegLib = await loadFfmpegLib();
+          createFFmpeg = ffmpegLib.createFFmpeg;
+          fetchFile = ffmpegLib.fetchFile;
+        }
+
         if (!ffmpeg) {
           updateVcStatus('加载 FFmpeg 核心...', 0);
           ffmpeg = createFFmpeg({

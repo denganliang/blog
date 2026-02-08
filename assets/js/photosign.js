@@ -37,6 +37,73 @@ const FONT_FAMILIES = {
     didot: "Didot, 'Bodoni MT', 'Times New Roman', serif"
 };
 
+const EXIFR_URL = 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js';
+const DOM_TO_IMAGE_URL = 'https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js';
+const PIEXIF_URL = 'https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js';
+
+let exifrReady = null;
+let domToImageReady = null;
+let piexifReady = null;
+
+function loadScriptOnce(src) {
+    return new Promise((resolve, reject) => {
+        const existing = Array.from(document.querySelectorAll('script')).find(script => script.src === src);
+        if (existing) {
+            if (existing.dataset.loaded === 'true') {
+                resolve();
+                return;
+            }
+
+            existing.addEventListener('load', () => resolve(), { once: true });
+            existing.addEventListener('error', () => reject(new Error(`Failed to load script: ${src}`)), { once: true });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = () => {
+            script.dataset.loaded = 'true';
+            resolve();
+        };
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.appendChild(script);
+    });
+}
+
+function ensureExifrLoaded() {
+    if (window.exifr) return Promise.resolve(window.exifr);
+    if (!exifrReady) {
+        exifrReady = loadScriptOnce(EXIFR_URL).then(() => {
+            if (!window.exifr) throw new Error('exifr global not found');
+            return window.exifr;
+        });
+    }
+    return exifrReady;
+}
+
+function ensureDomToImageLoaded() {
+    if (window.domtoimage) return Promise.resolve(window.domtoimage);
+    if (!domToImageReady) {
+        domToImageReady = loadScriptOnce(DOM_TO_IMAGE_URL).then(() => {
+            if (!window.domtoimage) throw new Error('dom-to-image global not found');
+            return window.domtoimage;
+        });
+    }
+    return domToImageReady;
+}
+
+function ensurePiexifLoaded() {
+    if (window.piexif) return Promise.resolve(window.piexif);
+    if (!piexifReady) {
+        piexifReady = loadScriptOnce(PIEXIF_URL).then(() => {
+            if (!window.piexif) throw new Error('piexif global not found');
+            return window.piexif;
+        });
+    }
+    return piexifReady;
+}
+
 // State
 const STORAGE_KEY = 'picseal_settings';
 let currentState = { ...DEFAULT_EXIF };
@@ -230,7 +297,8 @@ async function handleFileUpload(e) {
     document.getElementById('previewContainer').style.display = 'block';
 
     try {
-        const exif = await exifr.parse(file, {
+        const exifrLib = await ensureExifrLoaded();
+        const exif = await exifrLib.parse(file, {
             xmp: true,
             tiff: true,
             gps: true,
@@ -390,6 +458,7 @@ async function handleDownload(includeWatermark) {
     }
 
     try {
+        await ensureDomToImageLoaded();
         // Force the layout to update and use getBoundingClientRect for precise dimensions
         const rect = preview.getBoundingClientRect();
 
@@ -408,7 +477,8 @@ async function handleDownload(includeWatermark) {
         });
 
         // If user wants to keep EXIF and we have original EXIF data
-        if (!currentState.removeExif && originalExifData && typeof piexif !== 'undefined') {
+        if (!currentState.removeExif && originalExifData) {
+            await ensurePiexifLoaded();
             try {
                 // Create a minimal EXIF object with key metadata
                 const zeroth = {};
