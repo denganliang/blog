@@ -1611,7 +1611,7 @@
 
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
+        script.src = '/assets/vendor/qrcode-generator/qrcode.min.js';
         script.onload = () => {
           qrCodeLib = window.qrcode;
           resolve();
@@ -1700,7 +1700,7 @@
 
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+        script.src = '/assets/vendor/jsqr/jsQR.min.js';
         script.onload = () => {
           jsQRLib = window.jsQR;
           resolve();

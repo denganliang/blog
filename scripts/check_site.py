@@ -6,6 +6,16 @@ import sys
 ROOT = pathlib.Path('.')
 HTML_FILES = sorted(ROOT.rglob('*.html'))
 BASE = 'https://denganliang.com'
+SCAN_FILE_SUFFIXES = {'.html', '.js', '.css'}
+SCAN_EXCLUDE_PREFIXES = ('assets/vendor/',)
+BLOCKED_CDN_RULES = (
+    ('cdn.jsdelivr.net', re.compile(r'(?:https?:)?//(?:[^/]+\.)?cdn\.jsdelivr\.net', re.IGNORECASE)),
+    ('unpkg.com', re.compile(r'(?:https?:)?//(?:[^/]+\.)?unpkg\.com', re.IGNORECASE)),
+    ('cdnjs.cloudflare.com', re.compile(r'(?:https?:)?//(?:[^/]+\.)?cdnjs\.cloudflare\.com', re.IGNORECASE)),
+    ('cdn.tailwindcss.com', re.compile(r'(?:https?:)?//(?:[^/]+\.)?cdn\.tailwindcss\.com', re.IGNORECASE)),
+    ('maxcdn.bootstrapcdn.com', re.compile(r'(?:https?:)?//(?:[^/]+\.)?maxcdn\.bootstrapcdn\.com', re.IGNORECASE)),
+)
+LOCAL_VENDOR_REF_PATTERN = re.compile(r"[\"'](/assets/vendor/[^\"'?#]+)")
 
 
 def route_from_path(path: pathlib.Path) -> str:
@@ -70,10 +80,53 @@ def check_html_tags():
     return issues
 
 
+def check_no_cdn_dependencies():
+    issues = []
+
+    for path in ROOT.rglob('*'):
+        if not path.is_file() or path.suffix.lower() not in SCAN_FILE_SUFFIXES:
+            continue
+
+        posix = path.as_posix()
+        if any(posix.startswith(prefix) for prefix in SCAN_EXCLUDE_PREFIXES):
+            continue
+
+        text = path.read_text(encoding='utf-8')
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            for host, pattern in BLOCKED_CDN_RULES:
+                if pattern.search(line):
+                    issues.append(f'{posix}:{line_number}: blocked CDN dependency ({host})')
+                    break
+
+    return issues
+
+
+def check_vendor_references_exist():
+    issues = []
+
+    for path in ROOT.rglob('*'):
+        if not path.is_file() or path.suffix.lower() not in SCAN_FILE_SUFFIXES:
+            continue
+
+        posix = path.as_posix()
+        if any(posix.startswith(prefix) for prefix in SCAN_EXCLUDE_PREFIXES):
+            continue
+
+        text = path.read_text(encoding='utf-8')
+        for ref in LOCAL_VENDOR_REF_PATTERN.findall(text):
+            target = ROOT / ref.lstrip('/')
+            if not target.exists():
+                issues.append(f'{posix}: missing local vendor file ({ref})')
+
+    return issues
+
+
 def main():
     issues = []
     issues.extend(check_search_index())
     issues.extend(check_html_tags())
+    issues.extend(check_no_cdn_dependencies())
+    issues.extend(check_vendor_references_exist())
 
     if issues:
         print('CHECK FAILED:')

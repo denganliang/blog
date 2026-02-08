@@ -616,10 +616,10 @@
     // ==================== Single Threaded FFmpeg Workaround ====================
     // GitHub Pages doesn't support COOP/COEP headers required for SharedArrayBuffer
     // We must use a single-threaded version of FFmpeg core
-    const FFMPEG_SCRIPT_URL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
-    const GIF_SCRIPT_URL = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js';
-    const GIF_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
-    const FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
+    const FFMPEG_SCRIPT_URL = '/assets/vendor/ffmpeg/ffmpeg.min.js';
+    const GIF_SCRIPT_URL = '/assets/vendor/gif/gif.js';
+    const GIF_WORKER_URL = '/assets/vendor/gif/gif.worker.js';
+    const FFMPEG_CORE_URL = '/assets/vendor/ffmpeg/ffmpeg-core.js';
     let ffmpegLibPromise = null;
     let gifLibPromise = null;
 

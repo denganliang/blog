@@ -37,9 +37,9 @@ const FONT_FAMILIES = {
     didot: "Didot, 'Bodoni MT', 'Times New Roman', serif"
 };
 
-const EXIFR_URL = 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js';
-const DOM_TO_IMAGE_URL = 'https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js';
-const PIEXIF_URL = 'https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js';
+const EXIFR_URL = '/assets/vendor/exifr/full.umd.min.js';
+const DOM_TO_IMAGE_URL = '/assets/vendor/dom-to-image/dom-to-image.min.js';
+const PIEXIF_URL = '/assets/vendor/piexif/piexif.min.js';
 
 let exifrReady = null;
 let domToImageReady = null;

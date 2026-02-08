@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize EasyMDE
   const easyMDE = new EasyMDE({
     element: document.getElementById('markdown-editor'),
-    autoDownloadFontAwesome: true,
+    autoDownloadFontAwesome: false,
     spellChecker: false,
     autosave: {
       enabled: true,
