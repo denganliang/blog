@@ -1176,43 +1176,28 @@
 
     async function createCompressionBlob(canvas, outputFormat, quality) {
       if (outputFormat === 'image/bmp') {
-        return convertCanvasToBmpBlob(canvas);
+        return { blob: convertCanvasToBmpBlob(canvas), mimeType: 'image/bmp' };
       }
 
       if (outputFormat === 'image/gif') {
+        const gifBlob = await canvasToBlobAsync(canvas, 'image/gif');
+        if (gifBlob && gifBlob.type === 'image/gif') {
+          return { blob: gifBlob, mimeType: 'image/gif' };
+        }
+
         const pngBlob = await canvasToBlobAsync(canvas, 'image/png');
         if (!pngBlob) {
-          throw new Error('无法生成PNG中间文件');
+          throw new Error('当前浏览器不支持GIF导出，且PNG回退失败');
         }
 
-        const img = new Image();
-        const pngUrl = URL.createObjectURL(pngBlob);
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = pngUrl;
-        });
-
-        const gifCanvas = document.createElement('canvas');
-        gifCanvas.width = canvas.width;
-        gifCanvas.height = canvas.height;
-        const gifCtx = gifCanvas.getContext('2d');
-        gifCtx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(pngUrl);
-
-        const gifBlob = await canvasToBlobAsync(gifCanvas, 'image/gif');
-        if (gifBlob) {
-          return gifBlob;
-        }
-
-        return pngBlob;
+        return { blob: pngBlob, mimeType: 'image/png' };
       }
 
       const blob = await canvasToBlobAsync(canvas, outputFormat, quality);
       if (!blob) {
         throw new Error('当前浏览器不支持该格式导出');
       }
-      return blob;
+      return { blob, mimeType: blob.type || outputFormat };
     }
 
     function handleFiles(files) {
@@ -1286,28 +1271,30 @@
         ctx.drawImage(originalImage, 0, 0);
 
         const supportsQualityCompression = outputFormat === 'image/jpeg' || outputFormat === 'image/webp';
-        let bestBlob = null;
+        let bestResult = null;
         let bestQuality = 1.0;
 
         if (!supportsQualityCompression) {
-          bestBlob = await createCompressionBlob(canvas, outputFormat, 1.0);
+          bestResult = await createCompressionBlob(canvas, outputFormat, 1.0);
           bestQuality = 1.0;
         } else {
           let minQ = 0.01;
           let maxQ = 1.0;
 
-          const initialBlob = await createCompressionBlob(canvas, outputFormat, 1.0);
+          const initialResult = await createCompressionBlob(canvas, outputFormat, 1.0);
+          const initialBlob = initialResult.blob;
 
           if (initialBlob.size <= targetSizeBytes) {
-            bestBlob = initialBlob;
+            bestResult = initialResult;
             bestQuality = 1.0;
           } else {
             for (let i = 0; i < 7; i++) {
               const midQ = (minQ + maxQ) / 2;
-              const blob = await createCompressionBlob(canvas, outputFormat, midQ);
+              const result = await createCompressionBlob(canvas, outputFormat, midQ);
+              const blob = result.blob;
 
               if (blob.size <= targetSizeBytes) {
-                bestBlob = blob;
+                bestResult = result;
                 bestQuality = midQ;
                 minQ = midQ;
               } else {
@@ -1315,14 +1302,20 @@
               }
             }
 
-            if (!bestBlob) {
-              bestBlob = await createCompressionBlob(canvas, outputFormat, minQ);
+            if (!bestResult) {
+              bestResult = await createCompressionBlob(canvas, outputFormat, minQ);
               bestQuality = minQ;
             }
           }
         }
 
-        showResult(bestBlob, bestQuality, supportsQualityCompression);
+        showResult(
+          bestResult.blob,
+          bestQuality,
+          supportsQualityCompression,
+          bestResult.mimeType,
+          outputFormat
+        );
 
       } catch (e) {
         console.error(e);
@@ -1333,14 +1326,14 @@
       }
     }
 
-    function showResult(blob, quality, supportsQualityCompression) {
+    function showResult(blob, quality, supportsQualityCompression, actualOutputMime, requestedOutputMime) {
       const resultInfo = document.getElementById('result-info');
       const downloadLink = document.getElementById('download-link');
       const targetSizeKB = parseFloat(document.getElementById('target-size').value);
 
       // 生成下载链接
       const url = URL.createObjectURL(blob);
-      const outputMime = document.getElementById('output-format').value;
+      const outputMime = actualOutputMime || requestedOutputMime || document.getElementById('output-format').value;
       const ext = getOutputExtByMime(outputMime);
 
       // 确定文件名
@@ -1365,6 +1358,20 @@
       // 显示结果信息
       const compressionRatio = ((1 - (blob.size / originalFile.size)) * 100).toFixed(1);
       const isSuccess = blob.size <= targetSizeKB * 1024;
+      const compressionInfo = supportsQualityCompression
+        ? `-${compressionRatio}% (质量: ${(quality * 100).toFixed(0)}%)`
+        : `-${compressionRatio}%`;
+
+      let extraNote = '';
+      if (!supportsQualityCompression) {
+        extraNote += '<div class="info-row"><span>说明:</span><span>当前格式不按质量参数压缩</span></div>';
+      }
+      if (requestedOutputMime === 'image/gif' && outputMime !== 'image/gif') {
+        extraNote += '<div class="error">提示: 当前浏览器不支持GIF导出，已自动回退为PNG。</div>';
+      }
+      if (supportsQualityCompression && !isSuccess) {
+        extraNote += '<div class="error">警告: 无法压缩到目标大小，已使用最低质量。建议调整图片尺寸。</div>';
+      }
 
       resultInfo.innerHTML = `
         <div class="info-row">
@@ -1377,9 +1384,9 @@
         </div>
         <div class="info-row">
           <span>压缩率:</span>
-          <span>-${compressionRatio}%${supportsQualityCompression ? ` (质量: ${(quality * 100).toFixed(0)}%)` : ''}</span>
+          <span>${compressionInfo}</span>
         </div>
-        ${!isSuccess ? '<div class="error">警告: 无法压缩到目标大小，已使用最低质量。建议调整图片尺寸。</div>' : ''}
+        ${extraNote}
       `;
       resultInfo.style.display = 'block';
     }
@@ -1395,6 +1402,7 @@
       document.getElementById('error-msg').textContent = '';
       document.getElementById('target-size').value = '200';
       document.getElementById('new-filename').value = '';
+      document.getElementById('output-format').value = 'image/png';
       originalImage = null;
       originalFile = null;
     }
