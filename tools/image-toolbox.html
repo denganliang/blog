@@ -633,6 +633,9 @@
           <div class="btn-group">
             <button class="btn btn-secondary" id="crop-apply-size-btn" onclick="applyCropTargetSize()" disabled>应用尺寸</button>
             <button class="btn btn-secondary" id="crop-fit-btn" onclick="fitCropImage()" disabled>自动铺满</button>
+            <button class="btn btn-secondary" id="crop-center-btn" onclick="centerCropImage()" disabled>居中对齐</button>
+            <button class="btn btn-secondary" id="crop-flip-h-btn" onclick="flipCropHorizontal()" disabled>水平翻转</button>
+            <button class="btn btn-secondary" id="crop-flip-v-btn" onclick="flipCropVertical()" disabled>垂直翻转</button>
             <button class="btn" id="crop-export-btn" onclick="exportCroppedImage()" disabled>导出图片</button>
             <button class="btn btn-secondary" onclick="resetCropper()">重置</button>
             <a id="crop-download-link" class="btn" style="display: none; background: #10b981;" download>下载图片</a>
@@ -1538,6 +1541,8 @@
     let cropDragStartY = 0;
     let cropLastPinchDistance = 0;
     let cropAspectRatio = cropTargetWidth / cropTargetHeight;
+    let cropFlipX = 1;
+    let cropFlipY = 1;
 
     function parsePositiveInt(value, fallback) {
       const number = parseInt(value, 10);
@@ -1623,7 +1628,14 @@
 
       cropCanvasCtx.fillStyle = '#0f172a';
       cropCanvasCtx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
-      cropCanvasCtx.drawImage(cropImage, cropOffsetX, cropOffsetY, renderWidth, renderHeight);
+      cropCanvasCtx.save();
+      cropCanvasCtx.translate(
+        cropOffsetX + (cropFlipX === -1 ? renderWidth : 0),
+        cropOffsetY + (cropFlipY === -1 ? renderHeight : 0)
+      );
+      cropCanvasCtx.scale(cropFlipX, cropFlipY);
+      cropCanvasCtx.drawImage(cropImage, 0, 0, renderWidth, renderHeight);
+      cropCanvasCtx.restore();
 
       cropCanvasCtx.strokeStyle = 'rgba(255,255,255,0.65)';
       cropCanvasCtx.lineWidth = 1;
@@ -1652,6 +1664,33 @@
       drawCropCanvas();
     }
 
+    function centerCropImage() {
+      if (!cropImage) return;
+
+      const renderWidth = cropImage.naturalWidth * cropBaseScale * cropScale;
+      const renderHeight = cropImage.naturalHeight * cropBaseScale * cropScale;
+      cropOffsetX = (cropCanvas.width - renderWidth) / 2;
+      cropOffsetY = (cropCanvas.height - renderHeight) / 2;
+
+      clampCropOffsets();
+      drawCropCanvas();
+      clearCropDownload();
+    }
+
+    function flipCropHorizontal() {
+      if (!cropImage) return;
+      cropFlipX *= -1;
+      drawCropCanvas();
+      clearCropDownload();
+    }
+
+    function flipCropVertical() {
+      if (!cropImage) return;
+      cropFlipY *= -1;
+      drawCropCanvas();
+      clearCropDownload();
+    }
+
     function clearCropDownload() {
       if (cropDownloadUrl) {
         URL.revokeObjectURL(cropDownloadUrl);
@@ -1665,6 +1704,9 @@
     function setCropButtonsEnabled(enabled) {
       document.getElementById('crop-apply-size-btn').disabled = !enabled;
       document.getElementById('crop-fit-btn').disabled = !enabled;
+      document.getElementById('crop-center-btn').disabled = !enabled;
+      document.getElementById('crop-flip-h-btn').disabled = !enabled;
+      document.getElementById('crop-flip-v-btn').disabled = !enabled;
       document.getElementById('crop-export-btn').disabled = !enabled;
     }
 
@@ -1798,7 +1840,14 @@
 
         outputCtx.fillStyle = '#ffffff';
         outputCtx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
-        outputCtx.drawImage(cropImage, renderX, renderY, renderWidth, renderHeight);
+        outputCtx.save();
+        outputCtx.translate(
+          renderX + (cropFlipX === -1 ? renderWidth : 0),
+          renderY + (cropFlipY === -1 ? renderHeight : 0)
+        );
+        outputCtx.scale(cropFlipX, cropFlipY);
+        outputCtx.drawImage(cropImage, 0, 0, renderWidth, renderHeight);
+        outputCtx.restore();
 
         const { type, quality, ext } = getCropOutputConfig();
         outputCanvas.toBlob((blob) => {
@@ -1938,6 +1987,8 @@
       cropScale = 1;
       cropOffsetX = 0;
       cropOffsetY = 0;
+      cropFlipX = 1;
+      cropFlipY = 1;
 
       cropTargetWidth = 1080;
       cropTargetHeight = 1080;
