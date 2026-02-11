@@ -252,6 +252,74 @@
       word-break: break-all;
     }
 
+    .crop-editor {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .crop-editor.active {
+      display: block;
+    }
+
+    .crop-canvas-shell {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg-secondary);
+      margin: 0 auto;
+    }
+
+    .crop-canvas-shell canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .crop-canvas-shell canvas.dragging {
+      cursor: grabbing;
+    }
+
+    .crop-checkline {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .crop-checkline input[type="checkbox"] {
+      width: auto;
+    }
+
+    .ratio-preset-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.6rem;
+    }
+
+    .ratio-preset-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 8px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .zoom-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .zoom-row input[type="range"] {
+      flex: 1;
+    }
+
     /* 子导航栏 */
     .sub-nav {
       position: sticky;
@@ -396,6 +464,7 @@
         <div class="sub-nav-list">
           <a href="#compress" class="sub-nav-item">图片压缩</a>
           <a href="#grid-split" class="sub-nav-item">九宫格拆分</a>
+          <a href="#resize-crop" class="sub-nav-item">尺寸裁剪</a>
           <a href="#video2gif" class="sub-nav-item">视频转GIF</a>
           <a href="#videocompress" class="sub-nav-item">视频压缩</a>
         </div>
@@ -496,6 +565,81 @@
           <div id="grid-error-msg" class="error"></div>
           <div id="grid-result-info" class="compression-info"></div>
           <div id="grid-result-list" class="split-result-grid"></div>
+        </div>
+
+        <div class="tool-item" id="resize-crop">
+          <h3><span class="icon">✂️</span> 图片尺寸裁剪（拖拽/缩放）</h3>
+
+          <div class="file-upload" id="crop-drop-zone" onclick="document.getElementById('crop-input').click()">
+            <input type="file" id="crop-input" accept="image/*" onchange="handleCropSelect(event)">
+            <div id="crop-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请上传一张图片</p>
+              <p class="hint">输入目标宽高后，可拖动和缩放图片，导出精确像素尺寸</p>
+            </div>
+            <p id="crop-file-info" style="margin-top: 0.5rem; color: var(--text-secondary);"></p>
+          </div>
+
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>目标宽度 (px)</label>
+              <input type="number" id="crop-target-width" value="1080" min="1" step="1">
+            </div>
+            <div class="io-section">
+              <label>目标高度 (px)</label>
+              <input type="number" id="crop-target-height" value="1080" min="1" step="1">
+            </div>
+            <div class="io-section">
+              <label>比例控制</label>
+              <label class="crop-checkline">
+                <input type="checkbox" id="crop-lock-ratio" checked>
+                <span>锁定比例（宽高联动）</span>
+              </label>
+              <div class="ratio-preset-group">
+                <button type="button" class="ratio-preset-btn" data-ratio="1:1">1:1</button>
+                <button type="button" class="ratio-preset-btn" data-ratio="4:5">4:5</button>
+                <button type="button" class="ratio-preset-btn" data-ratio="16:9">16:9</button>
+                <button type="button" class="ratio-preset-btn" data-ratio="9:16">9:16</button>
+              </div>
+            </div>
+            <div class="io-section">
+              <label>输出格式</label>
+              <select id="crop-output-format" onchange="toggleCropQuality()">
+                <option value="image/png" selected>PNG（默认）</option>
+                <option value="image/jpeg">JPG</option>
+                <option value="image/webp">WEBP</option>
+              </select>
+              <div id="crop-quality-wrap" style="display:none; margin-top: 0.6rem;">
+                <label style="font-size:0.85rem; color: var(--text-secondary);">质量 (0.1 - 1)</label>
+                <input type="number" id="crop-quality" value="0.92" min="0.1" max="1" step="0.01">
+              </div>
+            </div>
+          </div>
+
+          <div class="io-section">
+            <label>缩放</label>
+            <div class="zoom-row">
+              <input type="range" id="crop-zoom" min="1" max="5" step="0.01" value="1">
+              <span id="crop-zoom-value">100%</span>
+            </div>
+            <p class="hint">在裁剪区域内拖动图片调整位置，滚轮或滑块可缩放，导出后尺寸严格为目标像素。</p>
+          </div>
+
+          <div class="crop-editor" id="crop-editor">
+            <div class="crop-canvas-shell" id="crop-canvas-shell">
+              <canvas id="crop-canvas"></canvas>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-secondary" id="crop-apply-size-btn" onclick="applyCropTargetSize()" disabled>应用尺寸</button>
+            <button class="btn btn-secondary" id="crop-fit-btn" onclick="fitCropImage()" disabled>自动铺满</button>
+            <button class="btn" id="crop-export-btn" onclick="exportCroppedImage()" disabled>导出图片</button>
+            <button class="btn btn-secondary" onclick="resetCropper()">重置</button>
+            <a id="crop-download-link" class="btn" style="display: none; background: #10b981;" download>下载图片</a>
+          </div>
+
+          <div id="crop-error-msg" class="error"></div>
+          <div id="crop-result-info" class="compression-info"></div>
         </div>
       </div>
       <!-- 视频工具面板 -->
@@ -877,6 +1021,33 @@
     function handleGridSelect(e) {
       const files = e.target.files;
       handleGridFiles(files);
+    }
+
+    const cropDropZone = document.getElementById('crop-drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      cropDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      cropDropZone.addEventListener(eventName, () => cropDropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      cropDropZone.addEventListener(eventName, () => cropDropZone.classList.remove('drag-over'), false);
+    });
+
+    cropDropZone.addEventListener('drop', handleCropDrop, false);
+
+    function handleCropDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleCropFiles(files);
+    }
+
+    function handleCropSelect(e) {
+      const files = e.target.files;
+      handleCropFiles(files);
     }
 
     // ==================== 拖拽上传处理 (视频) ====================
@@ -1341,6 +1512,486 @@
       gridImage = null;
       gridFile = null;
     }
+
+    const cropCanvas = document.getElementById('crop-canvas');
+    const cropCanvasCtx = cropCanvas.getContext('2d');
+    const cropZoomInput = document.getElementById('crop-zoom');
+    const cropZoomValue = document.getElementById('crop-zoom-value');
+    const cropTargetWidthInput = document.getElementById('crop-target-width');
+    const cropTargetHeightInput = document.getElementById('crop-target-height');
+    const cropLockRatioInput = document.getElementById('crop-lock-ratio');
+    const cropEditor = document.getElementById('crop-editor');
+    const cropCanvasShell = document.getElementById('crop-canvas-shell');
+
+    let cropFile = null;
+    let cropImage = null;
+    let cropObjectUrl = null;
+    let cropDownloadUrl = null;
+    let cropTargetWidth = 1080;
+    let cropTargetHeight = 1080;
+    let cropBaseScale = 1;
+    let cropScale = 1;
+    let cropOffsetX = 0;
+    let cropOffsetY = 0;
+    let cropDragging = false;
+    let cropDragStartX = 0;
+    let cropDragStartY = 0;
+    let cropLastPinchDistance = 0;
+    let cropAspectRatio = cropTargetWidth / cropTargetHeight;
+
+    function parsePositiveInt(value, fallback) {
+      const number = parseInt(value, 10);
+      return Number.isFinite(number) && number > 0 ? number : fallback;
+    }
+
+    function getCropOutputConfig() {
+      const type = document.getElementById('crop-output-format').value;
+      const qualityInput = parseFloat(document.getElementById('crop-quality').value);
+      const quality = Number.isFinite(qualityInput) ? Math.min(1, Math.max(0.1, qualityInput)) : 0.92;
+      const ext = type === 'image/jpeg' ? 'jpg' : (type === 'image/webp' ? 'webp' : 'png');
+      return { type, quality, ext };
+    }
+
+    function toggleCropQuality() {
+      const format = document.getElementById('crop-output-format').value;
+      document.getElementById('crop-quality-wrap').style.display = format === 'image/png' ? 'none' : 'block';
+    }
+
+    function getCropBaseName(file) {
+      const dotIndex = file.name.lastIndexOf('.');
+      return dotIndex > 0 ? file.name.substring(0, dotIndex) : file.name;
+    }
+
+    function syncCropZoomLabel() {
+      cropZoomValue.textContent = `${Math.round(cropScale * 100)}%`;
+    }
+
+    function syncCropZoomInput() {
+      cropZoomInput.value = cropScale.toFixed(4);
+      syncCropZoomLabel();
+    }
+
+    function getCropCanvasDrawSize() {
+      const maxPreviewWidth = Math.min(760, cropCanvasShell.clientWidth || 760);
+      let drawWidth = maxPreviewWidth;
+      let drawHeight = drawWidth / cropAspectRatio;
+
+      const maxPreviewHeight = 520;
+      if (drawHeight > maxPreviewHeight) {
+        drawHeight = maxPreviewHeight;
+        drawWidth = drawHeight * cropAspectRatio;
+      }
+
+      return {
+        drawWidth: Math.max(120, Math.round(drawWidth)),
+        drawHeight: Math.max(120, Math.round(drawHeight))
+      };
+    }
+
+    function setCropCanvasSize() {
+      const { drawWidth, drawHeight } = getCropCanvasDrawSize();
+      cropCanvas.width = drawWidth;
+      cropCanvas.height = drawHeight;
+      cropCanvas.style.width = `${drawWidth}px`;
+      cropCanvas.style.height = `${drawHeight}px`;
+    }
+
+    function clampCropOffsets() {
+      if (!cropImage) return;
+      const renderWidth = cropImage.naturalWidth * cropBaseScale * cropScale;
+      const renderHeight = cropImage.naturalHeight * cropBaseScale * cropScale;
+
+      const minOffsetX = cropCanvas.width - renderWidth;
+      const minOffsetY = cropCanvas.height - renderHeight;
+
+      cropOffsetX = Math.min(0, Math.max(minOffsetX, cropOffsetX));
+      cropOffsetY = Math.min(0, Math.max(minOffsetY, cropOffsetY));
+    }
+
+    function drawCropCanvas() {
+      cropCanvasCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+      if (!cropImage) {
+        cropCanvasCtx.fillStyle = '#888';
+        cropCanvasCtx.font = '14px sans-serif';
+        cropCanvasCtx.textAlign = 'center';
+        cropCanvasCtx.fillText('请先上传图片', cropCanvas.width / 2, cropCanvas.height / 2);
+        return;
+      }
+
+      const renderWidth = cropImage.naturalWidth * cropBaseScale * cropScale;
+      const renderHeight = cropImage.naturalHeight * cropBaseScale * cropScale;
+
+      cropCanvasCtx.fillStyle = '#0f172a';
+      cropCanvasCtx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+      cropCanvasCtx.drawImage(cropImage, cropOffsetX, cropOffsetY, renderWidth, renderHeight);
+
+      cropCanvasCtx.strokeStyle = 'rgba(255,255,255,0.65)';
+      cropCanvasCtx.lineWidth = 1;
+      cropCanvasCtx.strokeRect(0.5, 0.5, cropCanvas.width - 1, cropCanvas.height - 1);
+    }
+
+    function fitCropImage() {
+      if (!cropImage) return;
+
+      setCropCanvasSize();
+      const coverScaleX = cropCanvas.width / cropImage.naturalWidth;
+      const coverScaleY = cropCanvas.height / cropImage.naturalHeight;
+      cropBaseScale = Math.max(coverScaleX, coverScaleY);
+      cropScale = 1;
+
+      const renderWidth = cropImage.naturalWidth * cropBaseScale * cropScale;
+      const renderHeight = cropImage.naturalHeight * cropBaseScale * cropScale;
+      cropOffsetX = (cropCanvas.width - renderWidth) / 2;
+      cropOffsetY = (cropCanvas.height - renderHeight) / 2;
+
+      cropZoomInput.min = '1';
+      cropZoomInput.max = '5';
+      cropZoomInput.step = '0.01';
+      syncCropZoomInput();
+      clampCropOffsets();
+      drawCropCanvas();
+    }
+
+    function clearCropDownload() {
+      if (cropDownloadUrl) {
+        URL.revokeObjectURL(cropDownloadUrl);
+        cropDownloadUrl = null;
+      }
+      document.getElementById('crop-download-link').style.display = 'none';
+      document.getElementById('crop-result-info').style.display = 'none';
+      document.getElementById('crop-result-info').innerHTML = '';
+    }
+
+    function setCropButtonsEnabled(enabled) {
+      document.getElementById('crop-apply-size-btn').disabled = !enabled;
+      document.getElementById('crop-fit-btn').disabled = !enabled;
+      document.getElementById('crop-export-btn').disabled = !enabled;
+    }
+
+    function handleCropFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const file = files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('请选择有效的图片文件');
+        return;
+      }
+
+      resetCropper(false);
+      cropFile = file;
+
+      if (cropObjectUrl) {
+        URL.revokeObjectURL(cropObjectUrl);
+      }
+      cropObjectUrl = URL.createObjectURL(file);
+
+      const image = new Image();
+      image.onload = () => {
+        cropImage = image;
+        cropEditor.classList.add('active');
+        document.getElementById('crop-upload-text').style.display = 'none';
+        document.getElementById('crop-file-info').textContent = `原始文件: ${file.name} (${formatSize(file.size)}) · ${cropImage.naturalWidth}×${cropImage.naturalHeight}`;
+        document.getElementById('crop-error-msg').textContent = '';
+
+        applyCropTargetSize();
+        setCropButtonsEnabled(true);
+      };
+
+      image.onerror = () => {
+        document.getElementById('crop-error-msg').textContent = '图片读取失败，请重试';
+      };
+
+      image.src = cropObjectUrl;
+    }
+
+    function applyCropTargetSize() {
+      const width = parsePositiveInt(cropTargetWidthInput.value, cropTargetWidth);
+      const height = parsePositiveInt(cropTargetHeightInput.value, cropTargetHeight);
+
+      cropTargetWidth = width;
+      cropTargetHeight = height;
+      cropTargetWidthInput.value = String(width);
+      cropTargetHeightInput.value = String(height);
+      cropAspectRatio = width / height;
+
+      clearCropDownload();
+      if (cropImage) {
+        fitCropImage();
+      }
+    }
+
+    function updateCropSizeByWidth() {
+      if (!cropLockRatioInput.checked) {
+        cropAspectRatio = parsePositiveInt(cropTargetWidthInput.value, cropTargetWidth) / parsePositiveInt(cropTargetHeightInput.value, cropTargetHeight);
+        return;
+      }
+
+      const width = parsePositiveInt(cropTargetWidthInput.value, cropTargetWidth);
+      const nextHeight = Math.max(1, Math.round(width / cropAspectRatio));
+      cropTargetHeightInput.value = String(nextHeight);
+    }
+
+    function updateCropSizeByHeight() {
+      if (!cropLockRatioInput.checked) {
+        cropAspectRatio = parsePositiveInt(cropTargetWidthInput.value, cropTargetWidth) / parsePositiveInt(cropTargetHeightInput.value, cropTargetHeight);
+        return;
+      }
+
+      const height = parsePositiveInt(cropTargetHeightInput.value, cropTargetHeight);
+      const nextWidth = Math.max(1, Math.round(height * cropAspectRatio));
+      cropTargetWidthInput.value = String(nextWidth);
+    }
+
+    function applyCropPresetRatio(ratioText) {
+      const [rw, rh] = ratioText.split(':').map(Number);
+      if (!rw || !rh) return;
+
+      cropAspectRatio = rw / rh;
+      cropLockRatioInput.checked = true;
+
+      const currentWidth = parsePositiveInt(cropTargetWidthInput.value, cropTargetWidth);
+      cropTargetHeightInput.value = String(Math.max(1, Math.round(currentWidth / cropAspectRatio)));
+      applyCropTargetSize();
+    }
+
+    function setCropScaleFromPoint(nextScale, pivotX, pivotY) {
+      if (!cropImage) return;
+
+      const minScale = 1;
+      const maxScale = 5;
+      const safeScale = Math.min(maxScale, Math.max(minScale, nextScale));
+      const oldScale = cropScale;
+      if (safeScale === oldScale) return;
+
+      const ratio = safeScale / oldScale;
+      cropOffsetX = pivotX - (pivotX - cropOffsetX) * ratio;
+      cropOffsetY = pivotY - (pivotY - cropOffsetY) * ratio;
+      cropScale = safeScale;
+
+      clampCropOffsets();
+      syncCropZoomInput();
+      drawCropCanvas();
+      clearCropDownload();
+    }
+
+    function exportCroppedImage() {
+      if (!cropImage || !cropFile) return;
+
+      const exportBtn = document.getElementById('crop-export-btn');
+      exportBtn.disabled = true;
+      exportBtn.textContent = '导出中...';
+
+      document.getElementById('crop-error-msg').textContent = '';
+
+      try {
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = cropTargetWidth;
+        outputCanvas.height = cropTargetHeight;
+        const outputCtx = outputCanvas.getContext('2d');
+
+        const scaleX = cropTargetWidth / cropCanvas.width;
+        const scaleY = cropTargetHeight / cropCanvas.height;
+        const renderWidth = cropImage.naturalWidth * cropBaseScale * cropScale * scaleX;
+        const renderHeight = cropImage.naturalHeight * cropBaseScale * cropScale * scaleY;
+        const renderX = cropOffsetX * scaleX;
+        const renderY = cropOffsetY * scaleY;
+
+        outputCtx.fillStyle = '#ffffff';
+        outputCtx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
+        outputCtx.drawImage(cropImage, renderX, renderY, renderWidth, renderHeight);
+
+        const { type, quality, ext } = getCropOutputConfig();
+        outputCanvas.toBlob((blob) => {
+          if (!blob) {
+            document.getElementById('crop-error-msg').textContent = '导出失败，请更换输出格式后重试';
+            return;
+          }
+
+          clearCropDownload();
+          cropDownloadUrl = URL.createObjectURL(blob);
+
+          const baseName = getCropBaseName(cropFile);
+          const downloadLink = document.getElementById('crop-download-link');
+          downloadLink.href = cropDownloadUrl;
+          downloadLink.download = `${baseName}_${cropTargetWidth}x${cropTargetHeight}.${ext}`;
+          downloadLink.style.display = 'inline-block';
+
+          const resultInfo = document.getElementById('crop-result-info');
+          resultInfo.innerHTML = `
+            <div class="info-row">
+              <span>导出尺寸:</span>
+              <span class="success-text">${cropTargetWidth} × ${cropTargetHeight}</span>
+            </div>
+            <div class="info-row">
+              <span>输出格式:</span>
+              <span>${ext.toUpperCase()}</span>
+            </div>
+            <div class="info-row">
+              <span>文件大小:</span>
+              <span>${formatSize(blob.size)}</span>
+            </div>
+          `;
+          resultInfo.style.display = 'block';
+        }, type, type === 'image/png' ? undefined : quality);
+      } finally {
+        exportBtn.disabled = false;
+        exportBtn.textContent = '导出图片';
+      }
+    }
+
+    function bindCropCanvasEvents() {
+      cropCanvas.addEventListener('pointerdown', (event) => {
+        if (!cropImage) return;
+        cropDragging = true;
+        cropDragStartX = event.clientX - cropOffsetX;
+        cropDragStartY = event.clientY - cropOffsetY;
+        cropCanvas.classList.add('dragging');
+        cropCanvas.setPointerCapture(event.pointerId);
+      });
+
+      cropCanvas.addEventListener('pointermove', (event) => {
+        if (!cropDragging || !cropImage) return;
+        cropOffsetX = event.clientX - cropDragStartX;
+        cropOffsetY = event.clientY - cropDragStartY;
+        clampCropOffsets();
+        drawCropCanvas();
+        clearCropDownload();
+      });
+
+      const releaseDrag = (event) => {
+        cropDragging = false;
+        cropCanvas.classList.remove('dragging');
+        if (event && event.pointerId !== undefined) {
+          try { cropCanvas.releasePointerCapture(event.pointerId); } catch (_) {}
+        }
+      };
+
+      cropCanvas.addEventListener('pointerup', releaseDrag);
+      cropCanvas.addEventListener('pointercancel', releaseDrag);
+      cropCanvas.addEventListener('pointerleave', () => {
+        if (cropDragging) return;
+        cropCanvas.classList.remove('dragging');
+      });
+
+      cropCanvas.addEventListener('wheel', (event) => {
+        if (!cropImage) return;
+        event.preventDefault();
+
+        const rect = cropCanvas.getBoundingClientRect();
+        const pivotX = event.clientX - rect.left;
+        const pivotY = event.clientY - rect.top;
+        const factor = event.deltaY < 0 ? 1.06 : 0.94;
+        setCropScaleFromPoint(cropScale * factor, pivotX, pivotY);
+      }, { passive: false });
+
+      cropCanvas.addEventListener('touchstart', (event) => {
+        if (event.touches.length === 2) {
+          const dx = event.touches[0].clientX - event.touches[1].clientX;
+          const dy = event.touches[0].clientY - event.touches[1].clientY;
+          cropLastPinchDistance = Math.hypot(dx, dy);
+        }
+      }, { passive: true });
+
+      cropCanvas.addEventListener('touchmove', (event) => {
+        if (!cropImage || event.touches.length !== 2) return;
+        event.preventDefault();
+
+        const dx = event.touches[0].clientX - event.touches[1].clientX;
+        const dy = event.touches[0].clientY - event.touches[1].clientY;
+        const distance = Math.hypot(dx, dy);
+        if (!cropLastPinchDistance) {
+          cropLastPinchDistance = distance;
+          return;
+        }
+
+        const rect = cropCanvas.getBoundingClientRect();
+        const pivotX = ((event.touches[0].clientX + event.touches[1].clientX) / 2) - rect.left;
+        const pivotY = ((event.touches[0].clientY + event.touches[1].clientY) / 2) - rect.top;
+
+        const pinchFactor = distance / cropLastPinchDistance;
+        cropLastPinchDistance = distance;
+        setCropScaleFromPoint(cropScale * pinchFactor, pivotX, pivotY);
+      }, { passive: false });
+
+      cropCanvas.addEventListener('touchend', () => {
+        cropLastPinchDistance = 0;
+      }, { passive: true });
+    }
+
+    function resetCropper(clearFileInput = true) {
+      if (clearFileInput) {
+        document.getElementById('crop-input').value = '';
+      }
+
+      if (cropObjectUrl) {
+        URL.revokeObjectURL(cropObjectUrl);
+        cropObjectUrl = null;
+      }
+
+      clearCropDownload();
+
+      cropFile = null;
+      cropImage = null;
+      cropDragging = false;
+      cropLastPinchDistance = 0;
+      cropBaseScale = 1;
+      cropScale = 1;
+      cropOffsetX = 0;
+      cropOffsetY = 0;
+
+      cropTargetWidth = 1080;
+      cropTargetHeight = 1080;
+      cropAspectRatio = 1;
+      cropTargetWidthInput.value = '1080';
+      cropTargetHeightInput.value = '1080';
+      cropLockRatioInput.checked = true;
+      document.getElementById('crop-output-format').value = 'image/png';
+      document.getElementById('crop-quality').value = '0.92';
+      toggleCropQuality();
+
+      cropEditor.classList.remove('active');
+      document.getElementById('crop-upload-text').style.display = 'block';
+      document.getElementById('crop-file-info').textContent = '';
+      document.getElementById('crop-error-msg').textContent = '';
+
+      setCropButtonsEnabled(false);
+      setCropCanvasSize();
+      drawCropCanvas();
+      syncCropZoomInput();
+    }
+
+    cropZoomInput.addEventListener('input', () => {
+      if (!cropImage) return;
+      const rect = cropCanvas.getBoundingClientRect();
+      const pivotX = rect.width / 2;
+      const pivotY = rect.height / 2;
+      setCropScaleFromPoint(parseFloat(cropZoomInput.value), pivotX, pivotY);
+    });
+
+    cropTargetWidthInput.addEventListener('input', updateCropSizeByWidth);
+    cropTargetHeightInput.addEventListener('input', updateCropSizeByHeight);
+    cropTargetWidthInput.addEventListener('change', applyCropTargetSize);
+    cropTargetHeightInput.addEventListener('change', applyCropTargetSize);
+    cropLockRatioInput.addEventListener('change', () => {
+      if (cropLockRatioInput.checked) {
+        const width = parsePositiveInt(cropTargetWidthInput.value, cropTargetWidth);
+        const height = parsePositiveInt(cropTargetHeightInput.value, cropTargetHeight);
+        cropAspectRatio = width / height;
+      }
+    });
+
+    document.querySelectorAll('#resize-crop .ratio-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyCropPresetRatio(btn.dataset.ratio));
+    });
+
+    window.addEventListener('resize', () => {
+      if (!cropImage) return;
+      fitCropImage();
+    });
+
+    bindCropCanvasEvents();
+    toggleCropQuality();
+    resetCropper();
 
     window.addEventListener('beforeunload', clearGridResults);
 
