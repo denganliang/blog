@@ -326,6 +326,25 @@
       flex: 1;
     }
 
+    .bg-preview-wrap {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .bg-preview-canvas {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-image:
+        linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+        linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+        linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      display: none;
+    }
+
     /* 子导航栏 */
     .sub-nav {
       position: sticky;
@@ -471,6 +490,7 @@
           <a href="#compress" class="sub-nav-item">图片压缩</a>
           <a href="#grid-split" class="sub-nav-item">九宫格拆分</a>
           <a href="#resize-crop" class="sub-nav-item">尺寸裁剪</a>
+          <a href="#bg-remove" class="sub-nav-item">背景去除</a>
           <a href="#video2gif" class="sub-nav-item">视频转GIF</a>
           <a href="#videocompress" class="sub-nav-item">视频压缩</a>
         </div>
@@ -652,6 +672,65 @@
 
           <div id="crop-error-msg" class="error"></div>
           <div id="crop-result-info" class="compression-info"></div>
+        </div>
+
+        <div class="tool-item" id="bg-remove">
+          <h3><span class="icon">🪄</span> 背景去除（纯前端）</h3>
+
+          <div class="file-upload" id="bg-drop-zone" onclick="document.getElementById('bg-input').click()">
+            <input type="file" id="bg-input" accept="image/*" onchange="handleBgSelect(event)">
+            <div id="bg-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请上传需要去背景的图片</p>
+              <p class="hint">纯前端处理，适合纯色/简单背景。复杂背景效果会弱于 remove.bg</p>
+            </div>
+            <p id="bg-file-info" style="margin-top: 0.5rem; color: var(--text-secondary);"></p>
+          </div>
+
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>背景阈值（越大去除越多）</label>
+              <input type="range" id="bg-threshold" min="10" max="180" step="1" value="45">
+              <p class="hint">当前：<span id="bg-threshold-value">45</span></p>
+            </div>
+
+            <div class="io-section">
+              <label>边缘羽化（过渡更自然）</label>
+              <input type="range" id="bg-feather" min="0" max="120" step="1" value="30">
+              <p class="hint">当前：<span id="bg-feather-value">30</span></p>
+            </div>
+
+            <div class="io-section">
+              <label>背景颜色来源</label>
+              <label class="crop-checkline">
+                <input type="checkbox" id="bg-use-auto" checked>
+                <span>自动取样（推荐）</span>
+              </label>
+              <input type="color" id="bg-color" value="#ffffff" style="margin-top: 0.6rem;">
+            </div>
+
+            <div class="io-section">
+              <label>导出格式</label>
+              <select id="bg-output-format">
+                <option value="image/png" selected>PNG（透明背景推荐）</option>
+                <option value="image/webp">WEBP（透明）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-secondary" id="bg-detect-btn" onclick="detectBgColorOnly()" disabled>重新自动取色</button>
+            <button class="btn" id="bg-run-btn" onclick="runBackgroundRemoval()" disabled>开始去背景</button>
+            <button class="btn btn-secondary" onclick="resetBgRemoval()">重置</button>
+            <a id="bg-download-link" class="btn" style="display:none; background:#10b981;" download>下载结果</a>
+          </div>
+
+          <div class="bg-preview-wrap">
+            <canvas id="bg-result-canvas" class="bg-preview-canvas"></canvas>
+            <canvas id="bg-source-canvas" style="display:none;"></canvas>
+          </div>
+
+          <div id="bg-error-msg" class="error"></div>
+          <div id="bg-result-info" class="compression-info"></div>
         </div>
       </div>
       <!-- 视频工具面板 -->
@@ -1060,6 +1139,33 @@
     function handleCropSelect(e) {
       const files = e.target.files;
       handleCropFiles(files);
+    }
+
+    const bgDropZone = document.getElementById('bg-drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      bgDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      bgDropZone.addEventListener(eventName, () => bgDropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      bgDropZone.addEventListener(eventName, () => bgDropZone.classList.remove('drag-over'), false);
+    });
+
+    bgDropZone.addEventListener('drop', handleBgDrop, false);
+
+    function handleBgDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleBgFiles(files);
+    }
+
+    function handleBgSelect(e) {
+      const files = e.target.files;
+      handleBgFiles(files);
     }
 
     // ==================== 拖拽上传处理 (视频) ====================
@@ -2204,6 +2310,262 @@
     bindCropCanvasEvents();
     toggleCropQuality();
     resetCropper();
+
+    const bgSourceCanvas = document.getElementById('bg-source-canvas');
+    const bgSourceCtx = bgSourceCanvas.getContext('2d');
+    const bgResultCanvas = document.getElementById('bg-result-canvas');
+    const bgResultCtx = bgResultCanvas.getContext('2d');
+    const bgThresholdInput = document.getElementById('bg-threshold');
+    const bgThresholdValue = document.getElementById('bg-threshold-value');
+    const bgFeatherInput = document.getElementById('bg-feather');
+    const bgFeatherValue = document.getElementById('bg-feather-value');
+    const bgUseAutoInput = document.getElementById('bg-use-auto');
+    const bgColorInput = document.getElementById('bg-color');
+
+    let bgFile = null;
+    let bgImage = null;
+    let bgObjectUrl = null;
+    let bgDownloadUrl = null;
+    let bgAutoColor = { r: 255, g: 255, b: 255 };
+
+    function hexToRgb(hex) {
+      const clean = (hex || '').replace('#', '');
+      if (clean.length !== 6) return { r: 255, g: 255, b: 255 };
+      return {
+        r: parseInt(clean.slice(0, 2), 16),
+        g: parseInt(clean.slice(2, 4), 16),
+        b: parseInt(clean.slice(4, 6), 16)
+      };
+    }
+
+    function rgbToHex(rgb) {
+      const toHex = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
+      return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
+    }
+
+    function clearBgDownload() {
+      if (bgDownloadUrl) {
+        URL.revokeObjectURL(bgDownloadUrl);
+        bgDownloadUrl = null;
+      }
+      document.getElementById('bg-download-link').style.display = 'none';
+      document.getElementById('bg-result-info').style.display = 'none';
+      document.getElementById('bg-result-info').innerHTML = '';
+    }
+
+    function setBgButtonsEnabled(enabled) {
+      document.getElementById('bg-detect-btn').disabled = !enabled;
+      document.getElementById('bg-run-btn').disabled = !enabled;
+    }
+
+    function sampleAutoBackgroundColor() {
+      const width = bgSourceCanvas.width;
+      const height = bgSourceCanvas.height;
+      if (!width || !height) return { r: 255, g: 255, b: 255 };
+
+      const data = bgSourceCtx.getImageData(0, 0, width, height).data;
+      let rSum = 0;
+      let gSum = 0;
+      let bSum = 0;
+      let count = 0;
+
+      const step = Math.max(1, Math.floor(Math.min(width, height) / 80));
+      for (let x = 0; x < width; x += step) {
+        const topIdx = (0 * width + x) * 4;
+        const bottomIdx = ((height - 1) * width + x) * 4;
+        rSum += data[topIdx] + data[bottomIdx];
+        gSum += data[topIdx + 1] + data[bottomIdx + 1];
+        bSum += data[topIdx + 2] + data[bottomIdx + 2];
+        count += 2;
+      }
+
+      for (let y = 0; y < height; y += step) {
+        const leftIdx = (y * width + 0) * 4;
+        const rightIdx = (y * width + (width - 1)) * 4;
+        rSum += data[leftIdx] + data[rightIdx];
+        gSum += data[leftIdx + 1] + data[rightIdx + 1];
+        bSum += data[leftIdx + 2] + data[rightIdx + 2];
+        count += 2;
+      }
+
+      return {
+        r: rSum / count,
+        g: gSum / count,
+        b: bSum / count
+      };
+    }
+
+    function detectBgColorOnly() {
+      if (!bgImage) return;
+      bgAutoColor = sampleAutoBackgroundColor();
+      bgColorInput.value = rgbToHex(bgAutoColor);
+      runBackgroundRemoval();
+    }
+
+    function getCurrentBgColor() {
+      return bgUseAutoInput.checked ? bgAutoColor : hexToRgb(bgColorInput.value);
+    }
+
+    function runBackgroundRemoval() {
+      if (!bgImage) return;
+
+      const threshold = parseInt(bgThresholdInput.value, 10);
+      const feather = parseInt(bgFeatherInput.value, 10);
+      const bgColor = getCurrentBgColor();
+
+      const width = bgSourceCanvas.width;
+      const height = bgSourceCanvas.height;
+
+      const src = bgSourceCtx.getImageData(0, 0, width, height);
+      const out = bgResultCtx.createImageData(width, height);
+
+      for (let i = 0; i < src.data.length; i += 4) {
+        const dr = src.data[i] - bgColor.r;
+        const dg = src.data[i + 1] - bgColor.g;
+        const db = src.data[i + 2] - bgColor.b;
+        const distance = Math.sqrt(dr * dr + dg * dg + db * db);
+
+        let alpha = 255;
+        if (distance <= threshold) {
+          alpha = 0;
+        } else if (distance < threshold + feather) {
+          alpha = Math.round(((distance - threshold) / Math.max(1, feather)) * 255);
+        }
+
+        out.data[i] = src.data[i];
+        out.data[i + 1] = src.data[i + 1];
+        out.data[i + 2] = src.data[i + 2];
+        out.data[i + 3] = alpha;
+      }
+
+      bgResultCtx.putImageData(out, 0, 0);
+      bgResultCanvas.style.display = 'inline-block';
+      clearBgDownload();
+
+      const outputFormat = document.getElementById('bg-output-format').value;
+      bgResultCanvas.toBlob((blob) => {
+        if (!blob) {
+          document.getElementById('bg-error-msg').textContent = '导出失败，请重试';
+          return;
+        }
+
+        clearBgDownload();
+        bgDownloadUrl = URL.createObjectURL(blob);
+        const base = bgFile ? (bgFile.name.includes('.') ? bgFile.name.slice(0, bgFile.name.lastIndexOf('.')) : bgFile.name) : 'image';
+        const ext = outputFormat === 'image/webp' ? 'webp' : 'png';
+
+        const downloadLink = document.getElementById('bg-download-link');
+        downloadLink.href = bgDownloadUrl;
+        downloadLink.download = `${base}_bg_removed.${ext}`;
+        downloadLink.style.display = 'inline-block';
+
+        const resultInfo = document.getElementById('bg-result-info');
+        resultInfo.innerHTML = `
+          <div class="info-row"><span>输出分辨率:</span><span class="success-text">${width} × ${height}</span></div>
+          <div class="info-row"><span>导出格式:</span><span>${ext.toUpperCase()}</span></div>
+          <div class="info-row"><span>文件大小:</span><span>${formatSize(blob.size)}</span></div>
+        `;
+        resultInfo.style.display = 'block';
+      }, outputFormat, outputFormat === 'image/webp' ? 0.92 : undefined);
+    }
+
+    function handleBgFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const file = files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('请选择有效的图片文件');
+        return;
+      }
+
+      resetBgRemoval(false);
+      bgFile = file;
+
+      if (bgObjectUrl) {
+        URL.revokeObjectURL(bgObjectUrl);
+      }
+      bgObjectUrl = URL.createObjectURL(file);
+
+      const image = new Image();
+      image.onload = () => {
+        bgImage = image;
+        bgSourceCanvas.width = image.naturalWidth;
+        bgSourceCanvas.height = image.naturalHeight;
+        bgResultCanvas.width = image.naturalWidth;
+        bgResultCanvas.height = image.naturalHeight;
+        bgSourceCtx.drawImage(image, 0, 0);
+
+        document.getElementById('bg-upload-text').style.display = 'none';
+        document.getElementById('bg-file-info').textContent = `原始文件: ${file.name} (${formatSize(file.size)}) · ${image.naturalWidth}×${image.naturalHeight}`;
+        document.getElementById('bg-error-msg').textContent = '';
+
+        setBgButtonsEnabled(true);
+        detectBgColorOnly();
+      };
+
+      image.onerror = () => {
+        document.getElementById('bg-error-msg').textContent = '图片读取失败，请重试';
+      };
+
+      image.src = bgObjectUrl;
+    }
+
+    function resetBgRemoval(clearFileInput = true) {
+      if (clearFileInput) {
+        document.getElementById('bg-input').value = '';
+      }
+      if (bgObjectUrl) {
+        URL.revokeObjectURL(bgObjectUrl);
+        bgObjectUrl = null;
+      }
+
+      clearBgDownload();
+
+      bgFile = null;
+      bgImage = null;
+      bgAutoColor = { r: 255, g: 255, b: 255 };
+
+      document.getElementById('bg-upload-text').style.display = 'block';
+      document.getElementById('bg-file-info').textContent = '';
+      document.getElementById('bg-error-msg').textContent = '';
+      bgResultCanvas.style.display = 'none';
+      bgSourceCtx.clearRect(0, 0, bgSourceCanvas.width, bgSourceCanvas.height);
+      bgResultCtx.clearRect(0, 0, bgResultCanvas.width, bgResultCanvas.height);
+
+      bgThresholdInput.value = '45';
+      bgFeatherInput.value = '30';
+      bgThresholdValue.textContent = '45';
+      bgFeatherValue.textContent = '30';
+      bgUseAutoInput.checked = true;
+      bgColorInput.value = '#ffffff';
+      document.getElementById('bg-output-format').value = 'image/png';
+
+      setBgButtonsEnabled(false);
+    }
+
+    bgThresholdInput.addEventListener('input', () => {
+      bgThresholdValue.textContent = bgThresholdInput.value;
+      if (bgImage) runBackgroundRemoval();
+    });
+
+    bgFeatherInput.addEventListener('input', () => {
+      bgFeatherValue.textContent = bgFeatherInput.value;
+      if (bgImage) runBackgroundRemoval();
+    });
+
+    bgUseAutoInput.addEventListener('change', () => {
+      if (bgImage) runBackgroundRemoval();
+    });
+
+    bgColorInput.addEventListener('input', () => {
+      if (bgImage && !bgUseAutoInput.checked) runBackgroundRemoval();
+    });
+
+    document.getElementById('bg-output-format').addEventListener('change', () => {
+      if (bgImage) runBackgroundRemoval();
+    });
+
+    resetBgRemoval();
 
     window.addEventListener('beforeunload', clearGridResults);
 
