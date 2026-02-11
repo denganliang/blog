@@ -184,6 +184,12 @@
       border: 1px solid var(--border-color);
     }
 
+    .btn-secondary.btn-toggle-active {
+      background: var(--accent-color);
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
     /* 文件上传区域 */
     .file-upload {
       border: 2px dashed var(--border-color);
@@ -1681,6 +1687,7 @@
       if (!cropImage) return;
       cropFlipX *= -1;
       drawCropCanvas();
+      updateCropTransformButtons();
       clearCropDownload();
     }
 
@@ -1688,7 +1695,24 @@
       if (!cropImage) return;
       cropFlipY *= -1;
       drawCropCanvas();
+      updateCropTransformButtons();
       clearCropDownload();
+    }
+
+    function updateCropTransformButtons() {
+      const flipHBtn = document.getElementById('crop-flip-h-btn');
+      const flipVBtn = document.getElementById('crop-flip-v-btn');
+      if (!flipHBtn || !flipVBtn) return;
+
+      const hActive = cropFlipX === -1;
+      const vActive = cropFlipY === -1;
+
+      flipHBtn.classList.toggle('btn-toggle-active', hActive);
+      flipVBtn.classList.toggle('btn-toggle-active', vActive);
+      flipHBtn.textContent = hActive ? '水平翻转 ✓' : '水平翻转';
+      flipVBtn.textContent = vActive ? '垂直翻转 ✓' : '垂直翻转';
+      flipHBtn.setAttribute('aria-pressed', hActive ? 'true' : 'false');
+      flipVBtn.setAttribute('aria-pressed', vActive ? 'true' : 'false');
     }
 
     function clearCropDownload() {
@@ -1989,6 +2013,7 @@
       cropOffsetY = 0;
       cropFlipX = 1;
       cropFlipY = 1;
+      updateCropTransformButtons();
 
       cropTargetWidth = 1080;
       cropTargetHeight = 1080;
