@@ -217,6 +217,41 @@
       display: none;
     }
 
+    .split-result-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .split-result-grid.active {
+      display: grid;
+    }
+
+    .split-result-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .split-result-item img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 6px;
+    }
+
+    .split-result-name {
+      font-size: 0.85rem;
+      line-height: 1.3;
+      word-break: break-all;
+    }
+
     /* 子导航栏 */
     .sub-nav {
       position: sticky;
@@ -360,6 +395,7 @@
       <nav class="sub-nav">
         <div class="sub-nav-list">
           <a href="#compress" class="sub-nav-item">图片压缩</a>
+          <a href="#grid-split" class="sub-nav-item">九宫格拆分</a>
           <a href="#video2gif" class="sub-nav-item">视频转GIF</a>
           <a href="#videocompress" class="sub-nav-item">视频压缩</a>
         </div>
@@ -412,6 +448,54 @@
 
           <div id="result-info" class="compression-info"></div>
           <div id="error-msg" class="error"></div>
+        </div>
+
+        <div class="tool-item" id="grid-split">
+          <h3><span class="icon">🔲</span> 九宫格/宫格拆分</h3>
+
+          <div class="file-upload" id="grid-drop-zone" onclick="document.getElementById('grid-input').click()">
+            <input type="file" id="grid-input" accept="image/*" onchange="handleGridSelect(event)">
+            <div id="grid-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请上传一张宫格图</p>
+              <p class="hint">支持 2×2、3×3、4×4 等规则宫格，点击或拖拽上传</p>
+            </div>
+            <div class="preview-container">
+              <img id="grid-preview-img" class="preview-image">
+              <p id="grid-file-info" style="margin-top: 0.5rem; color: var(--text-secondary);"></p>
+            </div>
+          </div>
+
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>宫格类型</label>
+              <select id="grid-layout">
+                <option value="2x2">2 × 2（4张）</option>
+                <option value="3x3" selected>3 × 3（9张）</option>
+                <option value="4x4">4 × 4（16张）</option>
+                <option value="5x5">5 × 5（25张）</option>
+              </select>
+            </div>
+
+            <div class="io-section">
+              <label>输出格式</label>
+              <select id="grid-output-format">
+                <option value="original" selected>保持原格式（推荐）</option>
+                <option value="image/png">PNG</option>
+                <option value="image/jpeg">JPG</option>
+                <option value="image/webp">WEBP</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="grid-split-btn" onclick="startGridSplit()" disabled>开始拆分</button>
+            <button class="btn btn-secondary" id="grid-download-all-btn" onclick="downloadAllGridPieces()" style="display:none;">下载全部</button>
+            <button class="btn btn-secondary" onclick="resetGridSplitter()">重置</button>
+          </div>
+
+          <div id="grid-error-msg" class="error"></div>
+          <div id="grid-result-info" class="compression-info"></div>
+          <div id="grid-result-list" class="split-result-grid"></div>
         </div>
       </div>
       <!-- 视频工具面板 -->
@@ -768,6 +852,33 @@
       handleFiles(files);
     }
 
+    const gridDropZone = document.getElementById('grid-drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      gridDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      gridDropZone.addEventListener(eventName, (e) => gridDropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      gridDropZone.addEventListener(eventName, (e) => gridDropZone.classList.remove('drag-over'), false);
+    });
+
+    gridDropZone.addEventListener('drop', handleGridDrop, false);
+
+    function handleGridDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleGridFiles(files);
+    }
+
+    function handleGridSelect(e) {
+      const files = e.target.files;
+      handleGridFiles(files);
+    }
+
     // ==================== 拖拽上传处理 (视频) ====================
     const videoDropZone = document.getElementById('video-drop-zone');
 
@@ -979,6 +1090,259 @@
       originalImage = null;
       originalFile = null;
     }
+
+    let gridImage = null;
+    let gridFile = null;
+    let gridSplitResults = [];
+
+    function getGridBaseName(file) {
+      const dotIndex = file.name.lastIndexOf('.');
+      return dotIndex > 0 ? file.name.substring(0, dotIndex) : file.name;
+    }
+
+    function getGridOutputSettings() {
+      const output = document.getElementById('grid-output-format').value;
+      let mimeType = output === 'original' ? (gridFile ? gridFile.type : 'image/png') : output;
+
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(mimeType)) {
+        mimeType = 'image/png';
+      }
+
+      const ext = mimeType === 'image/jpeg' ? 'jpg' : (mimeType === 'image/webp' ? 'webp' : 'png');
+      const quality = mimeType === 'image/png' ? undefined : 0.92;
+
+      return { mimeType, ext, quality };
+    }
+
+    function clearGridResults() {
+      gridSplitResults.forEach(item => URL.revokeObjectURL(item.url));
+      gridSplitResults = [];
+
+      const resultList = document.getElementById('grid-result-list');
+      resultList.innerHTML = '';
+      resultList.classList.remove('active');
+
+      const resultInfo = document.getElementById('grid-result-info');
+      resultInfo.innerHTML = '';
+      resultInfo.style.display = 'none';
+
+      const downloadAllBtn = document.getElementById('grid-download-all-btn');
+      downloadAllBtn.style.display = 'none';
+      downloadAllBtn.disabled = false;
+      downloadAllBtn.textContent = '下载全部';
+    }
+
+    function handleGridFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const file = files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('请选择有效的图片文件');
+        return;
+      }
+
+      clearGridResults();
+      gridFile = file;
+      document.getElementById('grid-error-msg').textContent = '';
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewImg = document.getElementById('grid-preview-img');
+        previewImg.src = e.target.result;
+        previewImg.style.display = 'block';
+        document.getElementById('grid-upload-text').style.display = 'none';
+
+        gridImage = new Image();
+        gridImage.onload = () => {
+          document.getElementById('grid-file-info').textContent = `原始文件: ${file.name} (${formatSize(file.size)}) · ${gridImage.naturalWidth}×${gridImage.naturalHeight}`;
+          document.getElementById('grid-split-btn').disabled = false;
+        };
+        gridImage.onerror = () => {
+          document.getElementById('grid-error-msg').textContent = '图片读取失败，请重试';
+          document.getElementById('grid-split-btn').disabled = true;
+          gridImage = null;
+        };
+        gridImage.src = e.target.result;
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    function renderGridSplitResult(rows, cols, ext) {
+      const resultInfo = document.getElementById('grid-result-info');
+      const resultList = document.getElementById('grid-result-list');
+      const downloadAllBtn = document.getElementById('grid-download-all-btn');
+
+      const totalSize = gridSplitResults.reduce((sum, item) => sum + item.size, 0);
+
+      resultInfo.innerHTML = `
+        <div class="info-row">
+          <span>宫格类型:</span>
+          <span>${rows} × ${cols}</span>
+        </div>
+        <div class="info-row">
+          <span>拆分数量:</span>
+          <span class="success-text">${gridSplitResults.length} 张</span>
+        </div>
+        <div class="info-row">
+          <span>输出格式:</span>
+          <span>${ext.toUpperCase()}</span>
+        </div>
+        <div class="info-row">
+          <span>总大小:</span>
+          <span>${formatSize(totalSize)}</span>
+        </div>
+      `;
+      resultInfo.style.display = 'block';
+
+      resultList.innerHTML = '';
+      gridSplitResults.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'split-result-item';
+
+        const image = document.createElement('img');
+        image.src = item.url;
+        image.alt = item.name;
+
+        const name = document.createElement('div');
+        name.className = 'split-result-name';
+        name.textContent = item.name;
+
+        const meta = document.createElement('p');
+        meta.className = 'hint';
+        meta.style.margin = '0';
+        meta.textContent = `${item.width}×${item.height} · ${formatSize(item.size)}`;
+
+        const downloadLink = document.createElement('a');
+        downloadLink.className = 'btn btn-secondary';
+        downloadLink.href = item.url;
+        downloadLink.download = item.name;
+        downloadLink.textContent = '下载';
+
+        card.appendChild(image);
+        card.appendChild(name);
+        card.appendChild(meta);
+        card.appendChild(downloadLink);
+        resultList.appendChild(card);
+      });
+
+      resultList.classList.add('active');
+      downloadAllBtn.style.display = 'inline-block';
+    }
+
+    async function startGridSplit() {
+      if (!gridImage || !gridFile) return;
+
+      const splitBtn = document.getElementById('grid-split-btn');
+      splitBtn.disabled = true;
+      splitBtn.textContent = '拆分中...';
+
+      document.getElementById('grid-error-msg').textContent = '';
+      clearGridResults();
+
+      try {
+        const [rows, cols] = document.getElementById('grid-layout').value.split('x').map(Number);
+        if (!rows || !cols) {
+          throw new Error('请选择有效的宫格类型');
+        }
+
+        if (gridImage.naturalWidth < cols || gridImage.naturalHeight < rows) {
+          throw new Error('图片尺寸过小，无法按当前宫格数量拆分');
+        }
+
+        const { mimeType, ext, quality } = getGridOutputSettings();
+        const baseName = getGridBaseName(gridFile);
+        const sourceWidth = gridImage.naturalWidth;
+        const sourceHeight = gridImage.naturalHeight;
+
+        let index = 1;
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const sx = Math.floor((sourceWidth * col) / cols);
+            const sy = Math.floor((sourceHeight * row) / rows);
+            const ex = Math.floor((sourceWidth * (col + 1)) / cols);
+            const ey = Math.floor((sourceHeight * (row + 1)) / rows);
+
+            const width = ex - sx;
+            const height = ey - sy;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(gridImage, sx, sy, width, height, 0, 0, width, height);
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, quality));
+            if (!blob) {
+              throw new Error('当前浏览器不支持该输出格式，请更换输出格式后重试');
+            }
+
+            const name = `${baseName}${index}.${ext}`;
+            const url = URL.createObjectURL(blob);
+
+            gridSplitResults.push({
+              name,
+              url,
+              size: blob.size,
+              width,
+              height
+            });
+
+            index++;
+          }
+        }
+
+        renderGridSplitResult(rows, cols, ext);
+      } catch (error) {
+        document.getElementById('grid-error-msg').textContent = `拆分失败: ${error.message}`;
+      } finally {
+        splitBtn.disabled = false;
+        splitBtn.textContent = '开始拆分';
+      }
+    }
+
+    async function downloadAllGridPieces() {
+      if (gridSplitResults.length === 0) return;
+
+      const downloadAllBtn = document.getElementById('grid-download-all-btn');
+      downloadAllBtn.disabled = true;
+      downloadAllBtn.textContent = '下载中...';
+
+      try {
+        for (const item of gridSplitResults) {
+          const link = document.createElement('a');
+          link.href = item.url;
+          link.download = item.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          await new Promise(resolve => setTimeout(resolve, 120));
+        }
+      } finally {
+        downloadAllBtn.disabled = false;
+        downloadAllBtn.textContent = '下载全部';
+      }
+    }
+
+    function resetGridSplitter() {
+      clearGridResults();
+
+      document.getElementById('grid-input').value = '';
+      document.getElementById('grid-preview-img').style.display = 'none';
+      document.getElementById('grid-upload-text').style.display = 'block';
+      document.getElementById('grid-file-info').textContent = '';
+      document.getElementById('grid-error-msg').textContent = '';
+      document.getElementById('grid-layout').value = '3x3';
+      document.getElementById('grid-output-format').value = 'original';
+      document.getElementById('grid-split-btn').disabled = true;
+
+      gridImage = null;
+      gridFile = null;
+    }
+
+    window.addEventListener('beforeunload', clearGridResults);
 
     // ==================== 视频转GIF逻辑 ====================
     let videoFile = null;

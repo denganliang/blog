@@ -217,6 +217,41 @@
       display: none;
     }
 
+    .split-result-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .split-result-grid.active {
+      display: grid;
+    }
+
+    .split-result-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .split-result-item img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 6px;
+    }
+
+    .split-result-name {
+      font-size: 0.85rem;
+      line-height: 1.3;
+      word-break: break-all;
+    }
+
     /* Sub Nav */
     .sub-nav {
       position: sticky;
@@ -360,6 +395,7 @@
       <nav class="sub-nav">
         <div class="sub-nav-list">
           <a href="#compress" class="sub-nav-item">Image Compression</a>
+          <a href="#grid-split" class="sub-nav-item">Grid Splitter</a>
           <a href="#video2gif" class="sub-nav-item">Video to GIF</a>
           <a href="#videocompress" class="sub-nav-item">Video Compressor</a>
         </div>
@@ -412,6 +448,54 @@
 
           <div id="result-info" class="compression-info"></div>
           <div id="error-msg" class="error"></div>
+        </div>
+
+        <div class="tool-item" id="grid-split">
+          <h3><span class="icon">🔲</span> Grid Splitter</h3>
+
+          <div class="file-upload" id="grid-drop-zone" onclick="document.getElementById('grid-input').click()">
+            <input type="file" id="grid-input" accept="image/*" onchange="handleGridSelect(event)">
+            <div id="grid-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Upload a grid image</p>
+              <p class="hint">Supports 2×2, 3×3, 4×4 and more. Click or drag & drop.</p>
+            </div>
+            <div class="preview-container">
+              <img id="grid-preview-img" class="preview-image">
+              <p id="grid-file-info" style="margin-top: 0.5rem; color: var(--text-secondary);"></p>
+            </div>
+          </div>
+
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>Grid Type</label>
+              <select id="grid-layout">
+                <option value="2x2">2 × 2 (4 pieces)</option>
+                <option value="3x3" selected>3 × 3 (9 pieces)</option>
+                <option value="4x4">4 × 4 (16 pieces)</option>
+                <option value="5x5">5 × 5 (25 pieces)</option>
+              </select>
+            </div>
+
+            <div class="io-section">
+              <label>Output Format</label>
+              <select id="grid-output-format">
+                <option value="original" selected>Keep original (recommended)</option>
+                <option value="image/png">PNG</option>
+                <option value="image/jpeg">JPG</option>
+                <option value="image/webp">WEBP</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="grid-split-btn" onclick="startGridSplit()" disabled>Split Image</button>
+            <button class="btn btn-secondary" id="grid-download-all-btn" onclick="downloadAllGridPieces()" style="display:none;">Download All</button>
+            <button class="btn btn-secondary" onclick="resetGridSplitter()">Reset</button>
+          </div>
+
+          <div id="grid-error-msg" class="error"></div>
+          <div id="grid-result-info" class="compression-info"></div>
+          <div id="grid-result-list" class="split-result-grid"></div>
         </div>
       </div>
 
@@ -769,6 +853,33 @@
       handleFiles(files);
     }
 
+    const gridDropZone = document.getElementById('grid-drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      gridDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      gridDropZone.addEventListener(eventName, (e) => gridDropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      gridDropZone.addEventListener(eventName, (e) => gridDropZone.classList.remove('drag-over'), false);
+    });
+
+    gridDropZone.addEventListener('drop', handleGridDrop, false);
+
+    function handleGridDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleGridFiles(files);
+    }
+
+    function handleGridSelect(e) {
+      const files = e.target.files;
+      handleGridFiles(files);
+    }
+
     // ==================== Drop Zone Handling (Video) ====================
     const videoDropZone = document.getElementById('video-drop-zone');
 
@@ -979,6 +1090,259 @@
       originalImage = null;
       originalFile = null;
     }
+
+    let gridImage = null;
+    let gridFile = null;
+    let gridSplitResults = [];
+
+    function getGridBaseName(file) {
+      const dotIndex = file.name.lastIndexOf('.');
+      return dotIndex > 0 ? file.name.substring(0, dotIndex) : file.name;
+    }
+
+    function getGridOutputSettings() {
+      const output = document.getElementById('grid-output-format').value;
+      let mimeType = output === 'original' ? (gridFile ? gridFile.type : 'image/png') : output;
+
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(mimeType)) {
+        mimeType = 'image/png';
+      }
+
+      const ext = mimeType === 'image/jpeg' ? 'jpg' : (mimeType === 'image/webp' ? 'webp' : 'png');
+      const quality = mimeType === 'image/png' ? undefined : 0.92;
+
+      return { mimeType, ext, quality };
+    }
+
+    function clearGridResults() {
+      gridSplitResults.forEach(item => URL.revokeObjectURL(item.url));
+      gridSplitResults = [];
+
+      const resultList = document.getElementById('grid-result-list');
+      resultList.innerHTML = '';
+      resultList.classList.remove('active');
+
+      const resultInfo = document.getElementById('grid-result-info');
+      resultInfo.innerHTML = '';
+      resultInfo.style.display = 'none';
+
+      const downloadAllBtn = document.getElementById('grid-download-all-btn');
+      downloadAllBtn.style.display = 'none';
+      downloadAllBtn.disabled = false;
+      downloadAllBtn.textContent = 'Download All';
+    }
+
+    function handleGridFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const file = files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file');
+        return;
+      }
+
+      clearGridResults();
+      gridFile = file;
+      document.getElementById('grid-error-msg').textContent = '';
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewImg = document.getElementById('grid-preview-img');
+        previewImg.src = e.target.result;
+        previewImg.style.display = 'block';
+        document.getElementById('grid-upload-text').style.display = 'none';
+
+        gridImage = new Image();
+        gridImage.onload = () => {
+          document.getElementById('grid-file-info').textContent = `Original: ${file.name} (${formatSize(file.size)}) · ${gridImage.naturalWidth}×${gridImage.naturalHeight}`;
+          document.getElementById('grid-split-btn').disabled = false;
+        };
+        gridImage.onerror = () => {
+          document.getElementById('grid-error-msg').textContent = 'Failed to read image, please try again';
+          document.getElementById('grid-split-btn').disabled = true;
+          gridImage = null;
+        };
+        gridImage.src = e.target.result;
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    function renderGridSplitResult(rows, cols, ext) {
+      const resultInfo = document.getElementById('grid-result-info');
+      const resultList = document.getElementById('grid-result-list');
+      const downloadAllBtn = document.getElementById('grid-download-all-btn');
+
+      const totalSize = gridSplitResults.reduce((sum, item) => sum + item.size, 0);
+
+      resultInfo.innerHTML = `
+        <div class="info-row">
+          <span>Grid type:</span>
+          <span>${rows} × ${cols}</span>
+        </div>
+        <div class="info-row">
+          <span>Pieces:</span>
+          <span class="success-text">${gridSplitResults.length}</span>
+        </div>
+        <div class="info-row">
+          <span>Output format:</span>
+          <span>${ext.toUpperCase()}</span>
+        </div>
+        <div class="info-row">
+          <span>Total size:</span>
+          <span>${formatSize(totalSize)}</span>
+        </div>
+      `;
+      resultInfo.style.display = 'block';
+
+      resultList.innerHTML = '';
+      gridSplitResults.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'split-result-item';
+
+        const image = document.createElement('img');
+        image.src = item.url;
+        image.alt = item.name;
+
+        const name = document.createElement('div');
+        name.className = 'split-result-name';
+        name.textContent = item.name;
+
+        const meta = document.createElement('p');
+        meta.className = 'hint';
+        meta.style.margin = '0';
+        meta.textContent = `${item.width}×${item.height} · ${formatSize(item.size)}`;
+
+        const downloadLink = document.createElement('a');
+        downloadLink.className = 'btn btn-secondary';
+        downloadLink.href = item.url;
+        downloadLink.download = item.name;
+        downloadLink.textContent = 'Download';
+
+        card.appendChild(image);
+        card.appendChild(name);
+        card.appendChild(meta);
+        card.appendChild(downloadLink);
+        resultList.appendChild(card);
+      });
+
+      resultList.classList.add('active');
+      downloadAllBtn.style.display = 'inline-block';
+    }
+
+    async function startGridSplit() {
+      if (!gridImage || !gridFile) return;
+
+      const splitBtn = document.getElementById('grid-split-btn');
+      splitBtn.disabled = true;
+      splitBtn.textContent = 'Splitting...';
+
+      document.getElementById('grid-error-msg').textContent = '';
+      clearGridResults();
+
+      try {
+        const [rows, cols] = document.getElementById('grid-layout').value.split('x').map(Number);
+        if (!rows || !cols) {
+          throw new Error('Please select a valid grid type');
+        }
+
+        if (gridImage.naturalWidth < cols || gridImage.naturalHeight < rows) {
+          throw new Error('Image is too small for this grid type');
+        }
+
+        const { mimeType, ext, quality } = getGridOutputSettings();
+        const baseName = getGridBaseName(gridFile);
+        const sourceWidth = gridImage.naturalWidth;
+        const sourceHeight = gridImage.naturalHeight;
+
+        let index = 1;
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const sx = Math.floor((sourceWidth * col) / cols);
+            const sy = Math.floor((sourceHeight * row) / rows);
+            const ex = Math.floor((sourceWidth * (col + 1)) / cols);
+            const ey = Math.floor((sourceHeight * (row + 1)) / rows);
+
+            const width = ex - sx;
+            const height = ey - sy;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(gridImage, sx, sy, width, height, 0, 0, width, height);
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, quality));
+            if (!blob) {
+              throw new Error('Output format is not supported in this browser');
+            }
+
+            const name = `${baseName}${index}.${ext}`;
+            const url = URL.createObjectURL(blob);
+
+            gridSplitResults.push({
+              name,
+              url,
+              size: blob.size,
+              width,
+              height
+            });
+
+            index++;
+          }
+        }
+
+        renderGridSplitResult(rows, cols, ext);
+      } catch (error) {
+        document.getElementById('grid-error-msg').textContent = `Split failed: ${error.message}`;
+      } finally {
+        splitBtn.disabled = false;
+        splitBtn.textContent = 'Split Image';
+      }
+    }
+
+    async function downloadAllGridPieces() {
+      if (gridSplitResults.length === 0) return;
+
+      const downloadAllBtn = document.getElementById('grid-download-all-btn');
+      downloadAllBtn.disabled = true;
+      downloadAllBtn.textContent = 'Downloading...';
+
+      try {
+        for (const item of gridSplitResults) {
+          const link = document.createElement('a');
+          link.href = item.url;
+          link.download = item.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          await new Promise(resolve => setTimeout(resolve, 120));
+        }
+      } finally {
+        downloadAllBtn.disabled = false;
+        downloadAllBtn.textContent = 'Download All';
+      }
+    }
+
+    function resetGridSplitter() {
+      clearGridResults();
+
+      document.getElementById('grid-input').value = '';
+      document.getElementById('grid-preview-img').style.display = 'none';
+      document.getElementById('grid-upload-text').style.display = 'block';
+      document.getElementById('grid-file-info').textContent = '';
+      document.getElementById('grid-error-msg').textContent = '';
+      document.getElementById('grid-layout').value = '3x3';
+      document.getElementById('grid-output-format').value = 'original';
+      document.getElementById('grid-split-btn').disabled = true;
+
+      gridImage = null;
+      gridFile = null;
+    }
+
+    window.addEventListener('beforeunload', clearGridResults);
 
     // ==================== Video to GIF Logic ====================
     let videoFile = null;
