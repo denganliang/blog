@@ -483,10 +483,10 @@
           <h3><span class="icon">📉</span> 图片压缩工具</h3>
 
           <div class="file-upload" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" onchange="handleFileSelect(event)">
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/bmp,image/x-ms-bmp,image/gif" onchange="handleFileSelect(event)">
             <div id="upload-text">
               <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">请加载一张图片</p>
-              <p class="hint">点击或拖拽图片到此处 (支持 JPG, PNG, WEBP)</p>
+              <p class="hint">点击或拖拽图片到此处 (支持 PNG, JPEG, BMP, GIF, WEBP)</p>
             </div>
             <div class="preview-container">
               <img id="preview-img" class="preview-image">
@@ -498,7 +498,7 @@
             <div class="io-section">
               <label>目标大小 (KB)</label>
               <input type="number" id="target-size" placeholder="例如: 200" value="200" min="10">
-              <p class="hint">工具会自动调整质量以接近此大小（仅支持JPG/WEBP输出）</p>
+              <p class="hint">JPEG/WEBP 会按目标大小智能压缩；PNG/BMP/GIF 为原尺寸转换导出</p>
             </div>
 
             <div class="io-section">
@@ -509,7 +509,10 @@
             <div class="io-section">
               <label>输出格式</label>
               <select id="output-format">
-                <option value="image/jpeg">JPG</option>
+                <option value="image/png">PNG</option>
+                <option value="image/jpeg">JPEG</option>
+                <option value="image/bmp">BMP</option>
+                <option value="image/gif">GIF</option>
                 <option value="image/webp">WEBP</option>
               </select>
             </div>

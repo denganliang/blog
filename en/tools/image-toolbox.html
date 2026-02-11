@@ -483,10 +483,10 @@
           <h3><span class="icon">📉</span> Image Compressor</h3>
 
           <div class="file-upload" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" onchange="handleFileSelect(event)">
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/bmp,image/x-ms-bmp,image/gif" onchange="handleFileSelect(event)">
             <div id="upload-text">
               <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Load an image</p>
-              <p class="hint">Click or drag & drop image here (JPG, PNG, WEBP)</p>
+              <p class="hint">Click or drag & drop image here (PNG, JPEG, BMP, GIF, WEBP)</p>
             </div>
             <div class="preview-container">
               <img id="preview-img" class="preview-image">
@@ -498,7 +498,7 @@
             <div class="io-section">
               <label>Target Size (KB)</label>
               <input type="number" id="target-size" placeholder="e.g. 200" value="200" min="10">
-              <p class="hint">Auto-adjusts quality to reach target size (JPG/WEBP only)</p>
+              <p class="hint">JPEG/WEBP use smart target-size compression; PNG/BMP/GIF export at original dimensions.</p>
             </div>
 
             <div class="io-section">
@@ -509,7 +509,10 @@
             <div class="io-section">
               <label>Output Format</label>
               <select id="output-format">
-                <option value="image/jpeg">JPG</option>
+                <option value="image/png">PNG</option>
+                <option value="image/jpeg">JPEG</option>
+                <option value="image/bmp">BMP</option>
+                <option value="image/gif">GIF</option>
                 <option value="image/webp">WEBP</option>
               </select>
             </div>
