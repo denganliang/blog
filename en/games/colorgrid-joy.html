@@ -68,6 +68,34 @@
       min-width: 150px;
     }
 
+    .pattern-preview-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      margin-left: auto;
+    }
+
+    .pattern-preview {
+      width: 96px;
+      height: 96px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      image-rendering: pixelated;
+    }
+
+    .pattern-preview-caption {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .pattern-preview-wrap {
+        margin-left: 0;
+      }
+    }
+
     .palette {
       display: flex;
       flex-wrap: wrap;
@@ -239,6 +267,10 @@
                 <select id="pattern-select" class="pattern-select"></select>
               </label>
               <button id="shuffle-btn" class="btn btn-secondary btn-sm" type="button">Random</button>
+              <div class="pattern-preview-wrap">
+                <canvas id="pattern-preview" class="pattern-preview" width="96" height="96" aria-label="Pattern preview"></canvas>
+                <div id="pattern-preview-caption" class="pattern-preview-caption">16×16 Preview</div>
+              </div>
             </div>
             <div class="palette" id="palette"></div>
             <div class="action-buttons">
@@ -1044,6 +1076,8 @@
     const categorySelectElement = document.getElementById('category-select');
     const patternSelectElement = document.getElementById('pattern-select');
     const shuffleButton = document.getElementById('shuffle-btn');
+    const patternPreviewCanvasElement = document.getElementById('pattern-preview');
+    const patternPreviewCaptionElement = document.getElementById('pattern-preview-caption');
     const progressFillElement = document.getElementById('progress-fill');
     const progressTextElement = document.getElementById('progress-text');
     const patternTextElement = document.getElementById('pattern-text');
@@ -1102,6 +1136,30 @@
       return selectedPattern;
     }
 
+    function renderPatternPreview(rows) {
+      if (!patternPreviewCanvasElement) {
+        return;
+      }
+
+      const context = patternPreviewCanvasElement.getContext('2d');
+      if (!context || !rows || rows.length === 0) {
+        return;
+      }
+
+      const size = rows.length;
+      const cellSize = patternPreviewCanvasElement.width / size;
+
+      context.clearRect(0, 0, patternPreviewCanvasElement.width, patternPreviewCanvasElement.height);
+
+      for (let row = 0; row < size; row += 1) {
+        for (let column = 0; column < size; column += 1) {
+          const number = Number(rows[row][column]);
+          context.fillStyle = number === 0 ? '#f3f4f6' : (colorMap[number] || '#d1d5db');
+          context.fillRect(column * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
     function loadPattern(patternId, announce = true) {
       const pattern = patternCatalog.find(item => item.id === patternId);
       if (!pattern) {
@@ -1116,7 +1174,11 @@
       setActiveColor(1, true);
       renderBoard();
       updateProgress();
+      renderPatternPreview(pattern.rows);
       patternTextElement.textContent = `Current pattern: ${pattern.name}`;
+      if (patternPreviewCaptionElement) {
+        patternPreviewCaptionElement.textContent = `${pattern.name} · ${paintableTotal} cells`;
+      }
 
       if (announce) {
         setStatus(`Switched to pattern: ${pattern.name}.`);
