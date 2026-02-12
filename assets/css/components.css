@@ -141,6 +141,62 @@
   }
 }
 
+/* 首页精选工具轮播 */
+.tools-carousel {
+  position: relative;
+}
+
+.tools-carousel-slide {
+  display: none;
+  animation: tools-carousel-fade 0.5s ease;
+}
+
+.tools-carousel-slide.is-active {
+  display: block;
+}
+
+.tools-carousel-slide[aria-hidden='true'] {
+  visibility: hidden;
+}
+
+.tools-carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.tools-carousel-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: none;
+  background: var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tools-carousel-dot:hover {
+  background: var(--text-tertiary);
+}
+
+.tools-carousel-dot.is-active {
+  width: 22px;
+  border-radius: 999px;
+  background: var(--accent-color);
+}
+
+@keyframes tools-carousel-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 标签组件 */
 .tag {
   display: inline-block;

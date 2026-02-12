@@ -79,38 +79,227 @@
       <div class="container">
         <h2 class="section-title">精选工具</h2>
         <p class="section-subtitle">实用在线工具，完全免费</p>
-        <div class="grid grid-3">
+        <div class="tools-carousel" data-interval="4500">
+          <div class="tools-carousel-slide is-active" aria-hidden="false">
+            <div class="grid grid-3">
 
-          <div class="card">
-            <div class="card-title">📷 PhotoSign 照片署名</div>
-            <div class="card-description">
-              为照片添加专业的相机水印，展示拍摄设备和参数信息。支持自动识别主流相机品牌 EXIF 信息，纯前端处理。
-            </div>
-            <div class="card-footer">
-              <a href="/tools/photosign.html" class="btn btn-primary btn-sm">开始使用</a>
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🍌</div>
+                  <div class="card-title">NanoBanana</div>
+                </div>
+                <div class="card-description">
+                  上传图片，施展 AI 魔法，创造精美手办风格或深夜食堂氛围图。支持多种预设风格和自定义提示词。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">AI 绘图</span>
+                  <span class="tag-outline">图片生成</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/nano-banana.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">📷</div>
+                  <div class="card-title">PhotoSign 照片署名</div>
+                </div>
+                <div class="card-description">
+                  为照片添加专业的相机水印，展示拍摄设备和参数信息。支持自动识别主流相机品牌 EXIF 信息，纯前端处理。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">图片工具</span>
+                  <span class="tag-outline">相机水印</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/photosign.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🖼️</div>
+                  <div class="card-title">图片工具箱</div>
+                </div>
+                <div class="card-description">
+                  集成智能图片压缩、格式转换、九宫格/宫格拆分等实用功能。支持指定目标大小压缩，纯前端处理，无需上传服务器。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">图片工具</span>
+                  <span class="tag-outline">图片压缩</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/image-toolbox.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🎵</div>
+                  <div class="card-title">音频工具箱</div>
+                </div>
+                <div class="card-description">
+                  集成音频合并等实用功能。支持批量上传合并，纯前端处理，保护隐私。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">音频工具</span>
+                  <span class="tag-outline">音频合并</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/audio-toolbox.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">✨</div>
+                  <div class="card-title">Gemini 水印抹除</div>
+                </div>
+                <div class="card-description">
+                  基于逆向 Alpha 混合算法，一键完美去除 Gemini 生成图片右下角的水印。纯前端处理，保护隐私。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">图片工具</span>
+                  <span class="tag-outline">AI 工具</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/gemini-watermark-remover.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🍅</div>
+                  <div class="card-title">番茄钟</div>
+                </div>
+                <div class="card-description">
+                  基于番茄工作法的时间管理工具。设定25分钟专注时间，搭配5分钟短休息，提高工作效率。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">时间管理</span>
+                  <span class="tag-outline">效率工具</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/pomodoro.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-title">✨ Gemini 水印抹除</div>
-            <div class="card-description">
-              基于逆向 Alpha 混合算法，一键完美去除 Gemini 生成图片右下角的水印。纯前端处理，保护隐私。
-            </div>
-            <div class="card-footer">
-              <a href="/tools/gemini-watermark-remover.html" class="btn btn-primary btn-sm">开始使用</a>
+          <div class="tools-carousel-slide" aria-hidden="true">
+            <div class="grid grid-3">
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🌍</div>
+                  <div class="card-title">世界时钟</div>
+                </div>
+                <div class="card-description">
+                  实时显示全球主要城市的当前时间。支持添加自定义城市，方便跨时区协作。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">时区转换</span>
+                  <span class="tag-outline">协作工具</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/world-clock.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🧰</div>
+                  <div class="card-title">开发工具箱</div>
+                </div>
+                <div class="card-description">
+                  集成15+常用开发工具的在线工具箱，包含编码转换、JSON格式化、正则表达式测试、哈希生成等。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">开发工具</span>
+                  <span class="tag-outline">编码转换</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/dev-toolbox.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">📝</div>
+                  <div class="card-title">Markdown 编辑器</div>
+                </div>
+                <div class="card-description">
+                  功能强大的在线 Markdown 编辑器，支持实时预览、导出 PDF 和 Word 文档。自动保存，减少内容丢失风险。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">生产力</span>
+                  <span class="tag-outline">写作工具</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/markdown-editor.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🍌</div>
+                  <div class="card-title">NanoBanana</div>
+                </div>
+                <div class="card-description">
+                  上传图片，施展 AI 魔法，创造精美手办风格或深夜食堂氛围图。支持多种预设风格和自定义提示词。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">AI 绘图</span>
+                  <span class="tag-outline">图片生成</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/nano-banana.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🖼️</div>
+                  <div class="card-title">图片工具箱</div>
+                </div>
+                <div class="card-description">
+                  集成智能图片压缩、格式转换、九宫格/宫格拆分等实用功能。支持指定目标大小压缩，纯前端处理，无需上传服务器。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">图片工具</span>
+                  <span class="tag-outline">图片压缩</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/image-toolbox.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
+              <div class="card tool-card">
+                <div class="tool-card-header">
+                  <div class="tool-card-icon">🍅</div>
+                  <div class="card-title">番茄钟</div>
+                </div>
+                <div class="card-description">
+                  基于番茄工作法的时间管理工具。设定25分钟专注时间，搭配5分钟短休息，提高工作效率。
+                </div>
+                <div style="margin: 0.5rem 0;">
+                  <span class="tag-outline">时间管理</span>
+                  <span class="tag-outline">效率工具</span>
+                </div>
+                <div class="card-footer">
+                  <a href="/tools/pomodoro.html" class="btn btn-primary btn-sm">开始使用</a>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-title">🍅 番茄钟</div>
-            <div class="card-description">
-              基于番茄工作法的时间管理工具。设定25分钟专注时间，搭配5分钟短休息，提高工作效率。
-            </div>
-            <div class="card-footer">
-              <a href="/tools/pomodoro.html" class="btn btn-primary btn-sm">开始使用</a>
-            </div>
+          <div class="tools-carousel-dots" role="tablist" aria-label="精选工具轮播">
+            <button class="tools-carousel-dot is-active" type="button" aria-label="查看第 1 组工具" aria-current="true"></button>
+            <button class="tools-carousel-dot" type="button" aria-label="查看第 2 组工具" aria-current="false"></button>
           </div>
-
         </div>
         <div class="section-cta">
           <a href="/tools/" class="btn btn-secondary">查看所有工具</a>

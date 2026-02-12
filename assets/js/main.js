@@ -198,6 +198,81 @@
     });
   }
 
+  function initToolsCarousel() {
+    const carousels = document.querySelectorAll('.tools-carousel');
+    if (carousels.length === 0) return;
+
+    carousels.forEach(carousel => {
+      const slides = Array.from(carousel.querySelectorAll('.tools-carousel-slide'));
+      const dots = Array.from(carousel.querySelectorAll('.tools-carousel-dot'));
+
+      if (slides.length === 0) return;
+
+      const intervalMs = Number(carousel.dataset.interval || 5000);
+      let activeIndex = slides.findIndex(slide => slide.classList.contains('is-active'));
+      let timerId = null;
+
+      if (activeIndex < 0) {
+        activeIndex = 0;
+      }
+
+      function setActiveSlide(index) {
+        activeIndex = index;
+
+        slides.forEach((slide, slideIndex) => {
+          const isActive = slideIndex === activeIndex;
+          slide.classList.toggle('is-active', isActive);
+          slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          const isActive = dotIndex === activeIndex;
+          dot.classList.toggle('is-active', isActive);
+          dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+        });
+      }
+
+      function stopAutoplay() {
+        if (timerId) {
+          window.clearInterval(timerId);
+          timerId = null;
+        }
+      }
+
+      function startAutoplay() {
+        if (slides.length < 2) return;
+
+        stopAutoplay();
+        timerId = window.setInterval(() => {
+          setActiveSlide((activeIndex + 1) % slides.length);
+        }, intervalMs);
+      }
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          setActiveSlide(index);
+          startAutoplay();
+        });
+      });
+
+      carousel.addEventListener('mouseenter', stopAutoplay);
+      carousel.addEventListener('mouseleave', startAutoplay);
+      carousel.addEventListener('touchstart', stopAutoplay, { passive: true });
+      carousel.addEventListener('touchend', startAutoplay);
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopAutoplay();
+        } else {
+          startAutoplay();
+        }
+      });
+
+      setActiveSlide(activeIndex);
+      startAutoplay();
+    });
+  }
+
   function init() {
     initMobileMenu();
     initSmoothScroll();
@@ -205,6 +280,7 @@
     initLazyLoad();
     initExternalLinks();
     initBackToTop();
+    initToolsCarousel();
     initCodeCopy();
   }
 
