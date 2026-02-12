@@ -2,6 +2,13 @@ function resolveAssetUrl(path) {
   return new URL(path, self.location.href).href;
 }
 
+function ensureAbsoluteUrl(path) {
+  if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(path)) {
+    return path;
+  }
+  return new URL(path, self.location.href).href;
+}
+
 self.FFMPEG_SCRIPT_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg.min.js');
 self.FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js');
 
@@ -85,7 +92,7 @@ async function ensureFfmpegLoaded() {
     const { createFFmpeg } = self.FFmpeg;
     ffmpeg = createFFmpeg({
       log: true,
-      corePath: self.FFMPEG_CORE_URL,
+      corePath: ensureAbsoluteUrl(self.FFMPEG_CORE_URL),
       mainName: 'main'
     });
 

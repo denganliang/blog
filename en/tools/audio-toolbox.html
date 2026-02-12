@@ -652,7 +652,7 @@
         const prefix = window.location.pathname.includes('/en/tools/') ? '../../assets/' : '../assets/';
         return new URL(prefix + assetPath, window.location.href).href;
       }
-      return '/assets/' + assetPath;
+      return new URL('/assets/' + assetPath, window.location.href).href;
     }
 
     const FFMPEG_SCRIPT_URL = resolveAssetUrl('vendor/ffmpeg/ffmpeg.min.js');
