@@ -36,7 +36,7 @@ const FFMPEG_SOURCES = [
   }
 ];
 
-const CORE_LOAD_TIMEOUT_MS = 12000;
+const CORE_LOAD_TIMEOUT_MS = 60000;
 
 let ffmpegReadyPromise = null;
 let ffmpeg = null;
