@@ -15,6 +15,8 @@ self.FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js');
 let ffmpegReadyPromise = null;
 let ffmpeg = null;
 let activeJobId = null;
+const canceledJobIds = new Set();
+const CANCELED_ERROR = '__CANCELED__';
 
 function postMessageSafe(type, payload = {}) {
   self.postMessage({ type, ...payload });
@@ -138,6 +140,29 @@ function cleanupFiles(inputName, outputName) {
 
 self.onmessage = async (event) => {
   const payload = event.data || {};
+  if (payload.type === 'cancel') {
+    if (activeJobId === null) {
+      postMessageSafe('canceled', { id: payload.id || null });
+      return;
+    }
+
+    const cancelId = activeJobId;
+    canceledJobIds.add(cancelId);
+    postMessageSafe('status', { code: 'canceling', id: cancelId });
+
+    if (ffmpeg && typeof ffmpeg.exit === 'function') {
+      try {
+        ffmpeg.exit();
+      } catch (error) {
+        // ignore, run loop will exit via catch path
+      }
+    }
+
+    ffmpeg = null;
+    ffmpegReadyPromise = null;
+    return;
+  }
+
   if (payload.type !== 'compress') {
     return;
   }
@@ -159,6 +184,10 @@ self.onmessage = async (event) => {
 
   try {
     await ensureFfmpegLoaded();
+    if (canceledJobIds.has(requestId)) {
+      throw new Error(CANCELED_ERROR);
+    }
+
     postMessageSafe('status', { code: 'encoding', id: requestId });
 
     const inputBytes = new Uint8Array(payload.inputBuffer);
@@ -172,6 +201,10 @@ self.onmessage = async (event) => {
       channels: payload.channels,
       sampleRate: payload.sampleRate
     });
+
+    if (canceledJobIds.has(requestId)) {
+      throw new Error(CANCELED_ERROR);
+    }
 
     await ffmpeg.run(...command);
     const outputData = ffmpeg.FS('readFile', outputName);
@@ -196,11 +229,17 @@ self.onmessage = async (event) => {
     );
   } catch (error) {
     cleanupFiles(inputName, outputName);
-    postMessageSafe('error', {
-      id: requestId,
-      message: error && error.message ? error.message : String(error)
-    });
+    const errorMessage = error && error.message ? error.message : String(error);
+    if (canceledJobIds.has(requestId) || errorMessage === CANCELED_ERROR) {
+      postMessageSafe('canceled', { id: requestId });
+    } else {
+      postMessageSafe('error', {
+        id: requestId,
+        message: errorMessage
+      });
+    }
   } finally {
+    canceledJobIds.delete(requestId);
     if (activeJobId === requestId) {
       activeJobId = null;
     }

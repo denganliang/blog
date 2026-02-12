@@ -516,6 +516,7 @@
 
           <div class="btn-group">
             <button class="btn" id="compress-start-btn" onclick="startCompress()" disabled>开始压缩</button>
+            <button class="btn btn-secondary" id="compress-cancel-btn" onclick="cancelCompress()" disabled>取消</button>
             <button class="btn btn-secondary" onclick="resetCompressor()">重置</button>
             <a id="compress-download-link" class="btn" style="display:none; background:#10b981;" download>下载音频</a>
           </div>
@@ -1083,12 +1084,15 @@
           unsupportedFile: '请选择有效音频文件（wav/mp3/ogg/m4a/aac/flac）',
           chooseFile: '请先选择音频文件',
           compressingBtn: '压缩中...',
+          cancelingBtn: '取消中...',
+          cancelBtn: '取消',
           startBtn: '开始压缩',
           ratioLarger: '体积增大',
           selectedFile: '已选择',
           workerFailed: '浏览器不支持 Web Worker，无法本地压缩',
           aacCodecHint: '当前 ffmpeg.wasm 构建可能不支持 AAC 编码，请切换 MP3/OGG',
           busyHint: '已有压缩任务在进行，请等待完成后再试',
+          canceled: '已取消',
           errorPrefix: '错误: '
         }
       : {
@@ -1101,12 +1105,15 @@
           unsupportedFile: 'Please select a valid audio file (wav/mp3/ogg/m4a/aac/flac)',
           chooseFile: 'Please select an audio file first',
           compressingBtn: 'Compressing...',
+          cancelingBtn: 'Canceling...',
+          cancelBtn: 'Cancel',
           startBtn: 'Start Compress',
           ratioLarger: 'Larger by',
           selectedFile: 'Selected',
           workerFailed: 'Web Worker is not supported in this browser',
           aacCodecHint: 'This ffmpeg.wasm build may not support AAC encoding. Try MP3/OGG.',
           busyHint: 'Another compression task is still running. Please wait.',
+          canceled: 'Canceled',
           errorPrefix: 'Error: '
         };
 
@@ -1115,6 +1122,7 @@
     const compressFileInfo = document.getElementById('compress-file-info');
     const compressUploadText = document.getElementById('compress-upload-text');
     const compressStartBtn = document.getElementById('compress-start-btn');
+    const compressCancelBtn = document.getElementById('compress-cancel-btn');
     const compressDownloadLink = document.getElementById('compress-download-link');
     const compressResultContainer = document.getElementById('compress-result-container');
     const compressResultPlayer = document.getElementById('compress-result-player');
@@ -1137,6 +1145,7 @@
     let compressOutputUrl = null;
     let compressRequestId = null;
     let compressInProgress = false;
+    let compressCanceling = false;
     let compressProgressValue = 0;
 
     function escapeHtml(value) {
@@ -1207,6 +1216,7 @@
         compressFileInfo.style.display = 'none';
         compressFileInfo.innerHTML = '';
         compressStartBtn.disabled = true;
+        compressCancelBtn.disabled = true;
         compressInputSizeEl.textContent = '-';
         return;
       }
@@ -1224,6 +1234,7 @@
 
       compressInputSizeEl.textContent = formatSize(compressFile.size);
       compressStartBtn.disabled = compressInProgress;
+      compressCancelBtn.disabled = !compressInProgress;
     }
 
     function onCompressFormatChange() {
@@ -1245,8 +1256,11 @@
       compressWorker.onerror = (event) => {
         console.error(event);
         compressInProgress = false;
+        compressCanceling = false;
         compressStartBtn.disabled = !compressFile;
         compressStartBtn.textContent = compressorLocale.startBtn;
+        compressCancelBtn.disabled = true;
+        compressCancelBtn.textContent = compressorLocale.cancelBtn;
         setCompressError(event.message || 'Worker error');
       };
       return true;
@@ -1260,6 +1274,11 @@
           updateCompressStatus(compressorLocale.loadingRuntime, 5);
         } else if (message.code === 'loading-core') {
           updateCompressStatus(compressorLocale.loadingCore, 15);
+        } else if (message.code === 'canceling' && message.id === compressRequestId) {
+          compressCanceling = true;
+          compressCancelBtn.disabled = true;
+          compressCancelBtn.textContent = compressorLocale.cancelingBtn;
+          updateCompressStatus(compressorLocale.cancelingBtn, Math.max(5, compressProgressValue));
         } else if (message.code === 'encoding' && message.id === compressRequestId) {
           updateCompressStatus(compressorLocale.encoding, Math.max(25, compressProgressValue));
         }
@@ -1284,8 +1303,11 @@
           return;
         }
         compressInProgress = false;
+        compressCanceling = false;
         compressStartBtn.disabled = !compressFile;
         compressStartBtn.textContent = compressorLocale.startBtn;
+        compressCancelBtn.disabled = true;
+        compressCancelBtn.textContent = compressorLocale.cancelBtn;
         let errorMessage = message.message || 'Unknown error';
         if (compressOutputFormatEl.value === 'aac' && /unknown encoder|encoder .* not found/i.test(errorMessage)) {
           errorMessage = `${errorMessage}；${compressorLocale.aacCodecHint}`;
@@ -1294,6 +1316,22 @@
           errorMessage = compressorLocale.busyHint;
         }
         setCompressError(compressorLocale.errorPrefix + errorMessage);
+        return;
+      }
+
+      if (message.type === 'canceled') {
+        if (message.id && message.id !== compressRequestId) {
+          return;
+        }
+        compressInProgress = false;
+        compressCanceling = false;
+        compressRequestId = null;
+        compressStartBtn.disabled = !compressFile;
+        compressStartBtn.textContent = compressorLocale.startBtn;
+        compressCancelBtn.disabled = true;
+        compressCancelBtn.textContent = compressorLocale.cancelBtn;
+        updateCompressStatus(compressorLocale.canceled, 0);
+        compressLogText.textContent = '';
         return;
       }
 
@@ -1329,8 +1367,11 @@
         }
 
         compressInProgress = false;
+        compressCanceling = false;
         compressStartBtn.disabled = false;
         compressStartBtn.textContent = compressorLocale.startBtn;
+        compressCancelBtn.disabled = true;
+        compressCancelBtn.textContent = compressorLocale.cancelBtn;
         updateCompressStatus(compressorLocale.completed, 100);
       }
     }
@@ -1386,9 +1427,12 @@
       }
 
       compressInProgress = true;
+      compressCanceling = false;
       compressRequestId = Date.now();
       compressStartBtn.disabled = true;
       compressStartBtn.textContent = compressorLocale.compressingBtn;
+      compressCancelBtn.disabled = false;
+      compressCancelBtn.textContent = compressorLocale.cancelBtn;
       compressProgressContainer.style.display = 'block';
       clearCompressResult();
       setCompressError('');
@@ -1412,14 +1456,30 @@
         );
       } catch (error) {
         compressInProgress = false;
+        compressCanceling = false;
         compressStartBtn.disabled = false;
         compressStartBtn.textContent = compressorLocale.startBtn;
-        setCompressError('错误: ' + (error.message || String(error)));
+        compressCancelBtn.disabled = true;
+        compressCancelBtn.textContent = compressorLocale.cancelBtn;
+        setCompressError(compressorLocale.errorPrefix + (error.message || String(error)));
       }
+    }
+
+    function cancelCompress() {
+      if (!compressInProgress || !compressWorker || compressCanceling) {
+        return;
+      }
+
+      compressCanceling = true;
+      compressCancelBtn.disabled = true;
+      compressCancelBtn.textContent = compressorLocale.cancelingBtn;
+      updateCompressStatus(compressorLocale.cancelingBtn, Math.max(5, compressProgressValue));
+      compressWorker.postMessage({ type: 'cancel', id: compressRequestId });
     }
 
     function resetCompressor() {
       compressInProgress = false;
+      compressCanceling = false;
       compressRequestId = null;
       compressFile = null;
       clearCompressResult();
@@ -1430,6 +1490,8 @@
       updateCompressStatus(compressorLocale.waitingFile, 0);
       compressStartBtn.textContent = compressorLocale.startBtn;
       compressStartBtn.disabled = true;
+      compressCancelBtn.textContent = compressorLocale.cancelBtn;
+      compressCancelBtn.disabled = true;
     }
 
     if (compressDropZone) {
