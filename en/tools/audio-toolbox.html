@@ -365,6 +365,89 @@
       font-weight: 600;
     }
 
+    .trim-grid {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 1rem;
+    }
+
+    .trim-time-chip {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.9rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      margin-left: 0.5rem;
+    }
+
+    .trim-points-wrap {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+    }
+
+    .trim-point-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .trim-point-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 999px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      font-family: monospace;
+    }
+
+    .trim-point-tag button {
+      border: none;
+      background: transparent;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .trim-segments {
+      margin-top: 1rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .trim-segment-item {
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .trim-segment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .trim-empty {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .toolbox-header h1 {
@@ -415,6 +498,7 @@
       <div class="tab-nav">
         <button class="tab-btn active" data-tab="merge-tools" onclick="switchTab('merge-tools')">Audio Merger</button>
         <button class="tab-btn" data-tab="compress-tools" onclick="switchTab('compress-tools')">Audio Compressor</button>
+        <button class="tab-btn" data-tab="trim-tools" onclick="switchTab('trim-tools')">Cue Cut</button>
         <button class="tab-btn" data-tab="tts-tools" onclick="switchTab('tts-tools')">SRT to Audio</button>
       </div>
 
@@ -553,6 +637,64 @@
           </div>
 
           <div id="compress-error-msg" class="error"></div>
+        </div>
+      </div>
+
+      <div class="tool-panel" id="trim-tools">
+        <div class="tool-item">
+          <h3><span class="icon">🎯</span> Cue Cut (Trim / Split)</h3>
+
+          <div class="file-upload" id="trim-drop-zone" onclick="document.getElementById('trim-file-input').click()">
+            <input type="file" id="trim-file-input" accept="audio/*" onchange="handleTrimFileSelect(event)">
+            <div id="trim-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Click or drag audio file here</p>
+              <p class="hint">Set cue points to trim one section or split into segments. Fully local in browser.</p>
+            </div>
+            <div id="trim-file-info" class="file-list" style="display:none;"></div>
+          </div>
+
+          <div id="trim-player-wrap" class="audio-player-container" style="display:none;">
+            <h4>Cue Player <span class="trim-time-chip" id="trim-current-time">00:00.00</span></h4>
+            <audio id="trim-player" controls></audio>
+          </div>
+
+          <div class="trim-grid">
+            <div class="field-group">
+              <label for="trim-start">Start Time (s)</label>
+              <input id="trim-start" type="number" min="0" step="0.01" style="padding:0.55rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary); color:var(--text-primary);">
+            </div>
+            <div class="field-group">
+              <label for="trim-end">End Time (s)</label>
+              <input id="trim-end" type="number" min="0" step="0.01" style="padding:0.55rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary); color:var(--text-primary);">
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-secondary" id="trim-set-start-btn" onclick="setTrimBoundary('start')" disabled>Set Start</button>
+            <button class="btn btn-secondary" id="trim-set-end-btn" onclick="setTrimBoundary('end')" disabled>Set End</button>
+            <button class="btn" id="trim-cut-btn" onclick="cutTrimRange()" disabled>Trim Current Range</button>
+          </div>
+
+          <div class="trim-points-wrap">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+              <strong style="font-size:0.95rem;">Split Cue Points</strong>
+              <span class="hint" id="trim-duration-text">Duration: -</span>
+            </div>
+            <div class="btn-group" style="margin-top:0.5rem;">
+              <button class="btn" id="trim-add-point-btn" onclick="addTrimPoint()" disabled>Add Cue Point</button>
+              <button class="btn btn-secondary" id="trim-split-btn" onclick="splitByTrimPoints()" disabled>Split by Cue Points</button>
+              <button class="btn btn-secondary" id="trim-clear-points-btn" onclick="clearTrimPoints()" disabled>Clear Cue Points</button>
+            </div>
+            <div id="trim-point-list" class="trim-point-list"></div>
+            <p id="trim-point-empty" class="trim-empty">No cue points yet. Move playback and click “Add Cue Point”.</p>
+          </div>
+
+          <div class="trim-segments">
+            <h4 style="margin:0;">Export Segments</h4>
+            <div id="trim-segment-list"></div>
+          </div>
+
+          <div id="trim-error-msg" class="error"></div>
         </div>
       </div>
 
@@ -1510,6 +1652,398 @@
 
     onCompressFormatChange();
     resetCompressor();
+
+    // ==================== Cue Cut (WebAudio local) ====================
+    const trimLocale = document.documentElement.lang.startsWith('zh')
+      ? {
+          noFile: '请先上传音频文件',
+          invalidRange: '裁剪区间无效，请确保结束时间大于开始时间',
+          decodeFailed: '音频解析失败，请换一个文件重试',
+          trimDone: '裁剪完成',
+          splitDone: '分割完成',
+          startEndHint: '开始: ',
+          endHint: '结束: ',
+          durationText: '总时长：',
+          noPoints: '还没有打点，播放到目标时间后点“添加打点”。',
+          segmentLabel: '片段',
+          downloadLabel: '下载',
+          removeLabel: '移除',
+          currentText: '当前',
+          timeFormat: '秒',
+          atLeastOnePoint: '请至少添加一个打点后再分割'
+        }
+      : {
+          noFile: 'Please upload an audio file first',
+          invalidRange: 'Invalid range: end must be greater than start',
+          decodeFailed: 'Failed to decode audio. Please try another file.',
+          trimDone: 'Trim completed',
+          splitDone: 'Split completed',
+          startEndHint: 'Start: ',
+          endHint: 'End: ',
+          durationText: 'Duration: ',
+          noPoints: 'No cue points yet. Move playback and click “Add Cue Point”.',
+          segmentLabel: 'Segment',
+          downloadLabel: 'Download',
+          removeLabel: 'Remove',
+          currentText: 'Current',
+          timeFormat: 's',
+          atLeastOnePoint: 'Add at least one cue point before splitting'
+        };
+
+    const trimDropZone = document.getElementById('trim-drop-zone');
+    const trimFileInput = document.getElementById('trim-file-input');
+    const trimUploadText = document.getElementById('trim-upload-text');
+    const trimFileInfo = document.getElementById('trim-file-info');
+    const trimPlayerWrap = document.getElementById('trim-player-wrap');
+    const trimPlayer = document.getElementById('trim-player');
+    const trimCurrentTime = document.getElementById('trim-current-time');
+    const trimStartInput = document.getElementById('trim-start');
+    const trimEndInput = document.getElementById('trim-end');
+    const trimSetStartBtn = document.getElementById('trim-set-start-btn');
+    const trimSetEndBtn = document.getElementById('trim-set-end-btn');
+    const trimCutBtn = document.getElementById('trim-cut-btn');
+    const trimAddPointBtn = document.getElementById('trim-add-point-btn');
+    const trimSplitBtn = document.getElementById('trim-split-btn');
+    const trimClearPointsBtn = document.getElementById('trim-clear-points-btn');
+    const trimDurationText = document.getElementById('trim-duration-text');
+    const trimPointList = document.getElementById('trim-point-list');
+    const trimPointEmpty = document.getElementById('trim-point-empty');
+    const trimSegmentList = document.getElementById('trim-segment-list');
+    const trimErrorMsg = document.getElementById('trim-error-msg');
+
+    let trimSourceFile = null;
+    let trimSourceUrl = null;
+    let trimAudioContext = null;
+    let trimDecodedBuffer = null;
+    let trimCuePoints = [];
+    let trimSegmentUrls = [];
+
+    function formatTimeSec(value) {
+      const total = Number.isFinite(value) ? Math.max(0, value) : 0;
+      const m = Math.floor(total / 60);
+      const s = total - m * 60;
+      return `${String(m).padStart(2, '0')}:${s.toFixed(2).padStart(5, '0')}`;
+    }
+
+    function setTrimError(message) {
+      trimErrorMsg.textContent = message || '';
+    }
+
+    function clearTrimSegments() {
+      trimSegmentUrls.forEach((url) => URL.revokeObjectURL(url));
+      trimSegmentUrls = [];
+      trimSegmentList.innerHTML = '';
+    }
+
+    function updateTrimPointList() {
+      if (!trimPointList) return;
+      if (trimCuePoints.length === 0) {
+        trimPointList.innerHTML = '';
+        trimPointEmpty.style.display = 'block';
+        trimSplitBtn.disabled = true;
+        trimClearPointsBtn.disabled = true;
+        return;
+      }
+
+      trimPointEmpty.style.display = 'none';
+      trimSplitBtn.disabled = false;
+      trimClearPointsBtn.disabled = false;
+      trimPointList.innerHTML = trimCuePoints.map((point, index) => `
+        <span class="trim-point-tag">
+          ${formatTimeSec(point)}
+          <button type="button" onclick="removeTrimPoint(${index})" aria-label="${trimLocale.removeLabel}">×</button>
+        </span>
+      `).join('');
+    }
+
+    function updateTrimCurrentTime() {
+      if (!trimPlayer) return;
+      trimCurrentTime.textContent = formatTimeSec(trimPlayer.currentTime || 0);
+    }
+
+    function setTrimControlsEnabled(enabled) {
+      trimSetStartBtn.disabled = !enabled;
+      trimSetEndBtn.disabled = !enabled;
+      trimCutBtn.disabled = !enabled;
+      trimAddPointBtn.disabled = !enabled;
+      trimSplitBtn.disabled = !enabled || trimCuePoints.length === 0;
+      trimClearPointsBtn.disabled = !enabled || trimCuePoints.length === 0;
+      trimStartInput.disabled = !enabled;
+      trimEndInput.disabled = !enabled;
+    }
+
+    function renderTrimFileInfo() {
+      if (!trimSourceFile) {
+        trimUploadText.style.display = 'block';
+        trimFileInfo.style.display = 'none';
+        trimFileInfo.innerHTML = '';
+        trimPlayerWrap.style.display = 'none';
+        trimDurationText.textContent = `${trimLocale.durationText}-`;
+        setTrimControlsEnabled(false);
+        return;
+      }
+
+      trimUploadText.style.display = 'none';
+      trimFileInfo.style.display = 'block';
+      trimFileInfo.innerHTML = `
+        <div class="file-list-item">
+          <div class="file-info-group">
+            <span class="file-name">${escapeHtml(trimSourceFile.name)}</span>
+            <span class="file-meta">${formatSize(trimSourceFile.size)}</span>
+          </div>
+        </div>
+      `;
+      trimPlayerWrap.style.display = 'block';
+      setTrimControlsEnabled(true);
+    }
+
+    async function decodeTrimFile(file) {
+      try {
+        if (!trimAudioContext) {
+          trimAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const copied = arrayBuffer.slice(0);
+        trimDecodedBuffer = await trimAudioContext.decodeAudioData(copied);
+      } catch (error) {
+        trimDecodedBuffer = null;
+        throw error;
+      }
+    }
+
+    async function applyTrimFile(file) {
+      if (!file || !(file.type || '').startsWith('audio/')) {
+        setTrimError(trimLocale.noFile);
+        return;
+      }
+
+      setTrimError('');
+      clearTrimSegments();
+      trimCuePoints = [];
+      updateTrimPointList();
+
+      if (trimSourceUrl) {
+        URL.revokeObjectURL(trimSourceUrl);
+      }
+      trimSourceFile = file;
+      trimSourceUrl = URL.createObjectURL(file);
+      trimPlayer.src = trimSourceUrl;
+      trimPlayer.currentTime = 0;
+      updateTrimCurrentTime();
+
+      try {
+        await decodeTrimFile(file);
+      } catch (error) {
+        setTrimError(trimLocale.decodeFailed);
+        return;
+      }
+
+      const duration = trimDecodedBuffer ? trimDecodedBuffer.duration : 0;
+      trimDurationText.textContent = `${trimLocale.durationText}${formatTimeSec(duration)}`;
+      trimStartInput.value = '0';
+      trimEndInput.value = duration > 0 ? duration.toFixed(2) : '0';
+      renderTrimFileInfo();
+    }
+
+    function audioBufferToWavBlob(buffer, startSec, endSec) {
+      const sampleRate = buffer.sampleRate;
+      const channels = buffer.numberOfChannels;
+      const safeStart = Math.max(0, Math.min(startSec, buffer.duration));
+      const safeEnd = Math.max(safeStart, Math.min(endSec, buffer.duration));
+      const startOffset = Math.floor(safeStart * sampleRate);
+      const endOffset = Math.floor(safeEnd * sampleRate);
+      const length = Math.max(1, endOffset - startOffset);
+      const bytesPerSample = 2;
+      const blockAlign = channels * bytesPerSample;
+      const dataSize = length * blockAlign;
+      const wavBuffer = new ArrayBuffer(44 + dataSize);
+      const view = new DataView(wavBuffer);
+
+      function writeString(offset, text) {
+        for (let i = 0; i < text.length; i++) {
+          view.setUint8(offset + i, text.charCodeAt(i));
+        }
+      }
+
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, channels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * blockAlign, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true);
+      writeString(36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < length; i++) {
+        for (let channel = 0; channel < channels; channel++) {
+          const sample = buffer.getChannelData(channel)[startOffset + i] || 0;
+          const clamped = Math.max(-1, Math.min(1, sample));
+          const intSample = clamped < 0 ? clamped * 32768 : clamped * 32767;
+          view.setInt16(offset, intSample, true);
+          offset += 2;
+        }
+      }
+
+      return new Blob([wavBuffer], { type: 'audio/wav' });
+    }
+
+    function appendTrimSegment(blob, startSec, endSec, indexHint) {
+      const url = URL.createObjectURL(blob);
+      trimSegmentUrls.push(url);
+      const idx = indexHint || trimSegmentUrls.length;
+      const item = document.createElement('div');
+      item.className = 'trim-segment-item';
+      item.innerHTML = `
+        <div class="trim-segment-head">
+          <span>${trimLocale.segmentLabel} ${idx} · ${formatTimeSec(startSec)} - ${formatTimeSec(endSec)}</span>
+          <span>${formatSize(blob.size)}</span>
+        </div>
+        <audio controls src="${url}"></audio>
+        <div class="btn-group">
+          <a class="btn" href="${url}" download="segment_${idx}_${Math.round(startSec*100)/100}-${Math.round(endSec*100)/100}.wav">${trimLocale.downloadLabel}</a>
+        </div>
+      `;
+      trimSegmentList.appendChild(item);
+    }
+
+    function handleTrimFileSelect(event) {
+      const file = event.target && event.target.files ? event.target.files[0] : null;
+      if (file) {
+        applyTrimFile(file);
+      }
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+
+    function handleTrimDrop(event) {
+      const files = event.dataTransfer ? event.dataTransfer.files : null;
+      if (!files || files.length === 0) return;
+      const file = Array.from(files).find((f) => (f.type || '').startsWith('audio/'));
+      if (file) {
+        applyTrimFile(file);
+      }
+    }
+
+    function setTrimBoundary(which) {
+      if (!trimSourceFile) {
+        setTrimError(trimLocale.noFile);
+        return;
+      }
+      const current = trimPlayer.currentTime || 0;
+      if (which === 'start') {
+        trimStartInput.value = current.toFixed(2);
+      } else {
+        trimEndInput.value = current.toFixed(2);
+      }
+    }
+
+    function cutTrimRange() {
+      if (!trimDecodedBuffer) {
+        setTrimError(trimLocale.noFile);
+        return;
+      }
+      const start = Number(trimStartInput.value);
+      const end = Number(trimEndInput.value);
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+        setTrimError(trimLocale.invalidRange);
+        return;
+      }
+
+      setTrimError('');
+      clearTrimSegments();
+      const blob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
+      appendTrimSegment(blob, start, end, 1);
+    }
+
+    function addTrimPoint() {
+      if (!trimDecodedBuffer) {
+        setTrimError(trimLocale.noFile);
+        return;
+      }
+      const current = trimPlayer.currentTime || 0;
+      const rounded = Math.round(current * 100) / 100;
+      if (trimCuePoints.some((point) => Math.abs(point - rounded) < 0.01)) {
+        return;
+      }
+      trimCuePoints.push(rounded);
+      trimCuePoints.sort((a, b) => a - b);
+      updateTrimPointList();
+    }
+
+    function removeTrimPoint(index) {
+      trimCuePoints.splice(index, 1);
+      updateTrimPointList();
+    }
+
+    function clearTrimPoints() {
+      trimCuePoints = [];
+      updateTrimPointList();
+    }
+
+    function splitByTrimPoints() {
+      if (!trimDecodedBuffer) {
+        setTrimError(trimLocale.noFile);
+        return;
+      }
+      if (trimCuePoints.length === 0) {
+        setTrimError(trimLocale.atLeastOnePoint);
+        return;
+      }
+
+      setTrimError('');
+      clearTrimSegments();
+      const duration = trimDecodedBuffer.duration;
+      const points = [0, ...trimCuePoints.filter((p) => p > 0 && p < duration), duration]
+        .sort((a, b) => a - b);
+
+      let segmentIndex = 1;
+      for (let i = 0; i < points.length - 1; i++) {
+        const start = points[i];
+        const end = points[i + 1];
+        if (end - start < 0.02) continue;
+        const blob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
+        appendTrimSegment(blob, start, end, segmentIndex);
+        segmentIndex += 1;
+      }
+    }
+
+    if (trimPlayer) {
+      trimPlayer.addEventListener('timeupdate', updateTrimCurrentTime);
+    }
+
+    if (trimDropZone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+        trimDropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      ['dragenter', 'dragover'].forEach((eventName) => {
+        trimDropZone.addEventListener(eventName, () => trimDropZone.classList.add('drag-over'), false);
+      });
+
+      ['dragleave', 'drop'].forEach((eventName) => {
+        trimDropZone.addEventListener(eventName, () => trimDropZone.classList.remove('drag-over'), false);
+      });
+
+      trimDropZone.addEventListener('drop', handleTrimDrop, false);
+    }
+
+    window.handleTrimFileSelect = handleTrimFileSelect;
+    window.setTrimBoundary = setTrimBoundary;
+    window.cutTrimRange = cutTrimRange;
+    window.addTrimPoint = addTrimPoint;
+    window.removeTrimPoint = removeTrimPoint;
+    window.clearTrimPoints = clearTrimPoints;
+    window.splitByTrimPoints = splitByTrimPoints;
+
+    setTrimControlsEnabled(false);
+    updateTrimPointList();
 
     // ==================== Tab Switching ====================
     function switchTab(tabId) {
