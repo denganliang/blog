@@ -384,6 +384,10 @@
       return { id, category, name, rows: gridToRows(grid) };
     }
 
+    function makePatternRows(id, category, name, rows) {
+      return { id, category, name, rows };
+    }
+
     const patternCatalog = [
       makePattern('zodiac-dragon', 'zodiac', '生肖·龙腾', grid => {
         drawLine(grid, 2, 12, 4, 10, 3);
@@ -451,15 +455,24 @@
         paint(grid, 9, 9, 4);
         paint(grid, 8, 10, 3);
       }),
-      makePattern('zodiac-horse', 'zodiac', '生肖·骏马', grid => {
-        fillRect(grid, 6, 6, 5, 6, 2);
-        fillRect(grid, 9, 3, 2, 3, 2);
-        drawLine(grid, 6, 6, 5, 3, 1);
-        drawLine(grid, 6, 7, 5, 5, 1);
-        drawLine(grid, 11, 6, 13, 8, 3);
-        paint(grid, 9, 5, 4);
-        paint(grid, 10, 11, 3);
-      }),
+      makePatternRows('zodiac-horse', 'zodiac', '生肖·骏马', [
+        '0000000000000000',
+        '0000000330000000',
+        '0000003333000000',
+        '0000033223300000',
+        '0000032222230000',
+        '0000032211223000',
+        '0000032222222300',
+        '0000032222222230',
+        '0000032222222230',
+        '0000332222222300',
+        '0003322222223000',
+        '0003222222220000',
+        '0000322222200000',
+        '0000033333000000',
+        '0000003330000000',
+        '0000000300000000'
+      ]),
       makePattern('zodiac-goat', 'zodiac', '生肖·山羊', grid => {
         fillCircle(grid, 8, 9, 4, 2);
         drawLine(grid, 6, 6, 4, 2, 3);
@@ -585,18 +598,24 @@
         drawLine(grid, 6, 9, 8, 12, 4);
         drawLine(grid, 10, 9, 8, 12, 4);
       }),
-      makePattern('pet-cat', 'pet', '宠物·猫咪脸', grid => {
-        fillCircle(grid, 8, 9, 4, 2);
-        drawLine(grid, 5, 6, 6, 3, 2);
-        drawLine(grid, 6, 3, 7, 6, 2);
-        drawLine(grid, 9, 6, 10, 3, 2);
-        drawLine(grid, 10, 3, 11, 6, 2);
-        paint(grid, 7, 9, 4);
-        paint(grid, 9, 9, 4);
-        paint(grid, 8, 10, 1);
-        drawLine(grid, 5, 10, 3, 10, 3);
-        drawLine(grid, 11, 10, 13, 10, 3);
-      }),
+      makePatternRows('pet-cat', 'pet', '宠物·猫咪脸', [
+        '0000000000000000',
+        '0000002000020000',
+        '0000002200220000',
+        '0000022222220000',
+        '0000222222222000',
+        '0002222222222200',
+        '0022211221122220',
+        '0022211221122220',
+        '0022222222222220',
+        '0022211331122220',
+        '0002223333222200',
+        '0000222222222000',
+        '0000022222220000',
+        '0000002222220000',
+        '0000000222200000',
+        '0000000000000000'
+      ]),
       makePattern('pet-paw', 'pet', '宠物·爪印', grid => {
         fillCircle(grid, 8, 10, 3, 2);
         fillCircle(grid, 4, 5, 2, 2);
@@ -611,23 +630,42 @@
         drawLine(grid, 14, 6, 14, 10, 4);
         fillCircle(grid, 6, 8, 1, 5);
       }),
-      makePattern('pet-dog', 'pet', '宠物·小狗脸', grid => {
-        fillCircle(grid, 8, 9, 4, 2);
-        fillRect(grid, 3, 7, 2, 4, 3);
-        fillRect(grid, 11, 7, 2, 4, 3);
-        paint(grid, 7, 9, 4);
-        paint(grid, 9, 9, 4);
-        fillRect(grid, 7, 10, 3, 2, 1);
-        paint(grid, 8, 10, 4);
-      }),
-      makePattern('pet-bunny', 'pet', '宠物·兔兔', grid => {
-        fillRect(grid, 6, 2, 2, 5, 2);
-        fillRect(grid, 9, 2, 2, 5, 2);
-        fillCircle(grid, 8, 10, 4, 2);
-        paint(grid, 7, 9, 4);
-        paint(grid, 9, 9, 4);
-        paint(grid, 8, 10, 1);
-      }),
+      makePatternRows('pet-dog', 'pet', '宠物·小狗脸', [
+        '0000000000000000',
+        '0000020000200000',
+        '0000220000220000',
+        '0002222222220000',
+        '0022222222222200',
+        '0022211221122200',
+        '0022222222222200',
+        '0022221111222200',
+        '0002221331222000',
+        '0000223333220000',
+        '0000022222200000',
+        '0000002222000000',
+        '0000000000000000',
+        '0000000000000000',
+        '0000000000000000',
+        '0000000000000000'
+      ]),
+      makePatternRows('pet-bunny', 'pet', '宠物·兔兔', [
+        '0000000000000000',
+        '0000002200220000',
+        '0000002200220000',
+        '0000002200220000',
+        '0000002222220000',
+        '0000022222222000',
+        '0000222222222200',
+        '0002222111222220',
+        '0002222111222220',
+        '0002222222222220',
+        '0000222133122200',
+        '0000022333222000',
+        '0000002222220000',
+        '0000000222200000',
+        '0000000000000000',
+        '0000000000000000'
+      ]),
       makePattern('pet-turtle', 'pet', '宠物·乌龟', grid => {
         fillCircle(grid, 8, 9, 4, 3);
         fillCircle(grid, 8, 9, 2, 2);
@@ -645,16 +683,24 @@
         drawLine(grid, 7, 12, 6, 14, 3);
         drawLine(grid, 9, 12, 10, 14, 3);
       }),
-      makePattern('pet-hamster', 'pet', '宠物·仓鼠', grid => {
-        fillCircle(grid, 8, 9, 4, 2);
-        fillCircle(grid, 5, 6, 1, 2);
-        fillCircle(grid, 11, 6, 1, 2);
-        fillCircle(grid, 6, 11, 1, 1);
-        fillCircle(grid, 10, 11, 1, 1);
-        paint(grid, 7, 9, 4);
-        paint(grid, 9, 9, 4);
-        paint(grid, 8, 10, 1);
-      }),
+      makePatternRows('pet-hamster', 'pet', '宠物·仓鼠', [
+        '0000000000000000',
+        '0000000000000000',
+        '0000022000220000',
+        '0000222202220000',
+        '0002222222222000',
+        '0022222222222200',
+        '0022211221122200',
+        '0022222222222200',
+        '0022213331222200',
+        '0022223333222200',
+        '0002222222222000',
+        '0000222222220000',
+        '0000022222200000',
+        '0000002222000000',
+        '0000000000000000',
+        '0000000000000000'
+      ]),
       makePattern('art-heart', 'art', '艺术·心形', grid => {
         for (let y = 0; y < GRID_SIZE; y += 1) {
           for (let x = 0; x < GRID_SIZE; x += 1) {
