@@ -1,5 +1,9 @@
-self.FFMPEG_SCRIPT_URL = '/assets/vendor/ffmpeg/ffmpeg.min.js';
-self.FFMPEG_CORE_URL = '/assets/vendor/ffmpeg/ffmpeg-core.js';
+function resolveAssetUrl(path) {
+  return new URL(path, self.location.href).href;
+}
+
+self.FFMPEG_SCRIPT_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg.min.js');
+self.FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js');
 
 let ffmpegReadyPromise = null;
 let ffmpeg = null;
