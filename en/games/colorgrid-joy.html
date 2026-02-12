@@ -34,11 +34,38 @@
     }
 
     .game-actions {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .pattern-controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: center;
-      margin-bottom: 1rem;
+      gap: 0.65rem;
+      align-items: flex-end;
+    }
+
+    .pattern-field {
+      display: grid;
+      gap: 0.35rem;
+      min-width: 140px;
+    }
+
+    .pattern-label {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .pattern-select {
+      padding: 0.5rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      min-width: 150px;
     }
 
     .palette {
@@ -202,6 +229,17 @@
       <div class="game-shell">
         <section class="game-panel">
           <div class="game-actions">
+            <div class="pattern-controls">
+              <label class="pattern-field" for="category-select">
+                <span class="pattern-label">Theme</span>
+                <select id="category-select" class="pattern-select"></select>
+              </label>
+              <label class="pattern-field" for="pattern-select">
+                <span class="pattern-label">Pattern</span>
+                <select id="pattern-select" class="pattern-select"></select>
+              </label>
+              <button id="shuffle-btn" class="btn btn-secondary btn-sm" type="button">Random</button>
+            </div>
             <div class="palette" id="palette"></div>
             <div class="action-buttons">
               <button id="undo-btn" class="btn btn-secondary btn-sm" type="button">Undo</button>
@@ -215,6 +253,8 @@
             <div class="progress-text" id="progress-text">0 / 0</div>
           </div>
 
+          <div class="status-text" id="pattern-text">Current pattern: loading...</div>
+
           <div class="board-wrap">
             <div class="board" id="board" aria-label="ColorGrid Joy board"></div>
           </div>
@@ -224,6 +264,7 @@
 
         <section class="game-panel">
           <h2 style="font-size: 1.1rem; margin-bottom: 0.75rem;">How to play</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">0. Choose a theme (Zodiac, Constellation, Pets, Art).</p>
           <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">1. Pick a numbered color from the palette.</p>
           <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">2. Tap cells with the same number to fill them.</p>
           <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">3. Wrong taps flash red; use undo to step back.</p>
@@ -251,6 +292,7 @@
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
   <script>
+    const GRID_SIZE = 16;
     const colorMap = {
       1: '#ef4444',
       2: '#f59e0b',
@@ -259,40 +301,225 @@
       5: '#a855f7'
     };
 
-    const patternRows = [
-      '0000000000000000',
-      '0000003333000000',
-      '0000033333330000',
-      '0000332222330000',
-      '0003322222233000',
-      '0033221111223300',
-      '0332211111122330',
-      '0332214441122330',
-      '0332214441122330',
-      '0033221111223300',
-      '0003322222233000',
-      '0000332222330000',
-      '0000033333330000',
-      '0000003333000000',
-      '0000000000000000',
-      '0000005555000000'
+    const categoryOptions = [
+      { value: 'all', label: 'All Themes' },
+      { value: 'zodiac', label: 'Zodiac' },
+      { value: 'constellation', label: 'Constellation' },
+      { value: 'pet', label: 'Pets' },
+      { value: 'art', label: 'Art & Creative' }
     ];
 
-    const boardData = patternRows.join('').split('').map(number => Number(number));
+    function createGrid() {
+      return Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
+    }
+
+    function paint(grid, x, y, color) {
+      if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) {
+        return;
+      }
+      grid[y][x] = color;
+    }
+
+    function fillRect(grid, x, y, width, height, color) {
+      for (let row = y; row < y + height; row += 1) {
+        for (let column = x; column < x + width; column += 1) {
+          paint(grid, column, row, color);
+        }
+      }
+    }
+
+    function fillCircle(grid, centerX, centerY, radius, color) {
+      for (let row = centerY - radius; row <= centerY + radius; row += 1) {
+        for (let column = centerX - radius; column <= centerX + radius; column += 1) {
+          const distance = ((column - centerX) ** 2) + ((row - centerY) ** 2);
+          if (distance <= radius ** 2) {
+            paint(grid, column, row, color);
+          }
+        }
+      }
+    }
+
+    function drawLine(grid, startX, startY, endX, endY, color) {
+      let x = startX;
+      let y = startY;
+      const deltaX = Math.abs(endX - startX);
+      const stepX = startX < endX ? 1 : -1;
+      const deltaY = -Math.abs(endY - startY);
+      const stepY = startY < endY ? 1 : -1;
+      let error = deltaX + deltaY;
+
+      while (true) {
+        paint(grid, x, y, color);
+        if (x === endX && y === endY) {
+          break;
+        }
+
+        const doubled = 2 * error;
+        if (doubled >= deltaY) {
+          error += deltaY;
+          x += stepX;
+        }
+        if (doubled <= deltaX) {
+          error += deltaX;
+          y += stepY;
+        }
+      }
+    }
+
+    function drawStar(grid, x, y, color) {
+      paint(grid, x, y, color);
+      paint(grid, x - 1, y, color);
+      paint(grid, x + 1, y, color);
+      paint(grid, x, y - 1, color);
+      paint(grid, x, y + 1, color);
+    }
+
+    function gridToRows(grid) {
+      return grid.map(row => row.join(''));
+    }
+
+    function makePattern(id, category, name, drawFn) {
+      const grid = createGrid();
+      drawFn(grid);
+      return { id, category, name, rows: gridToRows(grid) };
+    }
+
+    const patternCatalog = [
+      makePattern('zodiac-dragon', 'zodiac', 'Zodiac · Dragon', grid => {
+        drawLine(grid, 2, 12, 4, 10, 3);
+        drawLine(grid, 4, 10, 6, 11, 3);
+        drawLine(grid, 6, 11, 8, 9, 3);
+        drawLine(grid, 8, 9, 10, 10, 3);
+        drawLine(grid, 10, 10, 12, 8, 3);
+        drawLine(grid, 12, 8, 13, 6, 3);
+        fillCircle(grid, 12, 5, 2, 3);
+        drawLine(grid, 11, 3, 10, 1, 1);
+        drawLine(grid, 13, 3, 14, 1, 1);
+        drawLine(grid, 3, 12, 11, 5, 2);
+        paint(grid, 13, 5, 4);
+        paint(grid, 14, 6, 1);
+      }),
+      makePattern('zodiac-rabbit', 'zodiac', 'Zodiac · Rabbit', grid => {
+        fillRect(grid, 5, 2, 2, 5, 2);
+        fillRect(grid, 9, 2, 2, 5, 2);
+        fillRect(grid, 6, 3, 1, 3, 1);
+        fillRect(grid, 9, 3, 1, 3, 1);
+        fillCircle(grid, 8, 10, 4, 2);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        paint(grid, 8, 10, 1);
+        drawLine(grid, 5, 10, 3, 9, 3);
+        drawLine(grid, 11, 10, 13, 9, 3);
+      }),
+      makePattern('zodiac-snake', 'zodiac', 'Zodiac · Snake', grid => {
+        drawLine(grid, 3, 3, 12, 3, 3);
+        drawLine(grid, 12, 3, 12, 7, 3);
+        drawLine(grid, 12, 7, 5, 7, 3);
+        drawLine(grid, 5, 7, 5, 11, 3);
+        drawLine(grid, 5, 11, 12, 11, 3);
+        fillCircle(grid, 12, 12, 2, 3);
+        paint(grid, 13, 11, 4);
+        drawLine(grid, 14, 12, 15, 13, 1);
+      }),
+      makePattern('const-orion', 'constellation', 'Constellation · Orion', grid => {
+        const stars = [[3, 3], [6, 5], [8, 7], [10, 9], [5, 11], [11, 11], [13, 4]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 3, 3, 6, 5, 4);
+        drawLine(grid, 6, 5, 8, 7, 4);
+        drawLine(grid, 8, 7, 10, 9, 4);
+        drawLine(grid, 10, 9, 11, 11, 4);
+        drawLine(grid, 8, 7, 5, 11, 4);
+        drawLine(grid, 6, 5, 13, 4, 4);
+      }),
+      makePattern('const-dipper', 'constellation', 'Constellation · Big Dipper', grid => {
+        const stars = [[2, 5], [4, 4], [6, 5], [8, 6], [10, 7], [12, 8], [13, 10]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 2, 5, 4, 4, 4);
+        drawLine(grid, 4, 4, 6, 5, 4);
+        drawLine(grid, 6, 5, 8, 6, 4);
+        drawLine(grid, 8, 6, 10, 7, 4);
+        drawLine(grid, 10, 7, 12, 8, 4);
+        drawLine(grid, 12, 8, 13, 10, 4);
+      }),
+      makePattern('pet-cat', 'pet', 'Pet · Cat Face', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        drawLine(grid, 5, 6, 6, 3, 2);
+        drawLine(grid, 6, 3, 7, 6, 2);
+        drawLine(grid, 9, 6, 10, 3, 2);
+        drawLine(grid, 10, 3, 11, 6, 2);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        paint(grid, 8, 10, 1);
+        drawLine(grid, 5, 10, 3, 10, 3);
+        drawLine(grid, 11, 10, 13, 10, 3);
+      }),
+      makePattern('pet-paw', 'pet', 'Pet · Paw Print', grid => {
+        fillCircle(grid, 8, 10, 3, 2);
+        fillCircle(grid, 4, 5, 2, 2);
+        fillCircle(grid, 7, 4, 2, 2);
+        fillCircle(grid, 10, 4, 2, 2);
+        fillCircle(grid, 13, 5, 2, 2);
+      }),
+      makePattern('pet-fish', 'pet', 'Pet · Small Fish', grid => {
+        fillCircle(grid, 8, 8, 4, 3);
+        drawLine(grid, 11, 8, 14, 6, 4);
+        drawLine(grid, 11, 8, 14, 10, 4);
+        drawLine(grid, 14, 6, 14, 10, 4);
+        fillCircle(grid, 6, 8, 1, 5);
+      }),
+      makePattern('art-heart', 'art', 'Art · Heart', grid => {
+        for (let y = 0; y < GRID_SIZE; y += 1) {
+          for (let x = 0; x < GRID_SIZE; x += 1) {
+            const normalizedX = (x - 7.5) / 7;
+            const normalizedY = (y - 7.5) / 7;
+            const value = ((normalizedX ** 2 + normalizedY ** 2 - 1) ** 3) - (normalizedX ** 2 * normalizedY ** 3);
+            if (value <= 0) {
+              paint(grid, x, y, 1);
+            }
+          }
+        }
+      }),
+      makePattern('art-butterfly', 'art', 'Art · Butterfly', grid => {
+        fillCircle(grid, 5, 6, 3, 4);
+        fillCircle(grid, 11, 6, 3, 4);
+        fillCircle(grid, 5, 10, 3, 5);
+        fillCircle(grid, 11, 10, 3, 5);
+        drawLine(grid, 8, 4, 8, 12, 2);
+        drawLine(grid, 8, 4, 6, 2, 1);
+        drawLine(grid, 8, 4, 10, 2, 1);
+      }),
+      makePattern('art-spiral', 'art', 'Art · Spiral', grid => {
+        for (let t = 0; t <= 22; t += 0.08) {
+          const radius = 0.22 * t;
+          const x = Math.round(8 + radius * Math.cos(t));
+          const y = Math.round(8 + radius * Math.sin(t));
+          const color = (Math.floor(t / 2.8) % 5) + 1;
+          paint(grid, x, y, color);
+        }
+      })
+    ];
+
     const boardElement = document.getElementById('board');
     const paletteElement = document.getElementById('palette');
+    const categorySelectElement = document.getElementById('category-select');
+    const patternSelectElement = document.getElementById('pattern-select');
+    const shuffleButton = document.getElementById('shuffle-btn');
     const progressFillElement = document.getElementById('progress-fill');
     const progressTextElement = document.getElementById('progress-text');
+    const patternTextElement = document.getElementById('pattern-text');
     const statusTextElement = document.getElementById('status-text');
 
     const undoButton = document.getElementById('undo-btn');
     const hintButton = document.getElementById('hint-btn');
     const resetButton = document.getElementById('reset-btn');
 
-    const paintedState = new Array(boardData.length).fill(false);
+    let boardData = [];
+    let paintedState = [];
     const historyStack = [];
-    const paintableTotal = boardData.filter(number => number > 0).length;
+    let paintableTotal = 0;
     const paletteNumbers = Object.keys(colorMap).map(number => Number(number));
+    let currentCategory = 'all';
+    let currentPattern = patternCatalog[0];
     let activeColor = 1;
 
     function setStatus(text, done = false) {
@@ -300,12 +527,62 @@
       statusTextElement.classList.toggle('done', done);
     }
 
-    function setActiveColor(colorNumber) {
+    function setActiveColor(colorNumber, silent = false) {
       activeColor = colorNumber;
       document.querySelectorAll('.color-btn').forEach(button => {
         button.classList.toggle('active', Number(button.dataset.color) === colorNumber);
       });
-      setStatus(`Current color: #${colorNumber}. Keep painting.`);
+      if (!silent) {
+        setStatus(`Current color: #${colorNumber}. Keep painting.`);
+      }
+    }
+
+    function getFilteredPatterns() {
+      if (currentCategory === 'all') {
+        return patternCatalog;
+      }
+      return patternCatalog.filter(pattern => pattern.category === currentCategory);
+    }
+
+    function renderCategoryOptions() {
+      categorySelectElement.innerHTML = categoryOptions.map(option => `
+        <option value="${option.value}">${option.label}</option>
+      `).join('');
+      categorySelectElement.value = currentCategory;
+    }
+
+    function renderPatternOptions(preferredPatternId = currentPattern.id) {
+      const patterns = getFilteredPatterns();
+      patternSelectElement.innerHTML = patterns.map(pattern => `
+        <option value="${pattern.id}">${pattern.name}</option>
+      `).join('');
+
+      const selectedPattern = patterns.find(pattern => pattern.id === preferredPatternId) || patterns[0];
+      patternSelectElement.value = selectedPattern.id;
+      return selectedPattern;
+    }
+
+    function loadPattern(patternId, announce = true) {
+      const pattern = patternCatalog.find(item => item.id === patternId);
+      if (!pattern) {
+        return;
+      }
+
+      currentPattern = pattern;
+      boardData = pattern.rows.join('').split('').map(number => Number(number));
+      paintedState = new Array(boardData.length).fill(false);
+      paintableTotal = boardData.filter(number => number > 0).length;
+      historyStack.length = 0;
+      setActiveColor(1, true);
+      renderBoard();
+      updateProgress();
+      patternTextElement.textContent = `Current pattern: ${pattern.name}`;
+
+      if (announce) {
+        setStatus(`Switched to pattern: ${pattern.name}.`);
+      } else {
+        setStatus('Current color: #1. Let\'s start painting.');
+      }
     }
 
     function updateProgress() {
@@ -315,7 +592,7 @@
       progressTextElement.textContent = `${paintedCount} / ${paintableTotal}`;
 
       if (paintedCount === paintableTotal) {
-        setStatus('Great job! You completed the whole artwork.', true);
+        setStatus(`Great job! You completed "${currentPattern.name}".`, true);
       }
     }
 
@@ -413,7 +690,7 @@
       if (targetIndex === -1) {
         targetIndex = boardData.findIndex((targetNumber, index) => !paintedState[index] && targetNumber > 0);
         if (targetIndex !== -1) {
-          setActiveColor(boardData[targetIndex]);
+          setActiveColor(boardData[targetIndex], true);
         }
       }
 
@@ -431,21 +708,40 @@
     }
 
     function resetGame() {
-      paintedState.fill(false);
-      historyStack.length = 0;
-      setActiveColor(1);
-      renderBoard();
-      updateProgress();
-      setStatus('Game reset. Start again!');
+      loadPattern(currentPattern.id, false);
+      setStatus(`Reset "${currentPattern.name}". Start again!`);
+    }
+
+    function switchCategory(category) {
+      currentCategory = category;
+      const selectedPattern = renderPatternOptions(currentPattern.id);
+      loadPattern(selectedPattern.id, true);
+    }
+
+    function shufflePattern() {
+      const patterns = getFilteredPatterns();
+      if (patterns.length === 0) {
+        return;
+      }
+
+      const alternatives = patterns.filter(pattern => pattern.id !== currentPattern.id);
+      const candidates = alternatives.length > 0 ? alternatives : patterns;
+      const randomPattern = candidates[Math.floor(Math.random() * candidates.length)];
+      patternSelectElement.value = randomPattern.id;
+      loadPattern(randomPattern.id, true);
     }
 
     undoButton.addEventListener('click', undoLast);
     hintButton.addEventListener('click', showHint);
     resetButton.addEventListener('click', resetGame);
+    categorySelectElement.addEventListener('change', event => switchCategory(event.target.value));
+    patternSelectElement.addEventListener('change', event => loadPattern(event.target.value, true));
+    shuffleButton.addEventListener('click', shufflePattern);
 
     renderPalette();
-    renderBoard();
-    updateProgress();
+    renderCategoryOptions();
+    const initialPattern = renderPatternOptions(currentPattern.id);
+    loadPattern(initialPattern.id, false);
   </script>
 </body>
 </html>
