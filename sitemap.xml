@@ -236,6 +236,43 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/tools/markdown-editor.html"/>
   </url>
 
+  <!-- 游戏 -->
+  <url>
+    <loc>https://denganliang.com/games/</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/games/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/games/"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/games/</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/games/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/games/"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/games/colorgrid-joy.html</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/games/colorgrid-joy.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/games/colorgrid-joy.html"/>
+  </url>
+
+  <url>
+    <loc>https://denganliang.com/en/games/colorgrid-joy.html</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://denganliang.com/games/colorgrid-joy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://denganliang.com/en/games/colorgrid-joy.html"/>
+  </url>
+
   <!-- 博客 -->
   <url>
     <loc>https://denganliang.com/blog/</loc>

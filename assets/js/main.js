@@ -198,6 +198,35 @@
     });
   }
 
+  function initGamesMenuLink() {
+    const isEnglish = document.documentElement.lang.toLowerCase().startsWith('en');
+    const toolsHref = isEnglish ? '/en/tools/' : '/tools/';
+    const gamesHref = isEnglish ? '/en/games/' : '/games/';
+    const gamesLabel = isEnglish ? 'Games' : '游戏';
+
+    function appendLink(listElement) {
+      if (!listElement || listElement.querySelector(`a[href="${gamesHref}"]`)) {
+        return;
+      }
+
+      const listItem = document.createElement('li');
+      const anchor = document.createElement('a');
+      anchor.href = gamesHref;
+      anchor.textContent = gamesLabel;
+      listItem.appendChild(anchor);
+
+      const toolsAnchor = listElement.querySelector(`a[href="${toolsHref}"]`);
+      if (toolsAnchor && toolsAnchor.parentElement?.tagName === 'LI') {
+        toolsAnchor.parentElement.insertAdjacentElement('afterend', listItem);
+      } else {
+        listElement.appendChild(listItem);
+      }
+    }
+
+    appendLink(document.querySelector('.navbar-menu'));
+    appendLink(document.querySelector('.footer-links'));
+  }
+
   function initToolsCarousel() {
     const carousels = document.querySelectorAll('.tools-carousel');
     if (carousels.length === 0) return;
@@ -274,6 +303,7 @@
   }
 
   function init() {
+    initGamesMenuLink();
     initMobileMenu();
     initSmoothScroll();
     initNavbarScroll();

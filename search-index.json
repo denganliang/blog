@@ -334,5 +334,33 @@
     "excerpt_en": "Integrated audio merger tool. Supports batch upload and merge. Pure frontend processing for privacy.",
     "url": "/en/tools/audio-toolbox.html",
     "lang": "en"
+  },
+  {
+    "slug": "colorgrid-joy",
+    "title": "彩格乐涂",
+    "title_en": "ColorGrid Joy",
+    "date": "2026-02-12",
+    "category": "游戏",
+    "category_en": "Games",
+    "tags": ["数字填色", "益智游戏", "休闲游戏", "网页游戏"],
+    "tags_en": ["Color by Number", "Puzzle", "Relax", "Web Game"],
+    "excerpt": "轻松解压的数字填色网页小游戏。选择颜色编号并填满对应方格，支持撤销与提示。",
+    "excerpt_en": "A relaxing color-by-number web mini-game with undo and hints.",
+    "url": "/games/colorgrid-joy.html",
+    "lang": "zh"
+  },
+  {
+    "slug": "colorgrid-joy",
+    "title": "ColorGrid Joy",
+    "title_en": "ColorGrid Joy",
+    "date": "2026-02-12",
+    "category": "Games",
+    "category_en": "Games",
+    "tags": ["Color by Number", "Puzzle", "Relax", "Web Game"],
+    "tags_en": ["Color by Number", "Puzzle", "Relax", "Web Game"],
+    "excerpt": "A relaxing color-by-number web mini-game. Choose a color and fill matching cells with undo and hints.",
+    "excerpt_en": "A relaxing color-by-number web mini-game. Choose a color and fill matching cells with undo and hints.",
+    "url": "/en/games/colorgrid-joy.html",
+    "lang": "en"
   }
 ]

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Online Games - Fun web mini-games running fully in the browser.">
+  <meta name="keywords" content="online games, web games, color by number, ColorGrid Joy, puzzle games">
+  <title>Online Games - Deng Anliang</title>
+
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+  <link rel="stylesheet" href="/assets/css/themes.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/utilities.css">
+  <link rel="stylesheet" href="/assets/css/tools-layout.css">
+
+  <link rel="canonical" href="https://denganliang.com/en/games/">
+  <link rel="alternate" hreflang="zh" href="/games/">
+  <link rel="alternate" hreflang="en" href="/en/games/">
+  <link rel="alternate" hreflang="x-default" href="/games/">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/en/" class="navbar-logo">Deng Anliang</a>
+
+      <ul class="navbar-menu">
+        <li><a href="/en/">Home</a></li>
+        <li><a href="/en/about/">About</a></li>
+        <li><a href="/en/projects/">Projects</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
+        <li><a href="/en/games/">Games</a></li>
+        <li><a href="/en/blog/">Blog</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <button class="lang-toggle" aria-label="Switch language">中文</button>
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="tools-layout">
+        <aside class="tools-sidebar">
+          <div class="sidebar-section">
+            <div class="sidebar-title">Categories</div>
+            <ul class="sidebar-menu">
+              <li class="sidebar-menu-item">
+                <a href="#all" class="sidebar-menu-link active" data-category="all">All Games</a>
+              </li>
+              <li class="sidebar-menu-item">
+                <a href="#puzzle" class="sidebar-menu-link" data-category="puzzle">Puzzle</a>
+              </li>
+              <li class="sidebar-menu-item">
+                <a href="#relax" class="sidebar-menu-link" data-category="relax">Relax</a>
+              </li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="tools-content">
+          <div class="tools-header">
+            <h1>Online Games</h1>
+            <div class="tools-search search-box">
+              <input type="text" class="search-input" placeholder="Search games..." id="game-search">
+              <span class="search-icon">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+            Original and relaxing browser mini-games, fully frontend and deployable on static hosting like GitHub Pages.
+          </p>
+
+          <div class="grid grid-3" id="games-grid">
+            <div class="card tool-card" data-categories="puzzle,relax" data-keywords="colorgrid joy color by number pixel coloring relax">
+              <div class="tool-card-header">
+                <div class="tool-card-icon">🎨</div>
+                <div class="card-title">ColorGrid Joy</div>
+              </div>
+              <div class="card-description">
+                A relaxing color-by-number mini-game. Pick a color and tap matching cells to complete the pixel artwork with undo and hints.
+              </div>
+              <div style="margin: 0.5rem 0;">
+                <span class="tag-outline">Puzzle</span>
+                <span class="tag-outline">Relax</span>
+                <span class="tag-outline">Frontend Only</span>
+              </div>
+              <div class="card-footer">
+                <a href="/en/games/colorgrid-joy.html" class="btn btn-primary">Play</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <ul class="footer-links">
+        <li><a href="/en/about/">About</a></li>
+        <li><a href="/en/blog/">Blog</a></li>
+        <li><a href="/en/projects/">Projects</a></li>
+        <li><a href="/en/tools/">Tools</a></li>
+        <li><a href="/en/games/">Games</a></li>
+      </ul>
+      <p style="margin-bottom: 0.5rem;">Contact: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
+      <p>&copy; 2026 Deng Anliang. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script>
+    const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
+    const gameCards = document.querySelectorAll('.tool-card');
+    const gameSearch = document.getElementById('game-search');
+
+    function filterGames() {
+      const activeLink = document.querySelector('.sidebar-menu-link.active');
+      const category = activeLink.dataset.category;
+      const searchTerm = gameSearch.value.toLowerCase();
+
+      gameCards.forEach(card => {
+        const categories = card.dataset.categories.split(',');
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-description').textContent.toLowerCase();
+        const keywords = (card.dataset.keywords || '').toLowerCase();
+
+        const matchesCategory = category === 'all' || categories.includes(category);
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm) || keywords.includes(searchTerm);
+
+        card.style.display = matchesCategory && matchesSearch ? '' : 'none';
+      });
+    }
+
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        sidebarLinks.forEach(item => item.classList.remove('active'));
+        link.classList.add('active');
+        filterGames();
+      });
+    });
+
+    gameSearch.addEventListener('input', filterGames);
+  </script>
+</body>
+</html>
