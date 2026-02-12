@@ -307,6 +307,64 @@
       margin-top: 0.5rem;
     }
 
+    .compressor-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .field-group label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .field-group select {
+      padding: 0.55rem 0.6rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .field-group select:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .metric-grid {
+      margin-top: 1rem;
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .metric-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .metric-label {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric-value {
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .toolbox-header h1 {
@@ -356,6 +414,7 @@
       <!-- Tab Nav -->
       <div class="tab-nav">
         <button class="tab-btn active" data-tab="merge-tools" onclick="switchTab('merge-tools')">Audio Merger</button>
+        <button class="tab-btn" data-tab="compress-tools" onclick="switchTab('compress-tools')">Audio Compressor</button>
         <button class="tab-btn" data-tab="tts-tools" onclick="switchTab('tts-tools')">SRT to Audio</button>
       </div>
 
@@ -402,6 +461,97 @@
           </div>
 
           <div id="error-msg" class="error"></div>
+        </div>
+      </div>
+
+      <div class="tool-panel" id="compress-tools">
+        <div class="tool-item">
+          <h3><span class="icon">🗜️</span> Audio Compressor</h3>
+
+          <div class="file-upload" id="compress-drop-zone" onclick="document.getElementById('compress-file-input').click()">
+            <input type="file" id="compress-file-input" accept=".wav,.mp3,.ogg,.m4a,.aac,.flac,audio/*" onchange="handleCompressFileSelect(event)">
+            <div id="compress-upload-text">
+              <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Click or drag an audio file here</p>
+              <p class="hint">Input support: wav / mp3 / ogg / m4a / aac / flac (as many as possible)</p>
+            </div>
+            <div id="compress-file-info" class="file-list" style="display:none;"></div>
+          </div>
+
+          <div class="compressor-options">
+            <div class="field-group">
+              <label for="compress-output-format">Output Format</label>
+              <select id="compress-output-format" onchange="onCompressFormatChange()">
+                <option value="mp3">mp3</option>
+                <option value="ogg">ogg</option>
+                <option value="aac">aac</option>
+                <option value="wav">wav</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="compress-bitrate">Bitrate</label>
+              <select id="compress-bitrate">
+                <option value="64">64k</option>
+                <option value="96">96k</option>
+                <option value="128" selected>128k</option>
+                <option value="192">192k</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="compress-channels">Channels</label>
+              <select id="compress-channels">
+                <option value="mono">mono</option>
+                <option value="stereo" selected>stereo</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="compress-sample-rate">Sample Rate</label>
+              <select id="compress-sample-rate">
+                <option value="keep" selected>keep</option>
+                <option value="22050">22050</option>
+                <option value="32000">32000</option>
+                <option value="44100">44100</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="compress-start-btn" onclick="startCompress()" disabled>Start Compress</button>
+            <button class="btn btn-secondary" onclick="resetCompressor()">Reset</button>
+            <a id="compress-download-link" class="btn" style="display:none; background:#10b981;" download>Download Audio</a>
+          </div>
+
+          <div id="compress-progress-container" class="progress-container">
+            <div style="margin-bottom: 0.5rem; display:flex; justify-content:space-between;">
+              <span id="compress-status-text">Waiting for file</span>
+              <span id="compress-progress-text">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="compress-progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="compress-log-text" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-label">Input Size</div>
+              <div class="metric-value" id="compress-input-size">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Output Size</div>
+              <div class="metric-value" id="compress-output-size">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Compression Ratio</div>
+              <div class="metric-value" id="compress-ratio">-</div>
+            </div>
+          </div>
+
+          <div id="compress-result-container" class="audio-player-container">
+            <h4>Compressed Audio Preview</h4>
+            <audio id="compress-result-player" controls></audio>
+          </div>
+
+          <div id="compress-error-msg" class="error"></div>
         </div>
       </div>
 
@@ -909,6 +1059,384 @@
         } catch(e) {}
       }
     }
+
+    // ==================== Audio Compressor (Worker + ffmpeg.wasm) ====================
+    const COMPRESS_WORKER_URL = '/assets/js/audio-compress-worker.js';
+    const COMPRESS_ALLOWED_EXTENSIONS = new Set(['wav', 'mp3', 'ogg', 'm4a', 'aac', 'flac']);
+
+    const compressorLocale = document.documentElement.lang.startsWith('zh')
+      ? {
+          waitingFile: '等待文件',
+          loadingRuntime: '加载 FFmpeg 运行时...',
+          loadingCore: '加载 FFmpeg 核心...',
+          encoding: '正在编码...',
+          readingResult: '读取压缩结果...',
+          completed: '压缩完成',
+          unsupportedFile: '请选择有效音频文件（wav/mp3/ogg/m4a/aac/flac）',
+          chooseFile: '请先选择音频文件',
+          compressingBtn: '压缩中...',
+          startBtn: '开始压缩',
+          ratioLarger: '体积增大',
+          selectedFile: '已选择',
+          workerFailed: '浏览器不支持 Web Worker，无法本地压缩',
+          aacCodecHint: '当前 ffmpeg.wasm 构建可能不支持 AAC 编码，请切换 MP3/OGG',
+          errorPrefix: '错误: '
+        }
+      : {
+          waitingFile: 'Waiting for file',
+          loadingRuntime: 'Loading FFmpeg runtime...',
+          loadingCore: 'Loading FFmpeg core...',
+          encoding: 'Encoding...',
+          readingResult: 'Reading output...',
+          completed: 'Compression completed',
+          unsupportedFile: 'Please select a valid audio file (wav/mp3/ogg/m4a/aac/flac)',
+          chooseFile: 'Please select an audio file first',
+          compressingBtn: 'Compressing...',
+          startBtn: 'Start Compress',
+          ratioLarger: 'Larger by',
+          selectedFile: 'Selected',
+          workerFailed: 'Web Worker is not supported in this browser',
+          aacCodecHint: 'This ffmpeg.wasm build may not support AAC encoding. Try MP3/OGG.',
+          errorPrefix: 'Error: '
+        };
+
+    const compressDropZone = document.getElementById('compress-drop-zone');
+    const compressFileInput = document.getElementById('compress-file-input');
+    const compressFileInfo = document.getElementById('compress-file-info');
+    const compressUploadText = document.getElementById('compress-upload-text');
+    const compressStartBtn = document.getElementById('compress-start-btn');
+    const compressDownloadLink = document.getElementById('compress-download-link');
+    const compressResultContainer = document.getElementById('compress-result-container');
+    const compressResultPlayer = document.getElementById('compress-result-player');
+    const compressProgressContainer = document.getElementById('compress-progress-container');
+    const compressStatusText = document.getElementById('compress-status-text');
+    const compressProgressText = document.getElementById('compress-progress-text');
+    const compressProgressBar = document.getElementById('compress-progress-bar');
+    const compressLogText = document.getElementById('compress-log-text');
+    const compressErrorMsg = document.getElementById('compress-error-msg');
+    const compressInputSizeEl = document.getElementById('compress-input-size');
+    const compressOutputSizeEl = document.getElementById('compress-output-size');
+    const compressRatioEl = document.getElementById('compress-ratio');
+    const compressOutputFormatEl = document.getElementById('compress-output-format');
+    const compressBitrateEl = document.getElementById('compress-bitrate');
+    const compressChannelsEl = document.getElementById('compress-channels');
+    const compressSampleRateEl = document.getElementById('compress-sample-rate');
+
+    let compressWorker = null;
+    let compressFile = null;
+    let compressOutputUrl = null;
+    let compressRequestId = null;
+    let compressInProgress = false;
+    let compressProgressValue = 0;
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function getFileExtension(fileName) {
+      const index = fileName.lastIndexOf('.');
+      if (index === -1) {
+        return '';
+      }
+      return fileName.slice(index + 1).toLowerCase();
+    }
+
+    function getBaseName(fileName) {
+      const index = fileName.lastIndexOf('.');
+      if (index === -1) {
+        return fileName || 'audio';
+      }
+      return fileName.slice(0, index);
+    }
+
+    function isSupportedCompressFile(file) {
+      if (!file) return false;
+      const extension = getFileExtension(file.name || '');
+      if (COMPRESS_ALLOWED_EXTENSIONS.has(extension)) {
+        return true;
+      }
+      return typeof file.type === 'string' && file.type.startsWith('audio/');
+    }
+
+    function updateCompressStatus(text, percent) {
+      compressStatusText.textContent = text;
+      compressProgressValue = Math.max(0, Math.min(100, Math.round(percent)));
+      compressProgressText.textContent = compressProgressValue + '%';
+      compressProgressBar.style.width = compressProgressValue + '%';
+    }
+
+    function setCompressError(message) {
+      compressErrorMsg.textContent = message || '';
+    }
+
+    function revokeCompressOutputUrl() {
+      if (compressOutputUrl) {
+        URL.revokeObjectURL(compressOutputUrl);
+        compressOutputUrl = null;
+      }
+    }
+
+    function clearCompressResult() {
+      revokeCompressOutputUrl();
+      compressDownloadLink.style.display = 'none';
+      compressDownloadLink.removeAttribute('href');
+      compressResultPlayer.src = '';
+      compressResultContainer.style.display = 'none';
+      compressOutputSizeEl.textContent = '-';
+      compressRatioEl.textContent = '-';
+    }
+
+    function renderCompressFileInfo() {
+      if (!compressFile) {
+        compressUploadText.style.display = 'block';
+        compressFileInfo.style.display = 'none';
+        compressFileInfo.innerHTML = '';
+        compressStartBtn.disabled = true;
+        compressInputSizeEl.textContent = '-';
+        return;
+      }
+
+      compressUploadText.style.display = 'none';
+      compressFileInfo.style.display = 'block';
+      compressFileInfo.innerHTML = `
+        <div class="file-list-item">
+          <div class="file-info-group">
+            <span class="file-name">${escapeHtml(compressFile.name)}</span>
+            <span class="file-meta">${formatSize(compressFile.size)}</span>
+          </div>
+        </div>
+      `;
+
+      compressInputSizeEl.textContent = formatSize(compressFile.size);
+      compressStartBtn.disabled = compressInProgress;
+    }
+
+    function onCompressFormatChange() {
+      const isWav = compressOutputFormatEl.value === 'wav';
+      compressBitrateEl.disabled = isWav;
+    }
+
+    function ensureCompressWorker() {
+      if (compressWorker) {
+        return true;
+      }
+      if (typeof Worker === 'undefined') {
+        setCompressError(compressorLocale.workerFailed);
+        return false;
+      }
+
+      compressWorker = new Worker(COMPRESS_WORKER_URL);
+      compressWorker.onmessage = onCompressWorkerMessage;
+      compressWorker.onerror = (event) => {
+        console.error(event);
+        compressInProgress = false;
+        compressStartBtn.disabled = !compressFile;
+        compressStartBtn.textContent = compressorLocale.startBtn;
+        setCompressError((event && event.message) || 'Worker error');
+      };
+      return true;
+    }
+
+    function onCompressWorkerMessage(event) {
+      const message = event.data || {};
+
+      if (message.type === 'status') {
+        if (message.code === 'loading-runtime') {
+          updateCompressStatus(compressorLocale.loadingRuntime, 5);
+        } else if (message.code === 'loading-core') {
+          updateCompressStatus(compressorLocale.loadingCore, 15);
+        } else if (message.code === 'encoding' && message.id === compressRequestId) {
+          updateCompressStatus(compressorLocale.encoding, Math.max(25, compressProgressValue));
+        }
+        return;
+      }
+
+      if (message.type === 'progress') {
+        if (!compressInProgress) return;
+        const ratio = typeof message.ratio === 'number' ? message.ratio : 0;
+        const percent = Math.max(compressProgressValue, Math.round(25 + Math.min(1, Math.max(0, ratio)) * 70));
+        updateCompressStatus(compressorLocale.encoding, percent);
+        return;
+      }
+
+      if (message.type === 'log') {
+        compressLogText.textContent = message.message || '';
+        return;
+      }
+
+      if (message.type === 'error') {
+        if (message.id && message.id !== compressRequestId) {
+          return;
+        }
+        compressInProgress = false;
+        compressStartBtn.disabled = !compressFile;
+        compressStartBtn.textContent = compressorLocale.startBtn;
+        let errorMessage = message.message || 'Unknown error';
+        if (compressOutputFormatEl.value === 'aac' && /unknown encoder|encoder .* not found/i.test(errorMessage)) {
+          errorMessage = `${errorMessage}; ${compressorLocale.aacCodecHint}`;
+        }
+        setCompressError(compressorLocale.errorPrefix + errorMessage);
+        return;
+      }
+
+      if (message.type === 'done') {
+        if (message.id !== compressRequestId || !compressFile) {
+          return;
+        }
+
+        updateCompressStatus(compressorLocale.readingResult, 98);
+
+        const blob = new Blob([message.outputBuffer], { type: message.mimeType || 'application/octet-stream' });
+        revokeCompressOutputUrl();
+        compressOutputUrl = URL.createObjectURL(blob);
+
+        const baseName = getBaseName(compressFile.name || 'audio');
+        const outputExt = message.outputFormat || compressOutputFormatEl.value || 'mp3';
+
+        compressDownloadLink.href = compressOutputUrl;
+        compressDownloadLink.download = `${baseName}_compressed.${outputExt}`;
+        compressDownloadLink.style.display = 'inline-block';
+
+        compressResultPlayer.src = compressOutputUrl;
+        compressResultContainer.style.display = 'block';
+
+        compressOutputSizeEl.textContent = formatSize(blob.size);
+        if (compressFile.size > 0) {
+          const ratio = (1 - blob.size / compressFile.size) * 100;
+          compressRatioEl.textContent = ratio >= 0
+            ? `${ratio.toFixed(1)}%`
+            : `${compressorLocale.ratioLarger} ${Math.abs(ratio).toFixed(1)}%`;
+        } else {
+          compressRatioEl.textContent = '-';
+        }
+
+        compressInProgress = false;
+        compressStartBtn.disabled = false;
+        compressStartBtn.textContent = compressorLocale.startBtn;
+        updateCompressStatus(compressorLocale.completed, 100);
+      }
+    }
+
+    function applyCompressFile(file) {
+      if (!file) return;
+      if (!isSupportedCompressFile(file)) {
+        setCompressError(compressorLocale.unsupportedFile);
+        return;
+      }
+
+      compressFile = file;
+      clearCompressResult();
+      setCompressError('');
+      compressLogText.textContent = `${compressorLocale.selectedFile}: ${file.name}`;
+      renderCompressFileInfo();
+    }
+
+    function handleCompressDrop(event) {
+      const files = event.dataTransfer ? event.dataTransfer.files : null;
+      if (!files || files.length === 0) {
+        return;
+      }
+
+      const file = Array.from(files).find(isSupportedCompressFile);
+      if (!file) {
+        setCompressError(compressorLocale.unsupportedFile);
+        return;
+      }
+
+      applyCompressFile(file);
+    }
+
+    function handleCompressFileSelect(event) {
+      const file = event.target && event.target.files ? event.target.files[0] : null;
+      if (file) {
+        applyCompressFile(file);
+      }
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+
+    async function startCompress() {
+      if (compressInProgress) return;
+      if (!compressFile) {
+        setCompressError(compressorLocale.chooseFile);
+        return;
+      }
+
+      if (!ensureCompressWorker()) {
+        return;
+      }
+
+      compressInProgress = true;
+      compressRequestId = Date.now();
+      compressStartBtn.disabled = true;
+      compressStartBtn.textContent = compressorLocale.compressingBtn;
+      compressProgressContainer.style.display = 'block';
+      clearCompressResult();
+      setCompressError('');
+      compressLogText.textContent = '';
+      updateCompressStatus(compressorLocale.loadingRuntime, 3);
+
+      try {
+        const inputBuffer = await compressFile.arrayBuffer();
+        compressWorker.postMessage(
+          {
+            type: 'compress',
+            id: compressRequestId,
+            inputName: compressFile.name,
+            inputBuffer,
+            outputFormat: compressOutputFormatEl.value,
+            bitrate: Number(compressBitrateEl.value),
+            channels: compressChannelsEl.value,
+            sampleRate: compressSampleRateEl.value
+          },
+          [inputBuffer]
+        );
+      } catch (error) {
+        compressInProgress = false;
+        compressStartBtn.disabled = false;
+        compressStartBtn.textContent = compressorLocale.startBtn;
+        setCompressError(compressorLocale.errorPrefix + (error.message || String(error)));
+      }
+    }
+
+    function resetCompressor() {
+      compressInProgress = false;
+      compressRequestId = null;
+      compressFile = null;
+      clearCompressResult();
+      renderCompressFileInfo();
+      compressLogText.textContent = '';
+      setCompressError('');
+      compressProgressContainer.style.display = 'none';
+      updateCompressStatus(compressorLocale.waitingFile, 0);
+      compressStartBtn.textContent = compressorLocale.startBtn;
+      compressStartBtn.disabled = true;
+    }
+
+    if (compressDropZone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+        compressDropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      ['dragenter', 'dragover'].forEach((eventName) => {
+        compressDropZone.addEventListener(eventName, () => compressDropZone.classList.add('drag-over'), false);
+      });
+
+      ['dragleave', 'drop'].forEach((eventName) => {
+        compressDropZone.addEventListener(eventName, () => compressDropZone.classList.remove('drag-over'), false);
+      });
+
+      compressDropZone.addEventListener('drop', handleCompressDrop, false);
+    }
+
+    onCompressFormatChange();
+    resetCompressor();
 
     // ==================== Tab Switching ====================
     function switchTab(tabId) {
