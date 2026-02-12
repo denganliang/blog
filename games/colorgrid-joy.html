@@ -421,6 +421,94 @@
         paint(grid, 13, 11, 4);
         drawLine(grid, 14, 12, 15, 13, 1);
       }),
+      makePattern('zodiac-rat', 'zodiac', '生肖·灵鼠', grid => {
+        fillCircle(grid, 8, 9, 3, 2);
+        fillCircle(grid, 6, 6, 1, 2);
+        fillCircle(grid, 10, 6, 1, 2);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        paint(grid, 8, 10, 1);
+        drawLine(grid, 11, 10, 14, 12, 3);
+      }),
+      makePattern('zodiac-ox', 'zodiac', '生肖·牛劲', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        drawLine(grid, 5, 6, 2, 3, 3);
+        drawLine(grid, 11, 6, 14, 3, 3);
+        paint(grid, 6, 8, 4);
+        paint(grid, 10, 8, 4);
+        fillRect(grid, 7, 10, 3, 2, 1);
+        paint(grid, 7, 10, 4);
+        paint(grid, 9, 10, 4);
+      }),
+      makePattern('zodiac-tiger', 'zodiac', '生肖·虎啸', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        fillCircle(grid, 5, 5, 1, 2);
+        fillCircle(grid, 11, 5, 1, 2);
+        drawLine(grid, 8, 5, 8, 8, 1);
+        drawLine(grid, 6, 6, 5, 8, 1);
+        drawLine(grid, 10, 6, 11, 8, 1);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        paint(grid, 8, 10, 3);
+      }),
+      makePattern('zodiac-horse', 'zodiac', '生肖·骏马', grid => {
+        fillRect(grid, 6, 6, 5, 6, 2);
+        fillRect(grid, 9, 3, 2, 3, 2);
+        drawLine(grid, 6, 6, 5, 3, 1);
+        drawLine(grid, 6, 7, 5, 5, 1);
+        drawLine(grid, 11, 6, 13, 8, 3);
+        paint(grid, 9, 5, 4);
+        paint(grid, 10, 11, 3);
+      }),
+      makePattern('zodiac-goat', 'zodiac', '生肖·山羊', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        drawLine(grid, 6, 6, 4, 2, 3);
+        drawLine(grid, 10, 6, 12, 2, 3);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        drawLine(grid, 8, 11, 8, 13, 1);
+        drawLine(grid, 8, 13, 7, 14, 1);
+        drawLine(grid, 8, 13, 9, 14, 1);
+      }),
+      makePattern('zodiac-monkey', 'zodiac', '生肖·灵猴', grid => {
+        fillCircle(grid, 8, 9, 3, 2);
+        fillCircle(grid, 4, 9, 2, 3);
+        fillCircle(grid, 12, 9, 2, 3);
+        fillCircle(grid, 8, 9, 2, 1);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        drawLine(grid, 7, 11, 9, 11, 3);
+      }),
+      makePattern('zodiac-rooster', 'zodiac', '生肖·金鸡', grid => {
+        fillCircle(grid, 7, 9, 3, 2);
+        drawLine(grid, 9, 8, 12, 6, 4);
+        drawLine(grid, 9, 9, 13, 9, 4);
+        drawLine(grid, 9, 10, 12, 12, 4);
+        fillCircle(grid, 6, 5, 1, 1);
+        fillCircle(grid, 7, 4, 1, 1);
+        fillCircle(grid, 8, 5, 1, 1);
+        drawLine(grid, 4, 9, 2, 9, 2);
+        paint(grid, 6, 9, 4);
+      }),
+      makePattern('zodiac-dog', 'zodiac', '生肖·瑞犬', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        fillRect(grid, 3, 7, 2, 4, 3);
+        fillRect(grid, 11, 7, 2, 4, 3);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        fillRect(grid, 7, 10, 3, 2, 1);
+        paint(grid, 8, 10, 4);
+      }),
+      makePattern('zodiac-pig', 'zodiac', '生肖·福猪', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        fillCircle(grid, 6, 6, 1, 2);
+        fillCircle(grid, 10, 6, 1, 2);
+        fillRect(grid, 6, 10, 4, 2, 1);
+        paint(grid, 7, 10, 4);
+        paint(grid, 8, 10, 4);
+        paint(grid, 7, 8, 4);
+        paint(grid, 9, 8, 4);
+      }),
       makePattern('const-orion', 'constellation', '星座·猎户座', grid => {
         const stars = [[3, 3], [6, 5], [8, 7], [10, 9], [5, 11], [11, 11], [13, 4]];
         stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
@@ -440,6 +528,62 @@
         drawLine(grid, 8, 6, 10, 7, 4);
         drawLine(grid, 10, 7, 12, 8, 4);
         drawLine(grid, 12, 8, 13, 10, 4);
+      }),
+      makePattern('const-cassiopeia', 'constellation', '星座·仙后座', grid => {
+        const stars = [[2, 8], [5, 5], [8, 8], [11, 5], [14, 8]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 2, 8, 5, 5, 4);
+        drawLine(grid, 5, 5, 8, 8, 4);
+        drawLine(grid, 8, 8, 11, 5, 4);
+        drawLine(grid, 11, 5, 14, 8, 4);
+      }),
+      makePattern('const-scorpio', 'constellation', '星座·天蝎座', grid => {
+        const stars = [[3, 4], [5, 6], [7, 8], [9, 10], [11, 11], [13, 10], [14, 8]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 3, 4, 5, 6, 4);
+        drawLine(grid, 5, 6, 7, 8, 4);
+        drawLine(grid, 7, 8, 9, 10, 4);
+        drawLine(grid, 9, 10, 11, 11, 4);
+        drawLine(grid, 11, 11, 13, 10, 4);
+        drawLine(grid, 13, 10, 14, 8, 4);
+      }),
+      makePattern('const-leo', 'constellation', '星座·狮子座', grid => {
+        const stars = [[3, 9], [5, 7], [7, 6], [10, 6], [12, 8], [13, 11]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 3, 9, 5, 7, 4);
+        drawLine(grid, 5, 7, 7, 6, 4);
+        drawLine(grid, 7, 6, 10, 6, 4);
+        drawLine(grid, 10, 6, 12, 8, 4);
+        drawLine(grid, 12, 8, 13, 11, 4);
+      }),
+      makePattern('const-taurus', 'constellation', '星座·金牛座', grid => {
+        const stars = [[4, 4], [6, 6], [8, 8], [10, 6], [12, 4], [8, 11]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 4, 4, 6, 6, 4);
+        drawLine(grid, 6, 6, 8, 8, 4);
+        drawLine(grid, 8, 8, 10, 6, 4);
+        drawLine(grid, 10, 6, 12, 4, 4);
+        drawLine(grid, 8, 8, 8, 11, 4);
+      }),
+      makePattern('const-gemini', 'constellation', '星座·双子座', grid => {
+        const stars = [[4, 4], [4, 8], [4, 12], [11, 4], [11, 8], [11, 12], [7, 6], [8, 10]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 4, 4, 4, 12, 4);
+        drawLine(grid, 11, 4, 11, 12, 4);
+        drawLine(grid, 4, 4, 11, 4, 4);
+        drawLine(grid, 4, 12, 11, 12, 4);
+        drawLine(grid, 4, 8, 11, 8, 4);
+      }),
+      makePattern('const-lyra', 'constellation', '星座·天琴座', grid => {
+        const stars = [[5, 5], [8, 4], [11, 5], [10, 9], [6, 9], [8, 12]];
+        stars.forEach(([x, y]) => drawStar(grid, x, y, 5));
+        drawLine(grid, 5, 5, 8, 4, 4);
+        drawLine(grid, 8, 4, 11, 5, 4);
+        drawLine(grid, 11, 5, 10, 9, 4);
+        drawLine(grid, 10, 9, 6, 9, 4);
+        drawLine(grid, 6, 9, 5, 5, 4);
+        drawLine(grid, 6, 9, 8, 12, 4);
+        drawLine(grid, 10, 9, 8, 12, 4);
       }),
       makePattern('pet-cat', 'pet', '宠物·猫咪脸', grid => {
         fillCircle(grid, 8, 9, 4, 2);
@@ -466,6 +610,50 @@
         drawLine(grid, 11, 8, 14, 10, 4);
         drawLine(grid, 14, 6, 14, 10, 4);
         fillCircle(grid, 6, 8, 1, 5);
+      }),
+      makePattern('pet-dog', 'pet', '宠物·小狗脸', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        fillRect(grid, 3, 7, 2, 4, 3);
+        fillRect(grid, 11, 7, 2, 4, 3);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        fillRect(grid, 7, 10, 3, 2, 1);
+        paint(grid, 8, 10, 4);
+      }),
+      makePattern('pet-bunny', 'pet', '宠物·兔兔', grid => {
+        fillRect(grid, 6, 2, 2, 5, 2);
+        fillRect(grid, 9, 2, 2, 5, 2);
+        fillCircle(grid, 8, 10, 4, 2);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        paint(grid, 8, 10, 1);
+      }),
+      makePattern('pet-turtle', 'pet', '宠物·乌龟', grid => {
+        fillCircle(grid, 8, 9, 4, 3);
+        fillCircle(grid, 8, 9, 2, 2);
+        fillCircle(grid, 8, 4, 1, 2);
+        fillCircle(grid, 4, 9, 1, 2);
+        fillCircle(grid, 12, 9, 1, 2);
+        fillCircle(grid, 6, 13, 1, 2);
+        fillCircle(grid, 10, 13, 1, 2);
+      }),
+      makePattern('pet-bird', 'pet', '宠物·小鸟', grid => {
+        fillCircle(grid, 8, 9, 3, 2);
+        drawLine(grid, 10, 8, 13, 8, 1);
+        drawLine(grid, 13, 8, 11, 9, 1);
+        fillCircle(grid, 7, 9, 1, 4);
+        drawLine(grid, 7, 12, 6, 14, 3);
+        drawLine(grid, 9, 12, 10, 14, 3);
+      }),
+      makePattern('pet-hamster', 'pet', '宠物·仓鼠', grid => {
+        fillCircle(grid, 8, 9, 4, 2);
+        fillCircle(grid, 5, 6, 1, 2);
+        fillCircle(grid, 11, 6, 1, 2);
+        fillCircle(grid, 6, 11, 1, 1);
+        fillCircle(grid, 10, 11, 1, 1);
+        paint(grid, 7, 9, 4);
+        paint(grid, 9, 9, 4);
+        paint(grid, 8, 10, 1);
       }),
       makePattern('art-heart', 'art', '艺术·心形', grid => {
         for (let y = 0; y < GRID_SIZE; y += 1) {
@@ -495,6 +683,50 @@
           const y = Math.round(8 + radius * Math.sin(t));
           const color = (Math.floor(t / 2.8) % 5) + 1;
           paint(grid, x, y, color);
+        }
+      }),
+      makePattern('art-snowflake', 'art', '艺术·雪花', grid => {
+        drawLine(grid, 8, 2, 8, 13, 4);
+        drawLine(grid, 2, 8, 13, 8, 4);
+        drawLine(grid, 3, 3, 12, 12, 4);
+        drawLine(grid, 12, 3, 3, 12, 4);
+        fillCircle(grid, 8, 8, 1, 5);
+      }),
+      makePattern('art-kite', 'art', '艺术·风筝', grid => {
+        drawLine(grid, 8, 2, 13, 8, 2);
+        drawLine(grid, 13, 8, 8, 13, 3);
+        drawLine(grid, 8, 13, 3, 8, 4);
+        drawLine(grid, 3, 8, 8, 2, 5);
+        drawLine(grid, 8, 13, 10, 15, 1);
+        drawLine(grid, 10, 15, 12, 14, 1);
+      }),
+      makePattern('art-lotus', 'art', '艺术·莲花', grid => {
+        fillCircle(grid, 8, 9, 2, 2);
+        fillCircle(grid, 8, 6, 2, 1);
+        fillCircle(grid, 5, 8, 2, 4);
+        fillCircle(grid, 11, 8, 2, 4);
+        fillCircle(grid, 6, 11, 2, 3);
+        fillCircle(grid, 10, 11, 2, 3);
+      }),
+      makePattern('art-cube', 'art', '艺术·立方体', grid => {
+        drawLine(grid, 4, 6, 9, 3, 2);
+        drawLine(grid, 9, 3, 13, 6, 2);
+        drawLine(grid, 13, 6, 8, 9, 2);
+        drawLine(grid, 8, 9, 4, 6, 2);
+        drawLine(grid, 4, 6, 4, 11, 4);
+        drawLine(grid, 8, 9, 8, 14, 4);
+        drawLine(grid, 13, 6, 13, 11, 4);
+        drawLine(grid, 4, 11, 8, 14, 3);
+        drawLine(grid, 8, 14, 13, 11, 3);
+      }),
+      makePattern('art-wave', 'art', '艺术·流波', grid => {
+        for (let x = 1; x <= 14; x += 1) {
+          const y1 = Math.round(6 + Math.sin(x / 2) * 2);
+          const y2 = Math.round(9 + Math.sin((x / 2) + 1.4) * 2);
+          const y3 = Math.round(12 + Math.sin((x / 2) + 2.8) * 2);
+          paint(grid, x, y1, 2);
+          paint(grid, x, y2, 4);
+          paint(grid, x, y3, 5);
         }
       })
     ];
