@@ -667,6 +667,24 @@
               <label for="trim-end">End Time (s)</label>
               <input id="trim-end" type="number" min="0" step="0.01" style="padding:0.55rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary); color:var(--text-primary);">
             </div>
+            <div class="field-group">
+              <label for="trim-output-format">Output Format</label>
+              <select id="trim-output-format" onchange="onTrimFormatChange()">
+                <option value="mp3">mp3</option>
+                <option value="ogg">ogg</option>
+                <option value="aac">aac</option>
+                <option value="wav">wav</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="trim-bitrate">Bitrate</label>
+              <select id="trim-bitrate">
+                <option value="64">64k</option>
+                <option value="96">96k</option>
+                <option value="128" selected>128k</option>
+                <option value="192">192k</option>
+              </select>
+            </div>
           </div>
 
           <div class="btn-group">
@@ -691,6 +709,7 @@
 
           <div class="trim-segments">
             <h4 style="margin:0;">Export Segments</h4>
+            <p id="trim-status-text" class="hint" style="margin:0;">Ready</p>
             <div id="trim-segment-list"></div>
           </div>
 
@@ -1670,7 +1689,11 @@
           removeLabel: '移除',
           currentText: '当前',
           timeFormat: '秒',
-          atLeastOnePoint: '请至少添加一个打点后再分割'
+          atLeastOnePoint: '请至少添加一个打点后再分割',
+          statusReady: '就绪',
+          statusEncoding: '正在编码片段',
+          statusDone: '导出完成',
+          formatHintAac: '当前 ffmpeg.wasm 可能不支持 AAC，请切换 MP3/OGG'
         }
       : {
           noFile: 'Please upload an audio file first',
@@ -1687,7 +1710,11 @@
           removeLabel: 'Remove',
           currentText: 'Current',
           timeFormat: 's',
-          atLeastOnePoint: 'Add at least one cue point before splitting'
+          atLeastOnePoint: 'Add at least one cue point before splitting',
+          statusReady: 'Ready',
+          statusEncoding: 'Encoding segment',
+          statusDone: 'Export completed',
+          formatHintAac: 'Current ffmpeg.wasm build may not support AAC. Try MP3/OGG.'
         };
 
     const trimDropZone = document.getElementById('trim-drop-zone');
@@ -1708,6 +1735,9 @@
     const trimDurationText = document.getElementById('trim-duration-text');
     const trimPointList = document.getElementById('trim-point-list');
     const trimPointEmpty = document.getElementById('trim-point-empty');
+    const trimOutputFormatEl = document.getElementById('trim-output-format');
+    const trimBitrateEl = document.getElementById('trim-bitrate');
+    const trimStatusText = document.getElementById('trim-status-text');
     const trimSegmentList = document.getElementById('trim-segment-list');
     const trimErrorMsg = document.getElementById('trim-error-msg');
 
@@ -1717,6 +1747,8 @@
     let trimDecodedBuffer = null;
     let trimCuePoints = [];
     let trimSegmentUrls = [];
+    let trimWorker = null;
+    let trimJobSeq = 0;
 
     function formatTimeSec(value) {
       const total = Number.isFinite(value) ? Math.max(0, value) : 0;
@@ -1727,6 +1759,23 @@
 
     function setTrimError(message) {
       trimErrorMsg.textContent = message || '';
+    }
+
+    function setTrimStatus(text) {
+      if (trimStatusText) {
+        trimStatusText.textContent = text || '';
+      }
+    }
+
+    function onTrimFormatChange() {
+      if (!trimOutputFormatEl || !trimBitrateEl) return;
+      trimBitrateEl.disabled = trimOutputFormatEl.value === 'wav';
+    }
+
+    function ensureTrimWorker() {
+      if (trimWorker) return trimWorker;
+      trimWorker = new Worker(COMPRESS_WORKER_URL);
+      return trimWorker;
     }
 
     function clearTrimSegments() {
@@ -1842,6 +1891,7 @@
       trimDurationText.textContent = `${trimLocale.durationText}${formatTimeSec(duration)}`;
       trimStartInput.value = '0';
       trimEndInput.value = duration > 0 ? duration.toFixed(2) : '0';
+      setTrimStatus(trimLocale.statusReady);
       renderTrimFileInfo();
     }
 
@@ -1893,10 +1943,11 @@
       return new Blob([wavBuffer], { type: 'audio/wav' });
     }
 
-    function appendTrimSegment(blob, startSec, endSec, indexHint) {
+    function appendTrimSegment(blob, startSec, endSec, indexHint, fileExt) {
       const url = URL.createObjectURL(blob);
       trimSegmentUrls.push(url);
       const idx = indexHint || trimSegmentUrls.length;
+      const ext = fileExt || 'wav';
       const item = document.createElement('div');
       item.className = 'trim-segment-item';
       item.innerHTML = `
@@ -1906,10 +1957,59 @@
         </div>
         <audio controls src="${url}"></audio>
         <div class="btn-group">
-          <a class="btn" href="${url}" download="segment_${idx}_${Math.round(startSec*100)/100}-${Math.round(endSec*100)/100}.wav">${trimLocale.downloadLabel}</a>
+          <a class="btn" href="${url}" download="segment_${idx}_${Math.round(startSec*100)/100}-${Math.round(endSec*100)/100}.${ext}">${trimLocale.downloadLabel}</a>
         </div>
       `;
       trimSegmentList.appendChild(item);
+    }
+
+    async function encodeTrimBlob(wavBlob, format, bitrate, idx) {
+      if (format === 'wav') {
+        return {
+          blob: wavBlob,
+          ext: 'wav'
+        };
+      }
+
+      const worker = ensureTrimWorker();
+      const id = ++trimJobSeq;
+      const inputBuffer = await wavBlob.arrayBuffer();
+      setTrimStatus(`${trimLocale.statusEncoding} ${idx}...`);
+
+      return new Promise((resolve, reject) => {
+        const onMessage = (event) => {
+          const message = event.data || {};
+          if (message.id !== id) return;
+
+          if (message.type === 'done') {
+            worker.removeEventListener('message', onMessage);
+            const outBlob = new Blob([message.outputBuffer], { type: message.mimeType || 'application/octet-stream' });
+            resolve({ blob: outBlob, ext: format });
+            return;
+          }
+
+          if (message.type === 'error') {
+            worker.removeEventListener('message', onMessage);
+            let msg = message.message || 'encode error';
+            if (format === 'aac' && /unknown encoder|encoder .* not found/i.test(msg)) {
+              msg = `${msg}; ${trimLocale.formatHintAac}`;
+            }
+            reject(new Error(msg));
+          }
+        };
+
+        worker.addEventListener('message', onMessage);
+        worker.postMessage({
+          type: 'compress',
+          id,
+          inputName: `trim_${id}.wav`,
+          inputBuffer,
+          outputFormat: format,
+          bitrate: Number(bitrate),
+          channels: 'stereo',
+          sampleRate: 'keep'
+        }, [inputBuffer]);
+      });
     }
 
     function handleTrimFileSelect(event) {
@@ -1944,7 +2044,7 @@
       }
     }
 
-    function cutTrimRange() {
+    async function cutTrimRange() {
       if (!trimDecodedBuffer) {
         setTrimError(trimLocale.noFile);
         return;
@@ -1958,8 +2058,18 @@
 
       setTrimError('');
       clearTrimSegments();
-      const blob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
-      appendTrimSegment(blob, start, end, 1);
+      setTrimStatus(trimLocale.statusEncoding);
+      try {
+        const wavBlob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
+        const format = trimOutputFormatEl.value;
+        const bitrate = trimBitrateEl.value;
+        const encoded = await encodeTrimBlob(wavBlob, format, bitrate, 1);
+        appendTrimSegment(encoded.blob, start, end, 1, encoded.ext);
+        setTrimStatus(trimLocale.statusDone);
+      } catch (error) {
+        setTrimError(trimLocale.errorPrefix ? trimLocale.errorPrefix + error.message : error.message);
+        setTrimStatus(trimLocale.statusReady);
+      }
     }
 
     function addTrimPoint() {
@@ -1987,7 +2097,7 @@
       updateTrimPointList();
     }
 
-    function splitByTrimPoints() {
+    async function splitByTrimPoints() {
       if (!trimDecodedBuffer) {
         setTrimError(trimLocale.noFile);
         return;
@@ -1999,18 +2109,28 @@
 
       setTrimError('');
       clearTrimSegments();
+      setTrimStatus(trimLocale.statusEncoding);
       const duration = trimDecodedBuffer.duration;
       const points = [0, ...trimCuePoints.filter((p) => p > 0 && p < duration), duration]
         .sort((a, b) => a - b);
 
       let segmentIndex = 1;
-      for (let i = 0; i < points.length - 1; i++) {
-        const start = points[i];
-        const end = points[i + 1];
-        if (end - start < 0.02) continue;
-        const blob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
-        appendTrimSegment(blob, start, end, segmentIndex);
-        segmentIndex += 1;
+      try {
+        for (let i = 0; i < points.length - 1; i++) {
+          const start = points[i];
+          const end = points[i + 1];
+          if (end - start < 0.02) continue;
+          const wavBlob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
+          const format = trimOutputFormatEl.value;
+          const bitrate = trimBitrateEl.value;
+          const encoded = await encodeTrimBlob(wavBlob, format, bitrate, segmentIndex);
+          appendTrimSegment(encoded.blob, start, end, segmentIndex, encoded.ext);
+          segmentIndex += 1;
+        }
+        setTrimStatus(trimLocale.statusDone);
+      } catch (error) {
+        setTrimError(trimLocale.errorPrefix ? trimLocale.errorPrefix + error.message : error.message);
+        setTrimStatus(trimLocale.statusReady);
       }
     }
 
@@ -2037,12 +2157,15 @@
     window.handleTrimFileSelect = handleTrimFileSelect;
     window.setTrimBoundary = setTrimBoundary;
     window.cutTrimRange = cutTrimRange;
+    window.onTrimFormatChange = onTrimFormatChange;
     window.addTrimPoint = addTrimPoint;
     window.removeTrimPoint = removeTrimPoint;
     window.clearTrimPoints = clearTrimPoints;
     window.splitByTrimPoints = splitByTrimPoints;
 
     setTrimControlsEnabled(false);
+    onTrimFormatChange();
+    setTrimStatus(trimLocale.statusReady);
     updateTrimPointList();
 
     // ==================== Tab Switching ====================
