@@ -1087,7 +1087,9 @@
           ratioLarger: '体积增大',
           selectedFile: '已选择',
           workerFailed: '浏览器不支持 Web Worker，无法本地压缩',
-          aacCodecHint: '当前 ffmpeg.wasm 构建可能不支持 AAC 编码，请切换 MP3/OGG'
+          aacCodecHint: '当前 ffmpeg.wasm 构建可能不支持 AAC 编码，请切换 MP3/OGG',
+          busyHint: '已有压缩任务在进行，请等待完成后再试',
+          errorPrefix: '错误: '
         }
       : {
           waitingFile: 'Waiting for file',
@@ -1103,7 +1105,9 @@
           ratioLarger: 'Larger by',
           selectedFile: 'Selected',
           workerFailed: 'Web Worker is not supported in this browser',
-          aacCodecHint: 'This ffmpeg.wasm build may not support AAC encoding. Try MP3/OGG.'
+          aacCodecHint: 'This ffmpeg.wasm build may not support AAC encoding. Try MP3/OGG.',
+          busyHint: 'Another compression task is still running. Please wait.',
+          errorPrefix: 'Error: '
         };
 
     const compressDropZone = document.getElementById('compress-drop-zone');
@@ -1286,7 +1290,10 @@
         if (compressOutputFormatEl.value === 'aac' && /unknown encoder|encoder .* not found/i.test(errorMessage)) {
           errorMessage = `${errorMessage}；${compressorLocale.aacCodecHint}`;
         }
-        setCompressError('错误: ' + errorMessage);
+        if (/another compression task is still running/i.test(errorMessage)) {
+          errorMessage = compressorLocale.busyHint;
+        }
+        setCompressError(compressorLocale.errorPrefix + errorMessage);
         return;
       }
 

@@ -14,6 +14,7 @@ self.FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js');
 
 let ffmpegReadyPromise = null;
 let ffmpeg = null;
+let activeJobId = null;
 
 function postMessageSafe(type, payload = {}) {
   self.postMessage({ type, ...payload });
@@ -43,7 +44,13 @@ function buildCommand({
   channels,
   sampleRate
 }) {
-  const args = ['-i', inputName];
+  const args = [
+    '-i', inputName,
+    '-map', '0:a:0',
+    '-vn',
+    '-sn',
+    '-dn'
+  ];
 
   if (channels === 'mono') {
     args.push('-ac', '1');
@@ -136,6 +143,15 @@ self.onmessage = async (event) => {
   }
 
   const requestId = payload.id || Date.now();
+  if (activeJobId !== null) {
+    postMessageSafe('error', {
+      id: requestId,
+      message: 'Another compression task is still running. Please wait.'
+    });
+    return;
+  }
+
+  activeJobId = requestId;
   const outputFormat = payload.outputFormat || 'mp3';
   const inputExtension = getExtension(payload.inputName || 'input.bin');
   const inputName = `input_${requestId}.${inputExtension}`;
@@ -184,5 +200,9 @@ self.onmessage = async (event) => {
       id: requestId,
       message: error && error.message ? error.message : String(error)
     });
+  } finally {
+    if (activeJobId === requestId) {
+      activeJobId = null;
+    }
   }
 };
