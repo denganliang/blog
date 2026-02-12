@@ -647,8 +647,16 @@
     // ==================== Single Threaded FFmpeg Workaround ====================
     // GitHub Pages doesn't support COOP/COEP headers required for SharedArrayBuffer
     // We must use a single-threaded version of FFmpeg core
-    const FFMPEG_SCRIPT_URL = '/assets/vendor/ffmpeg/ffmpeg.min.js';
-    const FFMPEG_CORE_URL = '/assets/vendor/ffmpeg/ffmpeg-core.js';
+    function resolveAssetUrl(assetPath) {
+      if (window.location.protocol === 'file:') {
+        const prefix = window.location.pathname.includes('/en/tools/') ? '../../assets/' : '../assets/';
+        return new URL(prefix + assetPath, window.location.href).href;
+      }
+      return '/assets/' + assetPath;
+    }
+
+    const FFMPEG_SCRIPT_URL = resolveAssetUrl('vendor/ffmpeg/ffmpeg.min.js');
+    const FFMPEG_CORE_URL = resolveAssetUrl('vendor/ffmpeg/ffmpeg-core.js');
     let ffmpegLibPromise = null;
 
     function loadFfmpegLib() {
@@ -1061,7 +1069,7 @@
     }
 
     // ==================== 音频压缩（Worker + ffmpeg.wasm） ====================
-    const COMPRESS_WORKER_URL = '/assets/js/audio-compress-worker.js';
+    const COMPRESS_WORKER_URL = resolveAssetUrl('js/audio-compress-worker.js');
     const COMPRESS_ALLOWED_EXTENSIONS = new Set(['wav', 'mp3', 'ogg', 'm4a', 'aac', 'flac']);
 
     const compressorLocale = document.documentElement.lang.startsWith('zh')
