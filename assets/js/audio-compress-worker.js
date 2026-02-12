@@ -9,14 +9,41 @@ function ensureAbsoluteUrl(path) {
   return new URL(path, self.location.href).href;
 }
 
-self.FFMPEG_SCRIPT_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg.min.js');
-self.FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js');
+const LOCAL_FFMPEG_SCRIPT_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg.min.js');
+const LOCAL_FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js');
+const LOCAL_FFMPEG_WASM_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.wasm');
+const LOCAL_FFMPEG_CORE_WORKER_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.worker.js');
+
+const CDN_FFMPEG_SCRIPT_URL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+const CDN_FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js';
+const CDN_FFMPEG_WASM_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.wasm';
+const CDN_FFMPEG_CORE_WORKER_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.worker.js';
+
+const FFMPEG_SOURCES = [
+  {
+    name: 'local',
+    scriptUrl: LOCAL_FFMPEG_SCRIPT_URL,
+    corePath: LOCAL_FFMPEG_CORE_URL,
+    wasmPath: LOCAL_FFMPEG_WASM_URL,
+    workerPath: LOCAL_FFMPEG_CORE_WORKER_URL
+  },
+  {
+    name: 'cdn',
+    scriptUrl: CDN_FFMPEG_SCRIPT_URL,
+    corePath: CDN_FFMPEG_CORE_URL,
+    wasmPath: CDN_FFMPEG_WASM_URL,
+    workerPath: CDN_FFMPEG_CORE_WORKER_URL
+  }
+];
+
+const CORE_LOAD_TIMEOUT_MS = 12000;
 
 let ffmpegReadyPromise = null;
 let ffmpeg = null;
 let activeJobId = null;
 const canceledJobIds = new Set();
 const CANCELED_ERROR = '__CANCELED__';
+let runtimeScriptLoaded = false;
 
 function postMessageSafe(type, payload = {}) {
   self.postMessage({ type, ...payload });
@@ -36,6 +63,85 @@ function getMimeType(format) {
   if (format === 'aac') return 'audio/aac';
   if (format === 'wav') return 'audio/wav';
   return 'application/octet-stream';
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(message));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
+function resetFfmpegState() {
+  if (ffmpeg && typeof ffmpeg.exit === 'function') {
+    try {
+      ffmpeg.exit();
+    } catch (error) {
+      // ignore
+    }
+  }
+  ffmpeg = null;
+}
+
+function ensureRuntimeScript(url) {
+  if (runtimeScriptLoaded && self.FFmpeg && self.FFmpeg.createFFmpeg) {
+    return;
+  }
+  importScripts(url);
+  if (!self.FFmpeg || !self.FFmpeg.createFFmpeg) {
+    throw new Error('FFmpeg runtime is not available in worker context');
+  }
+  runtimeScriptLoaded = true;
+}
+
+async function loadWithSource(source) {
+  postMessageSafe('status', { code: 'loading-runtime', source: source.name });
+
+  if (typeof self.document === 'undefined') {
+    self.document = { baseURI: self.location.href };
+  }
+
+  ensureRuntimeScript(ensureAbsoluteUrl(source.scriptUrl));
+  const { createFFmpeg } = self.FFmpeg;
+  const nextFfmpeg = createFFmpeg({
+    log: true,
+    corePath: ensureAbsoluteUrl(source.corePath),
+    wasmPath: ensureAbsoluteUrl(source.wasmPath),
+    workerPath: ensureAbsoluteUrl(source.workerPath),
+    mainName: 'main'
+  });
+
+  nextFfmpeg.setLogger(({ message }) => {
+    postMessageSafe('log', { message });
+  });
+
+  nextFfmpeg.setProgress(({ ratio }) => {
+    if (typeof ratio === 'number' && Number.isFinite(ratio)) {
+      const clamped = Math.min(1, Math.max(0, ratio));
+      postMessageSafe('progress', { ratio: clamped });
+    }
+  });
+
+  postMessageSafe('status', { code: 'loading-core', source: source.name });
+  await withTimeout(
+    nextFfmpeg.load(),
+    CORE_LOAD_TIMEOUT_MS,
+    `FFmpeg core load timed out after ${Math.round(CORE_LOAD_TIMEOUT_MS / 1000)}s`
+  );
+
+  ffmpeg = nextFfmpeg;
+  postMessageSafe('ready', { source: source.name });
 }
 
 function buildCommand({
@@ -86,40 +192,27 @@ async function ensureFfmpegLoaded() {
   }
 
   ffmpegReadyPromise = (async () => {
-    postMessageSafe('status', { code: 'loading-runtime' });
-
-    if (typeof self.document === 'undefined') {
-      self.document = { baseURI: self.location.href };
-    }
-
-    importScripts(self.FFMPEG_SCRIPT_URL);
-
-    if (!self.FFmpeg || !self.FFmpeg.createFFmpeg) {
-      throw new Error('FFmpeg runtime is not available in worker context');
-    }
-
-    const { createFFmpeg } = self.FFmpeg;
-    ffmpeg = createFFmpeg({
-      log: true,
-      corePath: ensureAbsoluteUrl(self.FFMPEG_CORE_URL),
-      mainName: 'main'
-    });
-
-    ffmpeg.setLogger(({ message }) => {
-      postMessageSafe('log', { message });
-    });
-
-    ffmpeg.setProgress(({ ratio }) => {
-      if (typeof ratio === 'number' && Number.isFinite(ratio)) {
-        const clamped = Math.min(1, Math.max(0, ratio));
-        postMessageSafe('progress', { ratio: clamped });
+    let lastError = null;
+    for (const source of FFMPEG_SOURCES) {
+      try {
+        await loadWithSource(source);
+        return;
+      } catch (error) {
+        lastError = error;
+        resetFfmpegState();
+        postMessageSafe('status', {
+          code: 'load-failed',
+          source: source.name,
+          message: error && error.message ? error.message : String(error)
+        });
       }
-    });
+    }
 
-    postMessageSafe('status', { code: 'loading-core' });
-    await ffmpeg.load();
-    postMessageSafe('ready');
-  })();
+    throw lastError || new Error('Failed to load FFmpeg core');
+  })().catch((error) => {
+    ffmpegReadyPromise = null;
+    throw error;
+  });
 
   return ffmpegReadyPromise;
 }
@@ -158,7 +251,7 @@ self.onmessage = async (event) => {
       }
     }
 
-    ffmpeg = null;
+    resetFfmpegState();
     ffmpegReadyPromise = null;
     return;
   }
