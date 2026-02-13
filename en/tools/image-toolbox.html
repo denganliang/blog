@@ -1324,6 +1324,19 @@
       return { blob, mimeType: blob.type || outputFormat };
     }
 
+    function getBasicFileInfoText(file) {
+      const type = file && file.type ? file.type : 'unknown';
+      return `Filename: ${file.name} | Type: ${type} | Size: ${formatSize(file.size)}`;
+    }
+
+    function getImageFileInfoText(file, width, height) {
+      return `${getBasicFileInfoText(file)} | Resolution: ${width}×${height}`;
+    }
+
+    function getVideoFileInfoText(file, width, height, duration) {
+      return `${getBasicFileInfoText(file)} | Resolution: ${width}×${height} | Duration: ${formatTime(duration)}`;
+    }
+
     function handleFiles(files) {
       if (files.length === 0) return;
 
@@ -1338,7 +1351,7 @@
 
       // Show file info
       const info = document.getElementById('file-info');
-      info.textContent = `Original: ${file.name} (${formatSize(file.size)})`;
+      info.textContent = getBasicFileInfoText(file);
 
       // Preview
       const img = document.getElementById('preview-img');
@@ -1351,6 +1364,9 @@
 
         // Load into Image object
         originalImage = new Image();
+        originalImage.onload = () => {
+          info.textContent = getImageFileInfoText(file, originalImage.naturalWidth, originalImage.naturalHeight);
+        };
         originalImage.src = e.target.result;
 
         document.getElementById('compress-btn').disabled = false;
@@ -1422,7 +1438,7 @@
             }
 
             if (!bestResult) {
-              bestResult = await createCompressionBlob(canvas, outputFormat, minQ);
+              bestResult = await createCompressionBlob(baseCanvas, outputFormat, minQ);
               bestQuality = minQ;
             }
           }
@@ -1622,7 +1638,7 @@
 
         gridImage = new Image();
         gridImage.onload = () => {
-          document.getElementById('grid-file-info').textContent = `Original: ${file.name} (${formatSize(file.size)}) · ${gridImage.naturalWidth}×${gridImage.naturalHeight}`;
+          document.getElementById('grid-file-info').textContent = getImageFileInfoText(file, gridImage.naturalWidth, gridImage.naturalHeight);
           document.getElementById('grid-split-btn').disabled = false;
         };
         gridImage.onerror = () => {
@@ -2044,7 +2060,7 @@
         cropImage = image;
         cropEditor.classList.add('active');
         document.getElementById('crop-upload-text').style.display = 'none';
-        document.getElementById('crop-file-info').textContent = `Original: ${file.name} (${formatSize(file.size)}) · ${cropImage.naturalWidth}×${cropImage.naturalHeight}`;
+        document.getElementById('crop-file-info').textContent = getImageFileInfoText(file, cropImage.naturalWidth, cropImage.naturalHeight);
         document.getElementById('crop-error-msg').textContent = '';
 
         applyCropTargetSize();
@@ -2542,7 +2558,7 @@
         bgSourceCtx.drawImage(image, 0, 0);
 
         document.getElementById('bg-upload-text').style.display = 'none';
-        document.getElementById('bg-file-info').textContent = `Original: ${file.name} (${formatSize(file.size)}) · ${image.naturalWidth}×${image.naturalHeight}`;
+        document.getElementById('bg-file-info').textContent = getImageFileInfoText(file, image.naturalWidth, image.naturalHeight);
         document.getElementById('bg-error-msg').textContent = '';
 
         setBgButtonsEnabled(true);
@@ -2629,7 +2645,7 @@
       }
 
       videoFile = file;
-      document.getElementById('video-file-info').textContent = `Filename: ${file.name} (${formatSize(file.size)})`;
+      document.getElementById('video-file-info').textContent = getBasicFileInfoText(file);
       document.getElementById('video-upload-text').style.display = 'none';
       document.getElementById('video-preview-container').style.display = 'block';
 
@@ -2637,6 +2653,12 @@
       videoPreview.src = url;
 
       videoPreview.onloadedmetadata = () => {
+        document.getElementById('video-file-info').textContent = getVideoFileInfoText(
+          file,
+          videoPreview.videoWidth,
+          videoPreview.videoHeight,
+          videoPreview.duration
+        );
         document.getElementById('gif-duration').value = Math.min(3, videoPreview.duration).toFixed(1);
         document.getElementById('gif-start').max = videoPreview.duration;
         document.getElementById('generate-gif-btn').disabled = false;
@@ -2778,6 +2800,7 @@
     function resetVideo() {
       document.getElementById('video-input').value = '';
       document.getElementById('video-upload-text').style.display = 'block';
+      document.getElementById('video-file-info').textContent = '';
       document.getElementById('video-preview-container').style.display = 'none';
       document.getElementById('generate-gif-btn').disabled = true;
       document.getElementById('gif-result-container').style.display = 'none';
@@ -2838,8 +2861,8 @@
       video.src = url;
 
       video.onloadedmetadata = () => {
-         document.getElementById('vc-file-info').textContent = `Filename: ${file.name}`;
-         document.getElementById('vc-file-meta').textContent = `Size: ${formatSize(file.size)} | Res: ${video.videoWidth}x${video.videoHeight} | Duration: ${formatTime(video.duration)}`;
+         document.getElementById('vc-file-info').textContent = getBasicFileInfoText(file);
+         document.getElementById('vc-file-meta').textContent = `Resolution: ${video.videoWidth}×${video.videoHeight} | Duration: ${formatTime(video.duration)}`;
          document.getElementById('vc-start-btn').disabled = false;
          document.getElementById('vc-test-btn').disabled = false;
       };
@@ -3017,6 +3040,8 @@
     function resetVc() {
       document.getElementById('vc-input').value = '';
       document.getElementById('vc-upload-text').style.display = 'block';
+      document.getElementById('vc-file-info').textContent = '';
+      document.getElementById('vc-file-meta').textContent = '';
       document.getElementById('vc-preview-container').style.display = 'none';
       document.getElementById('vc-start-btn').disabled = true;
       document.getElementById('vc-test-btn').disabled = true;

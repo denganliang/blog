@@ -1323,6 +1323,19 @@
       return { blob, mimeType: blob.type || outputFormat };
     }
 
+    function getBasicFileInfoText(file) {
+      const type = file && file.type ? file.type : '未知';
+      return `文件名: ${file.name} | 类型: ${type} | 大小: ${formatSize(file.size)}`;
+    }
+
+    function getImageFileInfoText(file, width, height) {
+      return `${getBasicFileInfoText(file)} | 分辨率: ${width}×${height}`;
+    }
+
+    function getVideoFileInfoText(file, width, height, duration) {
+      return `${getBasicFileInfoText(file)} | 分辨率: ${width}×${height} | 时长: ${formatTime(duration)}`;
+    }
+
     function handleFiles(files) {
       if (files.length === 0) return;
 
@@ -1337,7 +1350,7 @@
 
       // 显示文件信息
       const info = document.getElementById('file-info');
-      info.textContent = `原始文件: ${file.name} (${formatSize(file.size)})`;
+      info.textContent = getBasicFileInfoText(file);
 
       // 预览
       const img = document.getElementById('preview-img');
@@ -1350,6 +1363,9 @@
 
         // 加载到Image对象用于处理
         originalImage = new Image();
+        originalImage.onload = () => {
+          info.textContent = getImageFileInfoText(file, originalImage.naturalWidth, originalImage.naturalHeight);
+        };
         originalImage.src = e.target.result;
 
         document.getElementById('compress-btn').disabled = false;
@@ -1421,7 +1437,7 @@
             }
 
             if (!bestResult) {
-              bestResult = await createCompressionBlob(canvas, outputFormat, minQ);
+              bestResult = await createCompressionBlob(baseCanvas, outputFormat, minQ);
               bestQuality = minQ;
             }
           }
@@ -1621,7 +1637,7 @@
 
         gridImage = new Image();
         gridImage.onload = () => {
-          document.getElementById('grid-file-info').textContent = `原始文件: ${file.name} (${formatSize(file.size)}) · ${gridImage.naturalWidth}×${gridImage.naturalHeight}`;
+          document.getElementById('grid-file-info').textContent = getImageFileInfoText(file, gridImage.naturalWidth, gridImage.naturalHeight);
           document.getElementById('grid-split-btn').disabled = false;
         };
         gridImage.onerror = () => {
@@ -2043,7 +2059,7 @@
         cropImage = image;
         cropEditor.classList.add('active');
         document.getElementById('crop-upload-text').style.display = 'none';
-        document.getElementById('crop-file-info').textContent = `原始文件: ${file.name} (${formatSize(file.size)}) · ${cropImage.naturalWidth}×${cropImage.naturalHeight}`;
+        document.getElementById('crop-file-info').textContent = getImageFileInfoText(file, cropImage.naturalWidth, cropImage.naturalHeight);
         document.getElementById('crop-error-msg').textContent = '';
 
         applyCropTargetSize();
@@ -2541,7 +2557,7 @@
         bgSourceCtx.drawImage(image, 0, 0);
 
         document.getElementById('bg-upload-text').style.display = 'none';
-        document.getElementById('bg-file-info').textContent = `原始文件: ${file.name} (${formatSize(file.size)}) · ${image.naturalWidth}×${image.naturalHeight}`;
+        document.getElementById('bg-file-info').textContent = getImageFileInfoText(file, image.naturalWidth, image.naturalHeight);
         document.getElementById('bg-error-msg').textContent = '';
 
         setBgButtonsEnabled(true);
@@ -2628,7 +2644,7 @@
       }
 
       videoFile = file;
-      document.getElementById('video-file-info').textContent = `文件名: ${file.name} (${formatSize(file.size)})`;
+      document.getElementById('video-file-info').textContent = getBasicFileInfoText(file);
       document.getElementById('video-upload-text').style.display = 'none';
       document.getElementById('video-preview-container').style.display = 'block';
 
@@ -2636,6 +2652,12 @@
       videoPreview.src = url;
 
       videoPreview.onloadedmetadata = () => {
+        document.getElementById('video-file-info').textContent = getVideoFileInfoText(
+          file,
+          videoPreview.videoWidth,
+          videoPreview.videoHeight,
+          videoPreview.duration
+        );
         document.getElementById('gif-duration').value = Math.min(3, videoPreview.duration).toFixed(1);
         document.getElementById('gif-start').max = videoPreview.duration;
         document.getElementById('generate-gif-btn').disabled = false;
@@ -2777,6 +2799,7 @@
     function resetVideo() {
       document.getElementById('video-input').value = '';
       document.getElementById('video-upload-text').style.display = 'block';
+      document.getElementById('video-file-info').textContent = '';
       document.getElementById('video-preview-container').style.display = 'none';
       document.getElementById('generate-gif-btn').disabled = true;
       document.getElementById('gif-result-container').style.display = 'none';
@@ -2837,8 +2860,8 @@
       video.src = url;
 
       video.onloadedmetadata = () => {
-         document.getElementById('vc-file-info').textContent = `文件名: ${file.name}`;
-         document.getElementById('vc-file-meta').textContent = `大小: ${formatSize(file.size)} | 分辨率: ${video.videoWidth}x${video.videoHeight} | 时长: ${formatTime(video.duration)}`;
+         document.getElementById('vc-file-info').textContent = getBasicFileInfoText(file);
+         document.getElementById('vc-file-meta').textContent = `分辨率: ${video.videoWidth}×${video.videoHeight} | 时长: ${formatTime(video.duration)}`;
          document.getElementById('vc-start-btn').disabled = false;
          document.getElementById('vc-test-btn').disabled = false;
       };
@@ -3021,6 +3044,8 @@
     function resetVc() {
       document.getElementById('vc-input').value = '';
       document.getElementById('vc-upload-text').style.display = 'block';
+      document.getElementById('vc-file-info').textContent = '';
+      document.getElementById('vc-file-meta').textContent = '';
       document.getElementById('vc-preview-container').style.display = 'none';
       document.getElementById('vc-start-btn').disabled = true;
       document.getElementById('vc-test-btn').disabled = true;
