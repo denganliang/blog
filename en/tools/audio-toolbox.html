@@ -365,11 +365,62 @@
       font-weight: 600;
     }
 
-    .trim-grid {
-      display: grid;
-      gap: 0.75rem;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    .trim-studio {
       margin-top: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      padding: 0.9rem;
+    }
+
+    .trim-player-hidden {
+      display: none;
+    }
+
+    .trim-transport-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .trim-transport-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .trim-icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .trim-icon-btn:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-1px);
+    }
+
+    .trim-icon-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .trim-time-display {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
     }
 
     .trim-time-chip {
@@ -378,9 +429,209 @@
       font-size: 0.9rem;
       padding: 0.25rem 0.5rem;
       border-radius: 6px;
-      background: var(--bg-secondary);
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
-      margin-left: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .trim-time-total {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .trim-zoom-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .trim-zoom-group input[type="range"] {
+      width: 130px;
+      accent-color: var(--accent-color);
+    }
+
+    .trim-editor-shell {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    .trim-editor-shell.is-disabled {
+      opacity: 0.55;
+    }
+
+    .trim-timeline-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      cursor: crosshair;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .trim-timeline-inner {
+      position: relative;
+      min-width: 100%;
+      height: 132px;
+      user-select: none;
+    }
+
+    .trim-ruler {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 26px;
+      border-bottom: 1px solid var(--border-color);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .trim-ruler-tick {
+      position: absolute;
+      bottom: 0;
+      width: 1px;
+      height: 8px;
+      background: var(--text-secondary);
+      opacity: 0.3;
+    }
+
+    .trim-ruler-tick.major {
+      height: 12px;
+      opacity: 0.5;
+    }
+
+    .trim-ruler-label {
+      position: absolute;
+      top: 2px;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      font-family: monospace;
+    }
+
+    .trim-waveform-canvas {
+      position: absolute;
+      left: 0;
+      top: 26px;
+      width: 100%;
+      height: 96px;
+      display: block;
+    }
+
+    .trim-cue-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 26px;
+      height: 96px;
+      z-index: 8;
+    }
+
+    .trim-cue-marker {
+      position: absolute;
+      top: 4px;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 88px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: linear-gradient(180deg, #f59e0b, #f97316);
+      border-radius: 999px;
+      opacity: 0.85;
+    }
+
+    .trim-cue-marker:hover {
+      opacity: 1;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    }
+
+    .trim-selection-range {
+      position: absolute;
+      top: 26px;
+      height: 96px;
+      border: 1px solid rgba(16, 185, 129, 0.8);
+      background: rgba(16, 185, 129, 0.2);
+      box-sizing: border-box;
+      cursor: move;
+      z-index: 9;
+    }
+
+    .trim-selection-handle {
+      position: absolute;
+      top: 26px;
+      width: 12px;
+      height: 96px;
+      border: 1px solid rgba(16, 185, 129, 0.95);
+      background: rgba(16, 185, 129, 0.95);
+      transform: translateX(-50%);
+      cursor: ew-resize;
+      border-radius: 4px;
+      z-index: 10;
+      padding: 0;
+    }
+
+    .trim-selection-handle:focus {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+    }
+
+    .trim-playhead {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ef4444;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    .trim-playhead::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+
+    .trim-grid {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin-top: 1rem;
+    }
+
+    .field-group input,
+    .field-group select {
+      padding: 0.55rem 0.6rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .trim-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .trim-shortcut {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-family: monospace;
     }
 
     .trim-points-wrap {
@@ -388,36 +639,60 @@
       padding: 0.75rem;
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      background: var(--bg-secondary);
+      background: var(--bg-primary);
     }
 
     .trim-point-list {
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 0.65rem;
+    }
+
+    .trim-point-row {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .trim-point-tag {
-      display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      border-radius: 999px;
-      padding: 0.25rem 0.6rem;
-      font-size: 0.85rem;
+      justify-content: space-between;
+      gap: 0.5rem;
       border: 1px solid var(--border-color);
-      background: var(--bg-primary);
-      font-family: monospace;
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      padding: 0.3rem 0.35rem;
     }
 
-    .trim-point-tag button {
+    .trim-point-jump {
+      flex: 1;
+      text-align: left;
       border: none;
       background: transparent;
-      color: #ef4444;
+      color: var(--text-primary);
+      font-family: monospace;
+      font-size: 0.86rem;
       cursor: pointer;
-      font-size: 0.85rem;
-      line-height: 1;
+      padding: 0.25rem 0.35rem;
+      border-radius: 6px;
+    }
+
+    .trim-point-jump:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .trim-point-remove {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: #ef4444;
+      font-size: 0.95rem;
+      cursor: pointer;
       padding: 0;
+      line-height: 1;
+    }
+
+    .trim-empty {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
     }
 
     .trim-segments {
@@ -442,10 +717,22 @@
       font-size: 0.9rem;
     }
 
-    .trim-empty {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
+    @media (max-width: 768px) {
+      .trim-zoom-group {
+        width: 100%;
+      }
+
+      .trim-zoom-group input[type="range"] {
+        flex: 1;
+      }
+
+      .trim-shortcut {
+        width: 100%;
+      }
+
+      .trim-point-row {
+        padding: 0.25rem;
+      }
     }
 
     /* Responsive */
@@ -659,63 +946,98 @@
             <input type="file" id="trim-file-input" accept="audio/*" onchange="handleTrimFileSelect(event)">
             <div id="trim-upload-text">
               <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Click or drag audio file here</p>
-              <p class="hint">Set cue points to trim one section or split into segments. Fully local in browser.</p>
+              <p class="hint">Timeline range drag, cue splitting, keyboard shortcuts. Fully local in browser.</p>
             </div>
             <div id="trim-file-info" class="file-list" style="display:none;"></div>
           </div>
 
-          <div id="trim-player-wrap" class="audio-player-container" style="display:none;">
-            <h4>Cue Player <span class="trim-time-chip" id="trim-current-time">00:00.00</span></h4>
-            <audio id="trim-player" controls></audio>
-          </div>
+          <div id="trim-player-wrap" class="trim-studio" style="display:none;">
+            <audio id="trim-player" class="trim-player-hidden" preload="metadata"></audio>
 
-          <div class="trim-grid">
-            <div class="field-group">
-              <label for="trim-start">Start Time (s)</label>
-              <input id="trim-start" type="number" min="0" step="0.01" style="padding:0.55rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary); color:var(--text-primary);">
+            <div class="trim-transport-bar">
+              <div class="trim-transport-controls">
+                <button class="trim-icon-btn" id="trim-jump-back-btn" type="button" title="Back 1 second" disabled>⏪</button>
+                <button class="trim-icon-btn" id="trim-play-toggle-btn" type="button" title="Play / Pause" disabled>▶</button>
+                <button class="trim-icon-btn" id="trim-jump-forward-btn" type="button" title="Forward 1 second" disabled>⏩</button>
+                <span class="trim-time-display">
+                  <span class="trim-time-chip" id="trim-current-time">00:00.00</span>
+                  <span>/</span>
+                  <span class="trim-time-total" id="trim-duration-text">Duration: -</span>
+                </span>
+              </div>
+              <div class="trim-zoom-group">
+                <label for="trim-zoom">Zoom</label>
+                <input type="range" id="trim-zoom" min="40" max="220" step="10" value="100" disabled>
+                <span id="trim-zoom-label">100 px/s</span>
+              </div>
             </div>
-            <div class="field-group">
-              <label for="trim-end">End Time (s)</label>
-              <input id="trim-end" type="number" min="0" step="0.01" style="padding:0.55rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary); color:var(--text-primary);">
-            </div>
-            <div class="field-group">
-              <label for="trim-output-format">Output Format</label>
-              <select id="trim-output-format" onchange="onTrimFormatChange()">
-                <option value="mp3">mp3</option>
-                <option value="ogg">ogg</option>
-                <option value="aac">aac</option>
-                <option value="wav">wav</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label for="trim-bitrate">Bitrate</label>
-              <select id="trim-bitrate">
-                <option value="64">64k</option>
-                <option value="96">96k</option>
-                <option value="128" selected>128k</option>
-                <option value="192">192k</option>
-              </select>
-            </div>
-          </div>
 
-          <div class="btn-group">
-            <button class="btn btn-secondary" id="trim-set-start-btn" onclick="setTrimBoundary('start')" disabled>Set Start</button>
-            <button class="btn btn-secondary" id="trim-set-end-btn" onclick="setTrimBoundary('end')" disabled>Set End</button>
-            <button class="btn" id="trim-cut-btn" onclick="cutTrimRange()" disabled>Trim Current Range</button>
-          </div>
+            <div class="trim-editor-shell is-disabled" id="trim-editor-shell">
+              <div class="trim-timeline-scroll" id="trim-timeline-scroll">
+                <div class="trim-timeline-inner" id="trim-timeline-inner">
+                  <div class="trim-ruler" id="trim-ruler"></div>
+                  <canvas id="trim-waveform-canvas" class="trim-waveform-canvas" height="96"></canvas>
+                  <div class="trim-cue-overlay" id="trim-cue-overlay"></div>
+                  <div class="trim-selection-range" id="trim-selection-range"></div>
+                  <button class="trim-selection-handle start" id="trim-selection-start-handle" type="button" aria-label="Drag start boundary"></button>
+                  <button class="trim-selection-handle end" id="trim-selection-end-handle" type="button" aria-label="Drag end boundary"></button>
+                  <div class="trim-playhead" id="trim-playhead"></div>
+                </div>
+              </div>
+            </div>
 
-          <div class="trim-points-wrap">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
-              <strong style="font-size:0.95rem;">Split Cue Points</strong>
-              <span class="hint" id="trim-duration-text">Duration: -</span>
+            <div class="trim-grid">
+              <div class="field-group">
+                <label for="trim-start">Start Time (s)</label>
+                <input id="trim-start" type="number" min="0" step="0.01">
+              </div>
+              <div class="field-group">
+                <label for="trim-end">End Time (s)</label>
+                <input id="trim-end" type="number" min="0" step="0.01">
+              </div>
+              <div class="field-group">
+                <label for="trim-seek-input">Seek Time (s)</label>
+                <input id="trim-seek-input" type="number" min="0" step="0.01" value="0">
+              </div>
+              <div class="field-group">
+                <label for="trim-output-format">Output Format</label>
+                <select id="trim-output-format" onchange="onTrimFormatChange()">
+                  <option value="mp3">mp3</option>
+                  <option value="ogg">ogg</option>
+                  <option value="aac">aac</option>
+                  <option value="wav">wav</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="trim-bitrate">Bitrate</label>
+                <select id="trim-bitrate">
+                  <option value="64">64k</option>
+                  <option value="96">96k</option>
+                  <option value="128" selected>128k</option>
+                  <option value="192">192k</option>
+                </select>
+              </div>
             </div>
-            <div class="btn-group" style="margin-top:0.5rem;">
-              <button class="btn" id="trim-add-point-btn" onclick="addTrimPoint()" disabled>Add Cue Point</button>
-              <button class="btn btn-secondary" id="trim-split-btn" onclick="splitByTrimPoints()" disabled>Split by Cue Points</button>
-              <button class="btn btn-secondary" id="trim-clear-points-btn" onclick="clearTrimPoints()" disabled>Clear Cue Points</button>
+
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="trim-set-start-btn" onclick="setTrimBoundary('start')" disabled>Set In (I)</button>
+              <button class="btn btn-secondary" id="trim-set-end-btn" onclick="setTrimBoundary('end')" disabled>Set Out (O)</button>
+              <button class="btn" id="trim-cut-btn" onclick="cutTrimRange()" disabled>Export Selection</button>
             </div>
-            <div id="trim-point-list" class="trim-point-list"></div>
-            <p id="trim-point-empty" class="trim-empty">No cue points yet. Move playback and click “Add Cue Point”.</p>
+
+            <div class="trim-points-wrap">
+              <div class="trim-meta-row">
+                <strong style="font-size:0.95rem;">Split Cue Points (visual markers on timeline)</strong>
+                <span class="trim-shortcut">Shortcuts: Space Play/Pause · I/O In/Out · M Cue Point</span>
+              </div>
+              <div class="btn-group" style="margin-top:0.5rem;">
+                <button class="btn" id="trim-add-point-btn" onclick="addTrimPoint()" disabled>Add Cue Point (M)</button>
+                <button class="btn btn-secondary" id="trim-split-btn" onclick="splitByTrimPoints()" disabled>Split by Cue Points</button>
+                <button class="btn btn-secondary" id="trim-clear-points-btn" onclick="clearTrimPoints()" disabled>Clear Cue Points</button>
+              </div>
+              <div id="trim-point-list" class="trim-point-list"></div>
+              <p id="trim-point-empty" class="trim-empty">No cue points yet. Move playback and click "Add Cue Point".</p>
+            </div>
           </div>
 
           <div class="trim-segments">
@@ -2283,6 +2605,426 @@
     onTrimFormatChange();
     setTrimStatus(trimLocale.statusReady);
     updateTrimPointList();
+
+    // Pro timeline interaction layer (non-breaking enhancement on top of existing trim logic)
+    const proTrimTimeline = (() => {
+      const zoom = document.getElementById('trim-zoom');
+      const zoomLabel = document.getElementById('trim-zoom-label');
+      const seekInput = document.getElementById('trim-seek-input');
+      const playBtn = document.getElementById('trim-play-toggle-btn');
+      const backBtn = document.getElementById('trim-jump-back-btn');
+      const forwardBtn = document.getElementById('trim-jump-forward-btn');
+      const shell = document.getElementById('trim-editor-shell');
+      const scroll = document.getElementById('trim-timeline-scroll');
+      const inner = document.getElementById('trim-timeline-inner');
+      const ruler = document.getElementById('trim-ruler');
+      const canvas = document.getElementById('trim-waveform-canvas');
+      const cueOverlay = document.getElementById('trim-cue-overlay');
+      const selection = document.getElementById('trim-selection-range');
+      const startHandle = document.getElementById('trim-selection-start-handle');
+      const endHandle = document.getElementById('trim-selection-end-handle');
+      const playhead = document.getElementById('trim-playhead');
+      let peaks = null;
+      let width = 0;
+      let pxPerSec = Number(zoom ? zoom.value : 100) || 100;
+      let drag = null;
+      const MIN_RANGE = 0.02;
+      const MAX_WIDTH = 16000;
+
+      const duration = () => (trimDecodedBuffer ? trimDecodedBuffer.duration : 0);
+      const clamp = (v) => Math.max(0, Math.min(duration(), Number.isFinite(v) ? v : 0));
+      const timeToX = (t) => (duration() > 0 && width > 0 ? (clamp(t) / duration()) * width : 0);
+      const xToTime = (x) => (duration() > 0 && width > 0 ? (Math.max(0, Math.min(width, x)) / width) * duration() : 0);
+      const cursorX = (clientX) => {
+        const rect = scroll.getBoundingClientRect();
+        return Math.max(0, Math.min(width, clientX - rect.left + scroll.scrollLeft));
+      };
+
+      const setPlayStateUI = () => {
+        if (!playBtn) return;
+        playBtn.textContent = trimPlayer && !trimPlayer.paused ? '⏸' : '▶';
+      };
+
+      const currentRange = () => {
+        const d = duration();
+        let start = clamp(Number(trimStartInput.value));
+        let end = clamp(Number(trimEndInput.value));
+        if (d > MIN_RANGE && end - start < MIN_RANGE) {
+          end = Math.min(d, start + MIN_RANGE);
+          if (end - start < MIN_RANGE) start = Math.max(0, end - MIN_RANGE);
+        }
+        return { start, end };
+      };
+
+      const setRange = (start, end, anchor) => {
+        const d = duration();
+        let s = clamp(start);
+        let e = clamp(end);
+        if (d <= MIN_RANGE) {
+          s = 0;
+          e = d;
+        } else if (e - s < MIN_RANGE) {
+          if (anchor === 'start') e = Math.min(d, s + MIN_RANGE);
+          else s = Math.max(0, e - MIN_RANGE);
+        }
+        trimStartInput.value = s.toFixed(2);
+        trimEndInput.value = e.toFixed(2);
+        renderSelection();
+      };
+
+      const renderRuler = () => {
+        if (!ruler) return;
+        ruler.innerHTML = '';
+        if (!duration() || !width) return;
+        const px = width / Math.max(duration(), 0.001);
+        const step = px > 200 ? 0.25 : px > 120 ? 0.5 : px > 50 ? 1 : px > 20 ? 2 : 5;
+        const every = step < 1 ? Math.round(1 / step) : 5;
+        const frag = document.createDocumentFragment();
+        for (let i = 0, t = 0; t <= duration() + 0.0001 && i < 3000; i++, t = i * step) {
+          const tick = document.createElement('div');
+          const major = i % every === 0;
+          tick.className = `trim-ruler-tick${major ? ' major' : ''}`;
+          tick.style.left = `${timeToX(t)}px`;
+          frag.appendChild(tick);
+          if (major) {
+            const label = document.createElement('div');
+            label.className = 'trim-ruler-label';
+            label.style.left = `${timeToX(t)}px`;
+            label.textContent = formatTimeSec(t);
+            frag.appendChild(label);
+          }
+        }
+        ruler.appendChild(frag);
+      };
+
+      const buildPeaks = () => {
+        if (!trimDecodedBuffer) {
+          peaks = null;
+          return;
+        }
+        const total = trimDecodedBuffer.length;
+        const channels = trimDecodedBuffer.numberOfChannels || 1;
+        const block = Math.max(1, Math.floor(total / 7000));
+        const count = Math.ceil(total / block);
+        peaks = new Float32Array(count);
+        for (let i = 0; i < count; i++) {
+          const start = i * block;
+          const end = Math.min(total, start + block);
+          let peak = 0;
+          for (let ch = 0; ch < channels; ch++) {
+            const data = trimDecodedBuffer.getChannelData(ch);
+            for (let j = start; j < end; j += 8) {
+              const v = Math.abs(data[j] || 0);
+              if (v > peak) peak = v;
+            }
+          }
+          peaks[i] = peak;
+        }
+      };
+
+      const drawWaveform = () => {
+        if (!canvas) return;
+        const w = Math.max(1, Math.round(width));
+        const h = 96;
+        canvas.width = w;
+        canvas.height = h;
+        canvas.style.width = `${w}px`;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const css = getComputedStyle(document.documentElement);
+        const accent = (css.getPropertyValue('--accent-color') || '#3b82f6').trim() || '#3b82f6';
+        const bg = (css.getPropertyValue('--bg-primary') || '#111827').trim() || '#111827';
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+        if (!peaks || peaks.length === 0) return;
+        ctx.strokeStyle = accent;
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        const mid = h / 2;
+        const ampMax = h * 0.44;
+        const stride = w > 2400 ? 2 : 1;
+        for (let x = 0; x < w; x += stride) {
+          const idx = Math.floor((x / w) * (peaks.length - 1));
+          const amp = Math.max(1, (peaks[idx] || 0) * ampMax);
+          ctx.moveTo(x + 0.5, mid - amp);
+          ctx.lineTo(x + 0.5, mid + amp);
+        }
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      };
+
+      const renderSelection = () => {
+        if (!selection || !startHandle || !endHandle) return;
+        const { start, end } = currentRange();
+        const left = timeToX(start);
+        const right = timeToX(end);
+        selection.style.left = `${left}px`;
+        selection.style.width = `${Math.max(2, right - left)}px`;
+        startHandle.style.left = `${left}px`;
+        endHandle.style.left = `${right}px`;
+      };
+
+      const renderPlayhead = () => {
+        if (!playhead || !trimPlayer) return;
+        playhead.style.left = `${timeToX(trimPlayer.currentTime || 0)}px`;
+      };
+
+      const renderCues = () => {
+        if (!cueOverlay) return;
+        cueOverlay.innerHTML = '';
+        if (!duration() || trimCuePoints.length === 0) return;
+        const frag = document.createDocumentFragment();
+        trimCuePoints.forEach((point, index) => {
+          const marker = document.createElement('button');
+          marker.type = 'button';
+          marker.className = 'trim-cue-marker';
+          marker.style.left = `${timeToX(point)}px`;
+          marker.title = formatTimeSec(point);
+          marker.addEventListener('click', (e) => {
+            e.stopPropagation();
+            trimPlayer.currentTime = clamp(point);
+            updateTrimCurrentTime();
+          });
+          marker.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            removeTrimPoint(index);
+          });
+          frag.appendChild(marker);
+        });
+        cueOverlay.appendChild(frag);
+      };
+
+      const refresh = (keepCenter) => {
+        if (!scroll || !inner) return;
+        const viewport = scroll.clientWidth || 720;
+        const rawWidth = duration() > 0 ? duration() * pxPerSec : viewport;
+        width = Math.max(viewport, Math.min(MAX_WIDTH, Math.max(1, Math.round(rawWidth))));
+        inner.style.width = `${width}px`;
+        if (zoomLabel) zoomLabel.textContent = `${Math.round(pxPerSec)} px/s`;
+        drawWaveform();
+        renderRuler();
+        renderSelection();
+        renderCues();
+        renderPlayhead();
+        if (keepCenter && trimPlayer) {
+          scroll.scrollLeft = Math.max(0, timeToX(trimPlayer.currentTime || 0) - scroll.clientWidth / 2);
+        }
+      };
+
+      const originalSetControlsEnabled = setTrimControlsEnabled;
+      setTrimControlsEnabled = (enabled) => {
+        originalSetControlsEnabled(enabled);
+        if (playBtn) playBtn.disabled = !enabled;
+        if (backBtn) backBtn.disabled = !enabled;
+        if (forwardBtn) forwardBtn.disabled = !enabled;
+        if (zoom) zoom.disabled = !enabled;
+        if (seekInput) seekInput.disabled = !enabled;
+        if (shell) shell.classList.toggle('is-disabled', !enabled);
+      };
+
+      const originalUpdateCurrentTime = updateTrimCurrentTime;
+      updateTrimCurrentTime = () => {
+        originalUpdateCurrentTime();
+        if (seekInput && document.activeElement !== seekInput) {
+          seekInput.value = (trimPlayer.currentTime || 0).toFixed(2);
+        }
+        renderPlayhead();
+      };
+
+      const originalUpdatePointList = updateTrimPointList;
+      updateTrimPointList = () => {
+        if (!trimPointList) return;
+        if (trimCuePoints.length === 0) {
+          trimPointList.innerHTML = '';
+          trimPointEmpty.style.display = 'block';
+          trimSplitBtn.disabled = true;
+          trimClearPointsBtn.disabled = true;
+          renderCues();
+          return;
+        }
+        trimPointEmpty.style.display = 'none';
+        trimSplitBtn.disabled = false;
+        trimClearPointsBtn.disabled = false;
+        trimPointList.innerHTML = trimCuePoints.map((point, index) => `
+          <div class="trim-point-row">
+            <button type="button" class="trim-point-jump" onclick="jumpToTrimPoint(${index})">#${index + 1} · ${formatTimeSec(point)}</button>
+            <button type="button" class="trim-point-remove" onclick="removeTrimPoint(${index})" aria-label="${trimLocale.removeLabel}">×</button>
+          </div>
+        `).join('');
+        renderCues();
+      };
+
+      const originalApplyTrimFile = applyTrimFile;
+      applyTrimFile = async (file) => {
+        await originalApplyTrimFile(file);
+        buildPeaks();
+        if (seekInput) {
+          seekInput.max = duration().toFixed(2);
+          seekInput.value = '0.00';
+        }
+        refresh(false);
+      };
+
+      const originalSetBoundary = setTrimBoundary;
+      setTrimBoundary = (which) => {
+        originalSetBoundary(which);
+        renderSelection();
+      };
+
+      const jumpToTrimPoint = (index) => {
+        const point = trimCuePoints[index];
+        if (!Number.isFinite(point)) return;
+        trimPlayer.currentTime = clamp(point);
+        updateTrimCurrentTime();
+        if (scroll) {
+          scroll.scrollLeft = Math.max(0, timeToX(point) - scroll.clientWidth / 2);
+        }
+      };
+      window.jumpToTrimPoint = jumpToTrimPoint;
+      window.setTrimBoundary = setTrimBoundary;
+
+      if (playBtn) {
+        playBtn.addEventListener('click', () => {
+          if (!trimDecodedBuffer) return;
+          if (trimPlayer.paused) trimPlayer.play();
+          else trimPlayer.pause();
+        });
+      }
+      if (backBtn) backBtn.addEventListener('click', () => {
+        trimPlayer.currentTime = clamp((trimPlayer.currentTime || 0) - 1);
+      });
+      if (forwardBtn) forwardBtn.addEventListener('click', () => {
+        trimPlayer.currentTime = clamp((trimPlayer.currentTime || 0) + 1);
+      });
+      if (seekInput) {
+        seekInput.addEventListener('change', () => {
+          trimPlayer.currentTime = clamp(Number(seekInput.value));
+          updateTrimCurrentTime();
+        });
+      }
+      if (zoom) {
+        zoom.addEventListener('input', () => {
+          pxPerSec = Number(zoom.value) || 100;
+          refresh(true);
+        });
+      }
+      if (trimStartInput) {
+        trimStartInput.addEventListener('input', () => setRange(Number(trimStartInput.value), Number(trimEndInput.value), 'start'));
+      }
+      if (trimEndInput) {
+        trimEndInput.addEventListener('input', () => setRange(Number(trimStartInput.value), Number(trimEndInput.value), 'end'));
+      }
+
+      const beginDrag = (kind, event) => {
+        if (!trimDecodedBuffer) return;
+        drag = {
+          kind,
+          id: event.pointerId,
+          anchor: xToTime(cursorX(event.clientX)),
+          start: Number(trimStartInput.value),
+          end: Number(trimEndInput.value)
+        };
+        event.preventDefault();
+      };
+
+      if (startHandle) startHandle.addEventListener('pointerdown', (e) => beginDrag('start', e));
+      if (endHandle) endHandle.addEventListener('pointerdown', (e) => beginDrag('end', e));
+      if (selection) selection.addEventListener('pointerdown', (e) => beginDrag('range', e));
+      if (inner) {
+        inner.addEventListener('pointerdown', (e) => {
+          const target = e.target;
+          if ((target.closest && target.closest('.trim-selection-handle')) || target === selection || (target.classList && target.classList.contains('trim-cue-marker'))) return;
+          beginDrag('seek', e);
+          trimPlayer.currentTime = clamp(xToTime(cursorX(e.clientX)));
+          updateTrimCurrentTime();
+        });
+        inner.addEventListener('dblclick', (e) => {
+          const point = Math.round(clamp(xToTime(cursorX(e.clientX))) * 100) / 100;
+          if (!trimCuePoints.some((p) => Math.abs(p - point) < 0.01)) {
+            trimCuePoints.push(point);
+            trimCuePoints.sort((a, b) => a - b);
+            updateTrimPointList();
+          }
+        });
+      }
+
+      window.addEventListener('pointermove', (e) => {
+        if (!drag || drag.id !== e.pointerId) return;
+        const t = xToTime(cursorX(e.clientX));
+        if (drag.kind === 'seek') {
+          trimPlayer.currentTime = clamp(t);
+          updateTrimCurrentTime();
+          return;
+        }
+        if (drag.kind === 'start') {
+          setRange(t, drag.end, 'start');
+          return;
+        }
+        if (drag.kind === 'end') {
+          setRange(drag.start, t, 'end');
+          return;
+        }
+        if (drag.kind === 'range') {
+          const shift = t - drag.anchor;
+          const span = drag.end - drag.start;
+          let nextStart = drag.start + shift;
+          let nextEnd = drag.end + shift;
+          if (nextStart < 0) {
+            nextStart = 0;
+            nextEnd = span;
+          }
+          if (nextEnd > duration()) {
+            nextEnd = duration();
+            nextStart = Math.max(0, nextEnd - span);
+          }
+          setRange(nextStart, nextEnd, 'end');
+        }
+      });
+      window.addEventListener('pointerup', (e) => {
+        if (drag && drag.id === e.pointerId) drag = null;
+      });
+
+      document.addEventListener('keydown', (e) => {
+        const trimPanel = document.getElementById('trim-tools');
+        if (!trimPanel || !trimPanel.classList.contains('active') || !trimDecodedBuffer) return;
+        const tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
+        if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (trimPlayer.paused) trimPlayer.play();
+          else trimPlayer.pause();
+        } else if ((e.key || '').toLowerCase() === 'i') {
+          e.preventDefault();
+          setTrimBoundary('start');
+        } else if ((e.key || '').toLowerCase() === 'o') {
+          e.preventDefault();
+          setTrimBoundary('end');
+        } else if ((e.key || '').toLowerCase() === 'm') {
+          e.preventDefault();
+          addTrimPoint();
+        }
+      });
+
+      if (trimPlayer) {
+        trimPlayer.addEventListener('play', setPlayStateUI);
+        trimPlayer.addEventListener('pause', setPlayStateUI);
+      }
+
+      const sync = () => {
+        setPlayStateUI();
+        originalUpdatePointList();
+        updateTrimPointList();
+        refresh(false);
+      };
+
+      window.addEventListener('resize', () => {
+        if (trimSourceFile) refresh(true);
+      });
+
+      return { sync };
+    })();
+
+    proTrimTimeline.sync();
 
     // ==================== Tab Switching ====================
     function switchTab(tabId) {
