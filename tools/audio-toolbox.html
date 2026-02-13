@@ -565,35 +565,46 @@
             <div class="field-group">
               <label for="compress-output-format">输出格式</label>
               <select id="compress-output-format" onchange="onCompressFormatChange()">
-                <option value="mp3">mp3</option>
-                <option value="ogg">ogg</option>
-                <option value="aac">aac</option>
-                <option value="wav">wav</option>
+                <option value="mp3">mp3（通用兼容，推荐）</option>
+                <option value="ogg">ogg（同码率音质更优）</option>
+                <option value="aac">aac（移动端常见）</option>
+                <option value="wav">wav（无损，体积最大）</option>
               </select>
             </div>
             <div class="field-group">
-              <label for="compress-bitrate">比特率</label>
+              <label for="compress-bitrate">比特率（kbps）</label>
               <select id="compress-bitrate">
-                <option value="64">64k</option>
-                <option value="96">96k</option>
-                <option value="128" selected>128k</option>
-                <option value="192">192k</option>
+                <option value="32">32 kbps（语音，极低）</option>
+                <option value="48">48 kbps（语音 / 极限压缩）</option>
+                <option value="64">64 kbps（小游戏BGM，移动端）</option>
+                <option value="96">96 kbps（一般音乐，可接受）</option>
+                <option value="128" selected>128 kbps（标准质量，默认）</option>
+                <option value="160">160 kbps（较高质量，PC游戏）</option>
+                <option value="192">192 kbps（高质量，音乐类）</option>
+                <option value="256">256 kbps（接近无损，文件较大）</option>
+                <option value="320">320 kbps（MP3最高，体积最大）</option>
               </select>
             </div>
             <div class="field-group">
               <label for="compress-channels">声道</label>
               <select id="compress-channels">
-                <option value="mono">mono</option>
-                <option value="stereo" selected>stereo</option>
+                <option value="keep" selected>keep（保持原声道，推荐）</option>
+                <option value="mono">mono（1 声道，语音 / 省体积）</option>
+                <option value="stereo">stereo（2 声道，音乐推荐）</option>
               </select>
             </div>
             <div class="field-group">
-              <label for="compress-sample-rate">采样率</label>
+              <label for="compress-sample-rate">采样率（Hz）</label>
               <select id="compress-sample-rate">
-                <option value="keep" selected>keep</option>
-                <option value="22050">22050</option>
-                <option value="32000">32000</option>
-                <option value="44100">44100</option>
+                <option value="keep" selected>keep（保持原采样率，推荐）</option>
+                <option value="8000">8000 Hz（电话语音）</option>
+                <option value="11025">11025 Hz（老设备兼容）</option>
+                <option value="16000">16000 Hz（语音识别）</option>
+                <option value="22050">22050 Hz（移动端 BGM 推荐）</option>
+                <option value="32000">32000 Hz（过渡档）</option>
+                <option value="44100">44100 Hz（CD 标准，最常用）</option>
+                <option value="48000">48000 Hz（视频 / 游戏常用）</option>
+                <option value="96000">96000 Hz（专业音频，不建议压缩）</option>
               </select>
             </div>
           </div>

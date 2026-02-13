@@ -565,35 +565,46 @@
             <div class="field-group">
               <label for="compress-output-format">Output Format</label>
               <select id="compress-output-format" onchange="onCompressFormatChange()">
-                <option value="mp3">mp3</option>
-                <option value="ogg">ogg</option>
-                <option value="aac">aac</option>
-                <option value="wav">wav</option>
+                <option value="mp3">mp3 (best compatibility, recommended)</option>
+                <option value="ogg">ogg (better quality at same bitrate)</option>
+                <option value="aac">aac (common on mobile)</option>
+                <option value="wav">wav (lossless, largest size)</option>
               </select>
             </div>
             <div class="field-group">
-              <label for="compress-bitrate">Bitrate</label>
+              <label for="compress-bitrate">Bitrate (kbps)</label>
               <select id="compress-bitrate">
-                <option value="64">64k</option>
-                <option value="96">96k</option>
-                <option value="128" selected>128k</option>
-                <option value="192">192k</option>
+                <option value="32">32 kbps (voice, very low quality)</option>
+                <option value="48">48 kbps (voice / extreme compression)</option>
+                <option value="64">64 kbps (mobile game BGM)</option>
+                <option value="96">96 kbps (basic music, acceptable)</option>
+                <option value="128" selected>128 kbps (standard quality, default)</option>
+                <option value="160">160 kbps (higher quality, PC game)</option>
+                <option value="192">192 kbps (high quality, music heavy)</option>
+                <option value="256">256 kbps (near-lossless feel, larger files)</option>
+                <option value="320">320 kbps (max MP3 quality)</option>
               </select>
             </div>
             <div class="field-group">
               <label for="compress-channels">Channels</label>
               <select id="compress-channels">
-                <option value="mono">mono</option>
-                <option value="stereo" selected>stereo</option>
+                <option value="keep" selected>keep (preserve source, recommended)</option>
+                <option value="mono">mono (1 channel, voice / smaller size)</option>
+                <option value="stereo">stereo (2 channels, music recommended)</option>
               </select>
             </div>
             <div class="field-group">
-              <label for="compress-sample-rate">Sample Rate</label>
+              <label for="compress-sample-rate">Sample Rate (Hz)</label>
               <select id="compress-sample-rate">
-                <option value="keep" selected>keep</option>
-                <option value="22050">22050</option>
-                <option value="32000">32000</option>
-                <option value="44100">44100</option>
+                <option value="keep" selected>keep (preserve source, recommended)</option>
+                <option value="8000">8000 Hz (telephone voice)</option>
+                <option value="11025">11025 Hz (legacy compatibility)</option>
+                <option value="16000">16000 Hz (speech recognition)</option>
+                <option value="22050">22050 Hz (mobile BGM recommended)</option>
+                <option value="32000">32000 Hz (transitional)</option>
+                <option value="44100">44100 Hz (CD standard, most common)</option>
+                <option value="48000">48000 Hz (video / game engines)</option>
+                <option value="96000">96000 Hz (pro audio, not for compression)</option>
               </select>
             </div>
           </div>
