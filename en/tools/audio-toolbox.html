@@ -848,8 +848,9 @@
 
     // ==================== File Upload Handling ====================
     const dropZone = document.getElementById('drop-zone');
-    let uploadedFiles = []; // Array of { file, duration, id, isPlaying }
+    let uploadedFiles = []; // Array of { file, duration, metadata, id, isPlaying }
     let currentPlayingId = null;
+    let metadataAudioContext = null;
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       dropZone.addEventListener(eventName, preventDefaults, false);
@@ -901,24 +902,33 @@
         return;
       }
 
-      // Process new files to get duration
+      // Process new files to get duration/channels/sampleRate/bitrate
       for (const file of newFiles) {
          try {
-           const duration = await getAudioDuration(file);
+           const metadata = await getAudioMetadata(file);
            uploadedFiles.push({
              file: file,
-             duration: duration,
+             duration: metadata.duration,
+             metadata,
              id: Math.random().toString(36).substr(2, 9),
              isPlaying: false
            });
          } catch (e) {
-           console.error("Failed to load audio metadata", e);
-           uploadedFiles.push({
-             file: file,
-             duration: 0,
-             id: Math.random().toString(36).substr(2, 9),
-             isPlaying: false
-           });
+            console.error("Failed to load audio metadata", e);
+            const fallbackMetadata = {
+              duration: 0,
+              channels: 0,
+              sampleRate: 0,
+              bitrateKbps: 0,
+              size: file.size || 0
+            };
+            uploadedFiles.push({
+              file: file,
+              duration: 0,
+              metadata: fallbackMetadata,
+              id: Math.random().toString(36).substr(2, 9),
+              isPlaying: false
+            });
          }
       }
 
@@ -943,11 +953,71 @@
       });
     }
 
+    async function getAudioMetadata(file) {
+      const metadata = {
+        duration: 0,
+        channels: 0,
+        sampleRate: 0,
+        bitrateKbps: 0,
+        size: file.size || 0
+      };
+
+      metadata.duration = await getAudioDuration(file);
+
+      try {
+        if (!metadataAudioContext) {
+          metadataAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const copied = arrayBuffer.slice(0);
+        const decoded = await metadataAudioContext.decodeAudioData(copied);
+        if (decoded) {
+          metadata.duration = Number.isFinite(decoded.duration) ? decoded.duration : metadata.duration;
+          metadata.channels = decoded.numberOfChannels || 0;
+          metadata.sampleRate = decoded.sampleRate || 0;
+        }
+      } catch (error) {
+        console.warn('Failed to decode audio details', error);
+      }
+
+      if (metadata.duration > 0 && metadata.size > 0) {
+        metadata.bitrateKbps = (metadata.size * 8) / (metadata.duration * 1000);
+      }
+
+      return metadata;
+    }
+
     function formatDuration(seconds) {
        if (!seconds) return '00:00';
        const m = Math.floor(seconds / 60);
        const s = Math.floor(seconds % 60);
        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function formatBitrateKbps(kbps) {
+      if (!Number.isFinite(kbps) || kbps <= 0) return '-';
+      return `${Math.round(kbps)} kbps`;
+    }
+
+    function formatChannelCount(channels) {
+      if (!Number.isFinite(channels) || channels <= 0) return '-';
+      return `${Math.round(channels)}ch`;
+    }
+
+    function formatSampleRate(sampleRate) {
+      if (!Number.isFinite(sampleRate) || sampleRate <= 0) return '-';
+      const khz = sampleRate / 1000;
+      return `${Number.isInteger(khz) ? khz.toFixed(0) : khz.toFixed(1)} kHz`;
+    }
+
+    function buildAudioMetaSummary(metadata, fallbackSize) {
+      const safeMeta = metadata || {};
+      const duration = formatDuration(safeMeta.duration || 0);
+      const size = formatSize(Number.isFinite(safeMeta.size) ? safeMeta.size : (fallbackSize || 0));
+      const bitrate = formatBitrateKbps(safeMeta.bitrateKbps);
+      const channels = formatChannelCount(safeMeta.channels);
+      const sampleRate = formatSampleRate(safeMeta.sampleRate);
+      return `${duration} · ${size} · ${bitrate} · ${channels} · ${sampleRate}`;
     }
 
     // Drag and Drop Logic
@@ -1034,7 +1104,7 @@
             <div class="drag-handle">☰</div>
             <div class="file-info-group">
                 <div class="file-name">${index + 1}. ${item.file.name}</div>
-                <div class="file-meta">(${formatDuration(item.duration)} - ${formatSize(item.file.size)})</div>
+                <div class="file-meta">${buildAudioMetaSummary(item.metadata, item.file.size)}</div>
             </div>
             <div class="action-group">
                 <button class="icon-btn play-btn" onclick="togglePlay('${item.id}')" title="Preview Play">${playIcon}</button>
@@ -1303,6 +1373,7 @@
 
     let compressWorker = null;
     let compressFile = null;
+    let compressFileMetadata = null;
     let compressOutputUrl = null;
     let compressRequestId = null;
     let compressInProgress = false;
@@ -1388,7 +1459,7 @@
         <div class="file-list-item">
           <div class="file-info-group">
             <span class="file-name">${escapeHtml(compressFile.name)}</span>
-            <span class="file-meta">${formatSize(compressFile.size)}</span>
+            <span class="file-meta">${buildAudioMetaSummary(compressFileMetadata, compressFile.size)}</span>
           </div>
         </div>
       `;
@@ -1543,10 +1614,27 @@
       }
 
       compressFile = file;
+      compressFileMetadata = {
+        duration: 0,
+        channels: 0,
+        sampleRate: 0,
+        bitrateKbps: 0,
+        size: file.size || 0
+      };
       clearCompressResult();
       setCompressError('');
       compressLogText.textContent = `${compressorLocale.selectedFile}: ${file.name}`;
       renderCompressFileInfo();
+
+      const pendingFile = file;
+      getAudioMetadata(file).then((metadata) => {
+        if (compressFile === pendingFile) {
+          compressFileMetadata = metadata;
+          renderCompressFileInfo();
+        }
+      }).catch((error) => {
+        console.warn('Failed to load compressor metadata', error);
+      });
     }
 
     function handleCompressDrop(event) {
@@ -1641,6 +1729,7 @@
       compressCanceling = false;
       compressRequestId = null;
       compressFile = null;
+      compressFileMetadata = null;
       clearCompressResult();
       renderCompressFileInfo();
       compressLogText.textContent = '';
@@ -1742,6 +1831,7 @@
     const trimErrorMsg = document.getElementById('trim-error-msg');
 
     let trimSourceFile = null;
+    let trimSourceMetadata = null;
     let trimSourceUrl = null;
     let trimAudioContext = null;
     let trimDecodedBuffer = null;
@@ -1838,7 +1928,7 @@
         <div class="file-list-item">
           <div class="file-info-group">
             <span class="file-name">${escapeHtml(trimSourceFile.name)}</span>
-            <span class="file-meta">${formatSize(trimSourceFile.size)}</span>
+            <span class="file-meta">${buildAudioMetaSummary(trimSourceMetadata, trimSourceFile.size)}</span>
           </div>
         </div>
       `;
@@ -1875,10 +1965,18 @@
         URL.revokeObjectURL(trimSourceUrl);
       }
       trimSourceFile = file;
+      trimSourceMetadata = {
+        duration: 0,
+        channels: 0,
+        sampleRate: 0,
+        bitrateKbps: 0,
+        size: file.size || 0
+      };
       trimSourceUrl = URL.createObjectURL(file);
       trimPlayer.src = trimSourceUrl;
       trimPlayer.currentTime = 0;
       updateTrimCurrentTime();
+      renderTrimFileInfo();
 
       try {
         await decodeTrimFile(file);
@@ -1888,6 +1986,13 @@
       }
 
       const duration = trimDecodedBuffer ? trimDecodedBuffer.duration : 0;
+      trimSourceMetadata = {
+        duration,
+        channels: trimDecodedBuffer ? (trimDecodedBuffer.numberOfChannels || 0) : 0,
+        sampleRate: trimDecodedBuffer ? (trimDecodedBuffer.sampleRate || 0) : 0,
+        bitrateKbps: duration > 0 ? (file.size * 8) / (duration * 1000) : 0,
+        size: file.size || 0
+      };
       trimDurationText.textContent = `${trimLocale.durationText}${formatTimeSec(duration)}`;
       trimStartInput.value = '0';
       trimEndInput.value = duration > 0 ? duration.toFixed(2) : '0';
