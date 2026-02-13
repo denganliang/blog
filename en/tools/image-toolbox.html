@@ -518,7 +518,7 @@
             <div class="io-section">
               <label>Target Size (KB)</label>
               <input type="number" id="target-size" placeholder="e.g. 200" value="200" min="10">
-              <p class="hint">JPEG/WEBP use smart target-size compression; PNG/BMP/GIF export at original dimensions.</p>
+              <p class="hint">JPEG/WEBP use quality compression; PNG/BMP/GIF use resolution scaling to approach the target size.</p>
             </div>
 
             <div class="io-section">
@@ -1232,6 +1232,23 @@
       return new Promise(resolve => canvas.toBlob(resolve, mimeType, quality));
     }
 
+    function createCanvasFromImage(image, width, height) {
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(width));
+      canvas.height = Math.max(1, Math.round(height));
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      return canvas;
+    }
+
+    function createScaledCanvasFromImage(image, scale) {
+      return createCanvasFromImage(
+        image,
+        image.naturalWidth * scale,
+        image.naturalHeight * scale
+      );
+    }
+
     function convertCanvasToBmpBlob(canvas) {
       const width = canvas.width;
       const height = canvas.height;
@@ -1370,25 +1387,20 @@
       btn.disabled = true;
 
       try {
-        // Create Canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = originalImage.naturalWidth;
-        canvas.height = originalImage.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(originalImage, 0, 0);
-
         const supportsQualityCompression = outputFormat === 'image/jpeg' || outputFormat === 'image/webp';
+        const baseCanvas = createCanvasFromImage(
+          originalImage,
+          originalImage.naturalWidth,
+          originalImage.naturalHeight
+        );
         let bestResult = null;
         let bestQuality = 1.0;
 
-        if (!supportsQualityCompression) {
-          bestResult = await createCompressionBlob(canvas, outputFormat, 1.0);
-          bestQuality = 1.0;
-        } else {
+        if (supportsQualityCompression) {
           let minQ = 0.01;
           let maxQ = 1.0;
 
-          const initialResult = await createCompressionBlob(canvas, outputFormat, 1.0);
+          const initialResult = await createCompressionBlob(baseCanvas, outputFormat, 1.0);
           const initialBlob = initialResult.blob;
 
           if (initialBlob.size <= targetSizeBytes) {
@@ -1397,7 +1409,7 @@
           } else {
             for (let i = 0; i < 7; i++) {
               const midQ = (minQ + maxQ) / 2;
-              const result = await createCompressionBlob(canvas, outputFormat, midQ);
+              const result = await createCompressionBlob(baseCanvas, outputFormat, midQ);
               const blob = result.blob;
 
               if (blob.size <= targetSizeBytes) {
@@ -1412,6 +1424,35 @@
             if (!bestResult) {
               bestResult = await createCompressionBlob(canvas, outputFormat, minQ);
               bestQuality = minQ;
+            }
+          }
+        } else {
+          const initialResult = await createCompressionBlob(baseCanvas, outputFormat, 1.0);
+          const initialBlob = initialResult.blob;
+
+          if (initialBlob.size <= targetSizeBytes) {
+            bestResult = initialResult;
+          } else {
+            let minScale = Math.max(1 / Math.max(baseCanvas.width, baseCanvas.height), 0.01);
+            let maxScale = 1.0;
+
+            for (let i = 0; i < 8; i++) {
+              const midScale = (minScale + maxScale) / 2;
+              const scaledCanvas = createScaledCanvasFromImage(originalImage, midScale);
+              const result = await createCompressionBlob(scaledCanvas, outputFormat, 1.0);
+              const blob = result.blob;
+
+              if (blob.size <= targetSizeBytes) {
+                bestResult = result;
+                minScale = midScale;
+              } else {
+                maxScale = midScale;
+              }
+            }
+
+            if (!bestResult) {
+              const smallestCanvas = createScaledCanvasFromImage(originalImage, minScale);
+              bestResult = await createCompressionBlob(smallestCanvas, outputFormat, 1.0);
             }
           }
         }
@@ -1471,13 +1512,17 @@
 
       let extraNote = '';
       if (!supportsQualityCompression) {
-        extraNote += '<div class="info-row"><span>Note:</span><span>This format does not use quality compression</span></div>';
+        extraNote += '<div class="info-row"><span>Note:</span><span>This format compresses by reducing resolution.</span></div>';
       }
       if (requestedOutputMime === 'image/gif' && outputMime !== 'image/gif') {
         extraNote += '<div class="error">Note: GIF export is not supported in this browser, so it fell back to PNG.</div>';
       }
-      if (supportsQualityCompression && !isSuccess) {
-        extraNote += '<div class="error">Warning: Cannot compress to target size. Used minimum quality. Suggest resizing the image.</div>';
+      if (!isSuccess) {
+        if (supportsQualityCompression) {
+          extraNote += '<div class="error">Warning: Cannot compress to target size. Used minimum quality. Suggest resizing the image.</div>';
+        } else {
+          extraNote += '<div class="error">Warning: Cannot reach target size with current format at practical resolution. Try JPEG/WEBP or a larger target size.</div>';
+        }
       }
 
       resultInfo.innerHTML = `
