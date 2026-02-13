@@ -1002,19 +1002,46 @@
               <div class="field-group">
                 <label for="trim-output-format">Output Format</label>
                 <select id="trim-output-format" onchange="onTrimFormatChange()">
-                  <option value="mp3">mp3</option>
-                  <option value="ogg">ogg</option>
-                  <option value="aac">aac</option>
-                  <option value="wav">wav</option>
+                  <option value="mp3">mp3 (best compatibility, recommended)</option>
+                  <option value="ogg">ogg (better quality at same bitrate)</option>
+                  <option value="aac">aac (common on mobile)</option>
+                  <option value="wav">wav (lossless, largest size)</option>
                 </select>
               </div>
               <div class="field-group">
-                <label for="trim-bitrate">Bitrate</label>
+                <label for="trim-bitrate">Bitrate (kbps)</label>
                 <select id="trim-bitrate">
-                  <option value="64">64k</option>
-                  <option value="96">96k</option>
-                  <option value="128" selected>128k</option>
-                  <option value="192">192k</option>
+                  <option value="32">32 kbps (voice, very low)</option>
+                  <option value="48">48 kbps (voice / extreme compression)</option>
+                  <option value="64">64 kbps (small game BGM, mobile)</option>
+                  <option value="96">96 kbps (general music, acceptable)</option>
+                  <option value="128" selected>128 kbps (standard quality, default)</option>
+                  <option value="160">160 kbps (better quality, PC games)</option>
+                  <option value="192">192 kbps (high quality, music-focused)</option>
+                  <option value="256">256 kbps (near lossless, larger file)</option>
+                  <option value="320">320 kbps (MP3 max, largest size)</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="trim-channels">Channels</label>
+                <select id="trim-channels">
+                  <option value="keep" selected>keep (preserve original, recommended)</option>
+                  <option value="mono">mono (1 channel, voice / smaller)</option>
+                  <option value="stereo">stereo (2 channels, music)</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="trim-sample-rate">Sample Rate (Hz)</label>
+                <select id="trim-sample-rate">
+                  <option value="keep" selected>keep (preserve original, recommended)</option>
+                  <option value="8000">8000 Hz (telephone voice)</option>
+                  <option value="11025">11025 Hz (legacy compatibility)</option>
+                  <option value="16000">16000 Hz (speech recognition)</option>
+                  <option value="22050">22050 Hz (mobile BGM recommended)</option>
+                  <option value="32000">32000 Hz (transition level)</option>
+                  <option value="44100">44100 Hz (CD standard, most common)</option>
+                  <option value="48000">48000 Hz (video / game common)</option>
+                  <option value="96000">96000 Hz (pro audio, not for compression)</option>
                 </select>
               </div>
             </div>
@@ -2159,6 +2186,8 @@
     const trimPointEmpty = document.getElementById('trim-point-empty');
     const trimOutputFormatEl = document.getElementById('trim-output-format');
     const trimBitrateEl = document.getElementById('trim-bitrate');
+    const trimChannelsEl = document.getElementById('trim-channels');
+    const trimSampleRateEl = document.getElementById('trim-sample-rate');
     const trimStatusText = document.getElementById('trim-status-text');
     const trimSegmentList = document.getElementById('trim-segment-list');
     const trimErrorMsg = document.getElementById('trim-error-msg');
@@ -2242,6 +2271,8 @@
       trimClearPointsBtn.disabled = !enabled || trimCuePoints.length === 0;
       trimStartInput.disabled = !enabled;
       trimEndInput.disabled = !enabled;
+      if (trimChannelsEl) trimChannelsEl.disabled = !enabled;
+      if (trimSampleRateEl) trimSampleRateEl.disabled = !enabled;
     }
 
     function renderTrimFileInfo() {
@@ -2401,8 +2432,11 @@
       trimSegmentList.appendChild(item);
     }
 
-    async function encodeTrimBlob(wavBlob, format, bitrate, idx) {
-      if (format === 'wav') {
+    async function encodeTrimBlob(wavBlob, format, bitrate, channels, sampleRate, idx) {
+      const useChannels = channels || 'keep';
+      const useSampleRate = sampleRate || 'keep';
+
+      if (format === 'wav' && useChannels === 'keep' && useSampleRate === 'keep') {
         return {
           blob: wavBlob,
           ext: 'wav'
@@ -2444,8 +2478,8 @@
           inputBuffer,
           outputFormat: format,
           bitrate: Number(bitrate),
-          channels: 'stereo',
-          sampleRate: 'keep'
+          channels: useChannels,
+          sampleRate: useSampleRate
         }, [inputBuffer]);
       });
     }
@@ -2501,7 +2535,9 @@
         const wavBlob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
         const format = trimOutputFormatEl.value;
         const bitrate = trimBitrateEl.value;
-        const encoded = await encodeTrimBlob(wavBlob, format, bitrate, 1);
+        const channels = trimChannelsEl ? trimChannelsEl.value : 'keep';
+        const sampleRate = trimSampleRateEl ? trimSampleRateEl.value : 'keep';
+        const encoded = await encodeTrimBlob(wavBlob, format, bitrate, channels, sampleRate, 1);
         appendTrimSegment(encoded.blob, start, end, 1, encoded.ext);
         setTrimStatus(trimLocale.statusDone);
       } catch (error) {
@@ -2561,7 +2597,9 @@
           const wavBlob = audioBufferToWavBlob(trimDecodedBuffer, start, end);
           const format = trimOutputFormatEl.value;
           const bitrate = trimBitrateEl.value;
-          const encoded = await encodeTrimBlob(wavBlob, format, bitrate, segmentIndex);
+          const channels = trimChannelsEl ? trimChannelsEl.value : 'keep';
+          const sampleRate = trimSampleRateEl ? trimSampleRateEl.value : 'keep';
+          const encoded = await encodeTrimBlob(wavBlob, format, bitrate, channels, sampleRate, segmentIndex);
           appendTrimSegment(encoded.blob, start, end, segmentIndex, encoded.ext);
           segmentIndex += 1;
         }
