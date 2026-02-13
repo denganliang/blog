@@ -3065,14 +3065,78 @@
     proTrimTimeline.sync();
 
     // ==================== Tab Switching ====================
-    function switchTab(tabId) {
+    const AUDIO_TOOL_URL_QUERY_KEY = 'tool';
+    const AUDIO_TOOL_ALIAS_MAP = {
+      merge: 'merge-tools',
+      'audio-merge': 'merge-tools',
+      compress: 'compress-tools',
+      'audio-compress': 'compress-tools',
+      trim: 'trim-tools',
+      'cue-cut': 'trim-tools',
+      tts: 'tts-tools',
+      'srt-tts': 'tts-tools'
+    };
+
+    function normalizeAudioTabId(token) {
+      if (!token) return '';
+      const normalized = token.trim().toLowerCase();
+
+      if (AUDIO_TOOL_ALIAS_MAP[normalized]) {
+        return AUDIO_TOOL_ALIAS_MAP[normalized];
+      }
+
+      if (document.getElementById(token) && token.endsWith('-tools')) {
+        return token;
+      }
+
+      return '';
+    }
+
+    function getAudioToolTokenFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const hashToken = decodeURIComponent(window.location.hash.replace('#', '').trim());
+      const queryToken = params.get(AUDIO_TOOL_URL_QUERY_KEY) || '';
+
+      if (hashToken && normalizeAudioTabId(hashToken)) return hashToken;
+      if (queryToken && normalizeAudioTabId(queryToken)) return queryToken;
+
+      return hashToken || queryToken || '';
+    }
+
+    function setAudioToolTokenToUrl(tabId) {
+      if (!tabId) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set(AUDIO_TOOL_URL_QUERY_KEY, tabId);
+      url.hash = tabId;
+      window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function switchTab(tabId, options = {}) {
+      const { updateUrl = true } = options;
+      const normalizedTabId = normalizeAudioTabId(tabId);
+      if (!normalizedTabId) return;
+
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabId);
+        btn.classList.toggle('active', btn.dataset.tab === normalizedTabId);
       });
       document.querySelectorAll('.tool-panel').forEach(panel => {
-        panel.classList.toggle('active', panel.id === tabId);
+        panel.classList.toggle('active', panel.id === normalizedTabId);
       });
+
+      if (updateUrl) {
+        setAudioToolTokenToUrl(normalizedTabId);
+      }
     }
+
+    const initialAudioTool = getAudioToolTokenFromUrl();
+    if (initialAudioTool) {
+      switchTab(initialAudioTool, { updateUrl: false });
+    }
+
+    window.addEventListener('hashchange', () => {
+      const token = getAudioToolTokenFromUrl();
+      if (token) switchTab(token, { updateUrl: false });
+    });
 
     // ==================== TTS Logic ====================
     let refAudioFile = null;

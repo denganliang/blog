@@ -955,6 +955,84 @@
     });
 
     // ==================== Common Copy Function ====================
+    const TOOL_URL_QUERY_KEY = 'tool';
+    const TOOL_SCROLL_OFFSET = 140;
+
+    function getToolTokenFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const hashToken = decodeURIComponent(window.location.hash.replace('#', '').trim());
+      const queryToken = params.get(TOOL_URL_QUERY_KEY) || '';
+
+      if (hashToken && document.getElementById(hashToken)) return hashToken;
+      if (queryToken && document.getElementById(queryToken)) return queryToken;
+
+      return hashToken || queryToken || '';
+    }
+
+    function setToolTokenToUrl(token) {
+      if (!token) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set(TOOL_URL_QUERY_KEY, token);
+      url.hash = token;
+      window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function activateToolByToken(token, smoothScroll = false) {
+      if (!token) return false;
+
+      const targetElement = document.getElementById(token);
+      if (!targetElement) return false;
+
+      const panel = targetElement.classList.contains('tool-panel')
+        ? targetElement
+        : targetElement.closest('.tool-panel');
+      if (!panel) return false;
+
+      const tabBtn = document.querySelector(`.tab-btn[data-tab="${panel.id}"]`);
+      if (tabBtn && !tabBtn.classList.contains('active')) {
+        tabBtn.click();
+      } else {
+        localStorage.setItem('dev-toolbox-tab', panel.id);
+      }
+
+      if (!targetElement.classList.contains('tool-panel')) {
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - TOOL_SCROLL_OFFSET;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: smoothScroll ? 'smooth' : 'auto'
+        });
+      }
+
+      setToolTokenToUrl(token);
+      return true;
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setToolTokenToUrl(btn.dataset.tab);
+      });
+    });
+
+    document.querySelectorAll('.sub-nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        const targetId = link.getAttribute('href').substring(1);
+        setToolTokenToUrl(targetId);
+      });
+    });
+
+    const initialToolToken = getToolTokenFromUrl();
+    if (initialToolToken) {
+      setTimeout(() => {
+        activateToolByToken(initialToolToken, false);
+      }, 0);
+    }
+
+    window.addEventListener('hashchange', () => {
+      const token = getToolTokenFromUrl();
+      if (token) activateToolByToken(token, false);
+    });
+
     async function copyToClipboard(text, button) {
       try {
         await navigator.clipboard.writeText(text);
