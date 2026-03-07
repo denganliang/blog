@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="开发工具箱 - 集成常用开发工具的在线工具箱，包含编码转换、数据格式化、加密哈希、二维码处理、正则表达式等15+实用工具。">
+  <meta name="description" content="开发工具箱 - 集成常用开发工具的在线工具箱，包含编码转换、JSON/JSONPath、加密哈希、二维码处理、正则表达式等16+实用工具。">
   <meta name="keywords" content="开发工具,编码转换,JSON工具,正则表达式,哈希生成,二维码">
   <title>开发工具箱 - 邓安良</title>
 
@@ -424,7 +424,7 @@
       <!-- 页面标题 -->
       <div class="toolbox-header">
         <h1>🧰 开发工具箱</h1>
-        <p>集成15+常用开发工具，纯前端实现，数据安全不上传服务器</p>
+        <p>集成16+常用开发工具，纯前端实现，数据安全不上传服务器</p>
       </div>
 
       <!-- Tab导航 -->
@@ -444,6 +444,7 @@
           <a href="#unicode" class="sub-nav-item">Unicode</a>
           <a href="#text-diff" class="sub-nav-item">文本对比</a>
           <a href="#json" class="sub-nav-item">JSON</a>
+          <a href="#jsonpath" class="sub-nav-item">JSONPath</a>
           <a href="#jwt" class="sub-nav-item">JWT</a>
           <a href="#uuid" class="sub-nav-item">UUID</a>
           <a href="#timestamp" class="sub-nav-item">时间戳</a>
@@ -581,6 +582,55 @@
             <button class="btn btn-secondary" onclick="clearJSON()">清空</button>
           </div>
           <div id="json-error" class="error"></div>
+        </div>
+
+        <!-- JSONPath 查询 -->
+        <div class="tool-item" id="jsonpath">
+          <h3><span class="icon">🧭</span> JSONPath 查询</h3>
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>JSON 文档</label>
+              <textarea id="jsonpath-input" style="min-height: 260px;">{
+  "tenant": "tenant_7f3k9q2m",
+  "serviceStatus": 2,
+  "assetType": "gateway",
+  "assetName": "node-a9x4",
+  "asset": "10.73.22.184",
+  "businessName": "示例业务-42"
+}</textarea>
+            </div>
+            <div class="io-section">
+              <label>查询结果</label>
+              <textarea id="jsonpath-output" placeholder="这里显示匹配结果" readonly style="min-height: 260px;"></textarea>
+            </div>
+          </div>
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>JSONPath 表达式</label>
+              <input type="text" id="jsonpath-expression" value="$.tenant" placeholder="例如：$.tenant 或 $..assetName">
+            </div>
+            <div class="io-section">
+              <label>执行选项</label>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; min-height: 44px;">
+                <label style="display: inline-flex; gap: 0.5rem; align-items: center; margin: 0;">
+                  <input type="checkbox" id="jsonpath-output-paths">
+                  输出路径
+                </label>
+                <label style="display: inline-flex; gap: 0.5rem; align-items: center; margin: 0;">
+                  <input type="checkbox" id="jsonpath-safe-eval" checked>
+                  安全模式
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn" onclick="evaluateJSONPath()">执行查询</button>
+            <button class="btn btn-secondary" onclick="formatJSONPathInput()">格式化JSON</button>
+            <button class="btn btn-secondary" onclick="loadJSONPathExample()">加载示例</button>
+            <button class="btn btn-secondary" onclick="clearJSONPath()">清空</button>
+          </div>
+          <div class="hint">支持常见 JSONPath 语法：`$.a.b`、`$..name`、`$.items[0]`、`$.items[*]`、过滤表达式等。</div>
+          <div id="jsonpath-error" class="error"></div>
         </div>
 
         <!-- JWT 解析 -->
@@ -1224,6 +1274,109 @@
       document.getElementById('json-input').value = '';
       document.getElementById('json-output').value = '';
       document.getElementById('json-error').textContent = '';
+    }
+
+    // ==================== JSONPath 查询 ====================
+    let jsonPathPromise = null;
+    let jsonPathEvaluator = null;
+
+    function getJSONPathExample() {
+      return `{
+  "tenant": "tenant_7f3k9q2m",
+  "serviceStatus": 2,
+  "assetType": "gateway",
+  "assetName": "node-a9x4",
+  "asset": "10.73.22.184",
+  "businessName": "示例业务-42"
+}`;
+    }
+
+    async function loadJSONPathLib() {
+      if (jsonPathEvaluator) return jsonPathEvaluator;
+      if (jsonPathPromise) return jsonPathPromise;
+
+      jsonPathPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '/assets/vendor/jsonpath-plus/jsonpath.min.js';
+        script.onload = () => {
+          const evaluator = window.JSONPath && window.JSONPath.JSONPath;
+          if (typeof evaluator !== 'function') {
+            reject(new Error('JSONPath 库加载成功，但初始化失败'));
+            return;
+          }
+          jsonPathEvaluator = evaluator;
+          resolve(jsonPathEvaluator);
+        };
+        script.onerror = () => reject(new Error('JSONPath 库加载失败'));
+        document.head.appendChild(script);
+      });
+
+      return jsonPathPromise;
+    }
+
+    function loadJSONPathExample() {
+      document.getElementById('jsonpath-input').value = getJSONPathExample();
+      document.getElementById('jsonpath-expression').value = '$.tenant';
+      document.getElementById('jsonpath-output').value = '';
+      document.getElementById('jsonpath-error').textContent = '';
+      document.getElementById('jsonpath-output-paths').checked = false;
+      document.getElementById('jsonpath-safe-eval').checked = true;
+    }
+
+    function formatJSONPathInput() {
+      const inputEl = document.getElementById('jsonpath-input');
+      const errorEl = document.getElementById('jsonpath-error');
+
+      try {
+        const parsed = JSON.parse(inputEl.value);
+        inputEl.value = JSON.stringify(parsed, null, 2);
+        errorEl.textContent = '';
+      } catch (e) {
+        errorEl.textContent = 'JSON 格式错误: ' + e.message;
+      }
+    }
+
+    async function evaluateJSONPath() {
+      const input = document.getElementById('jsonpath-input').value.trim();
+      const expression = document.getElementById('jsonpath-expression').value.trim();
+      const outputEl = document.getElementById('jsonpath-output');
+      const errorEl = document.getElementById('jsonpath-error');
+      const outputPaths = document.getElementById('jsonpath-output-paths').checked;
+      const safeEval = document.getElementById('jsonpath-safe-eval').checked;
+
+      if (!input || !expression) {
+        errorEl.textContent = '请输入 JSON 文档和 JSONPath 表达式';
+        outputEl.value = '';
+        return;
+      }
+
+      try {
+        const json = JSON.parse(input);
+        const evaluator = await loadJSONPathLib();
+
+        const result = evaluator({
+          path: expression,
+          json,
+          wrap: true,
+          resultType: outputPaths ? 'path' : 'value',
+          preventEval: safeEval
+        });
+
+        outputEl.value = JSON.stringify(result, null, 2);
+        errorEl.textContent = `匹配到 ${result.length} 项`;
+      } catch (e) {
+        outputEl.value = '';
+        errorEl.textContent = 'JSONPath 查询失败: ' + e.message;
+      }
+    }
+
+    function clearJSONPath() {
+      document.getElementById('jsonpath-input').value = '';
+      document.getElementById('jsonpath-expression').value = '';
+      document.getElementById('jsonpath-output').value = '';
+      document.getElementById('jsonpath-error').textContent = '';
+      document.getElementById('jsonpath-output-paths').checked = false;
+      document.getElementById('jsonpath-safe-eval').checked = true;
     }
 
     // ==================== JWT解析 ====================

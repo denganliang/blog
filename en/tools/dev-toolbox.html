@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Developer Toolbox - An integrated online developer toolbox with 15+ utilities including encoding conversion, data formatting, encryption hashing, QR code processing, regex tools, and more.">
+  <meta name="description" content="Developer Toolbox - An integrated online developer toolbox with 16+ utilities including encoding conversion, JSON/JSONPath, encryption hashing, QR code processing, regex tools, and more.">
   <meta name="keywords" content="dev tools,encoding,JSON formatter,regex,hash generator,QR code">
   <title>Developer Toolbox - Deng Anliang</title>
 
@@ -424,7 +424,7 @@
       <!-- Page Header -->
       <div class="toolbox-header">
         <h1>🧰 Developer Toolbox</h1>
-        <p>15+ integrated developer utilities, pure front-end implementation, your data stays secure</p>
+        <p>16+ integrated developer utilities, pure front-end implementation, your data stays secure</p>
       </div>
 
       <!-- Tab Navigation -->
@@ -444,6 +444,7 @@
           <a href="#unicode" class="sub-nav-item">Unicode</a>
           <a href="#text-diff" class="sub-nav-item">Text Diff</a>
           <a href="#json" class="sub-nav-item">JSON</a>
+          <a href="#jsonpath" class="sub-nav-item">JSONPath</a>
           <a href="#jwt" class="sub-nav-item">JWT</a>
           <a href="#uuid" class="sub-nav-item">UUID</a>
           <a href="#timestamp" class="sub-nav-item">Timestamp</a>
@@ -581,6 +582,55 @@
             <button class="btn btn-secondary" onclick="clearJSON()">Clear</button>
           </div>
           <div id="json-error" class="error"></div>
+        </div>
+
+        <!-- JSONPath Query -->
+        <div class="tool-item" id="jsonpath">
+          <h3><span class="icon">🧭</span> JSONPath Query</h3>
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>JSON Document</label>
+              <textarea id="jsonpath-input" style="min-height: 260px;">{
+  "tenant": "tenant_7f3k9q2m",
+  "serviceStatus": 2,
+  "assetType": "gateway",
+  "assetName": "node-a9x4",
+  "asset": "10.73.22.184",
+  "businessName": "ExampleService-42"
+}</textarea>
+            </div>
+            <div class="io-section">
+              <label>Evaluation Result</label>
+              <textarea id="jsonpath-output" placeholder="Matched results will be shown here" readonly style="min-height: 260px;"></textarea>
+            </div>
+          </div>
+          <div class="io-group two-columns">
+            <div class="io-section">
+              <label>JSONPath Expression</label>
+              <input type="text" id="jsonpath-expression" value="$.tenant" placeholder="e.g. $.tenant or $..assetName">
+            </div>
+            <div class="io-section">
+              <label>Execution Options</label>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; min-height: 44px;">
+                <label style="display: inline-flex; gap: 0.5rem; align-items: center; margin: 0;">
+                  <input type="checkbox" id="jsonpath-output-paths">
+                  Output paths
+                </label>
+                <label style="display: inline-flex; gap: 0.5rem; align-items: center; margin: 0;">
+                  <input type="checkbox" id="jsonpath-safe-eval" checked>
+                  Safe mode
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn" onclick="evaluateJSONPath()">Evaluate</button>
+            <button class="btn btn-secondary" onclick="formatJSONPathInput()">Format JSON</button>
+            <button class="btn btn-secondary" onclick="loadJSONPathExample()">Load Example</button>
+            <button class="btn btn-secondary" onclick="clearJSONPath()">Clear</button>
+          </div>
+          <div class="hint">Supports common JSONPath syntax: `$.a.b`, `$..name`, `$.items[0]`, `$.items[*]`, filter expressions, and more.</div>
+          <div id="jsonpath-error" class="error"></div>
         </div>
 
         <!-- JWT Parser -->
@@ -1220,6 +1270,109 @@
       document.getElementById('json-input').value = '';
       document.getElementById('json-output').value = '';
       document.getElementById('json-error').textContent = '';
+    }
+
+    // ==================== JSONPath Query ====================
+    let jsonPathPromise = null;
+    let jsonPathEvaluator = null;
+
+    function getJSONPathExample() {
+      return `{
+  "tenant": "tenant_7f3k9q2m",
+  "serviceStatus": 2,
+  "assetType": "gateway",
+  "assetName": "node-a9x4",
+  "asset": "10.73.22.184",
+  "businessName": "ExampleService-42"
+}`;
+    }
+
+    async function loadJSONPathLib() {
+      if (jsonPathEvaluator) return jsonPathEvaluator;
+      if (jsonPathPromise) return jsonPathPromise;
+
+      jsonPathPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '/assets/vendor/jsonpath-plus/jsonpath.min.js';
+        script.onload = () => {
+          const evaluator = window.JSONPath && window.JSONPath.JSONPath;
+          if (typeof evaluator !== 'function') {
+            reject(new Error('JSONPath library loaded but failed to initialize'));
+            return;
+          }
+          jsonPathEvaluator = evaluator;
+          resolve(jsonPathEvaluator);
+        };
+        script.onerror = () => reject(new Error('Failed to load JSONPath library'));
+        document.head.appendChild(script);
+      });
+
+      return jsonPathPromise;
+    }
+
+    function loadJSONPathExample() {
+      document.getElementById('jsonpath-input').value = getJSONPathExample();
+      document.getElementById('jsonpath-expression').value = '$.tenant';
+      document.getElementById('jsonpath-output').value = '';
+      document.getElementById('jsonpath-error').textContent = '';
+      document.getElementById('jsonpath-output-paths').checked = false;
+      document.getElementById('jsonpath-safe-eval').checked = true;
+    }
+
+    function formatJSONPathInput() {
+      const inputEl = document.getElementById('jsonpath-input');
+      const errorEl = document.getElementById('jsonpath-error');
+
+      try {
+        const parsed = JSON.parse(inputEl.value);
+        inputEl.value = JSON.stringify(parsed, null, 2);
+        errorEl.textContent = '';
+      } catch (e) {
+        errorEl.textContent = 'Invalid JSON: ' + e.message;
+      }
+    }
+
+    async function evaluateJSONPath() {
+      const input = document.getElementById('jsonpath-input').value.trim();
+      const expression = document.getElementById('jsonpath-expression').value.trim();
+      const outputEl = document.getElementById('jsonpath-output');
+      const errorEl = document.getElementById('jsonpath-error');
+      const outputPaths = document.getElementById('jsonpath-output-paths').checked;
+      const safeEval = document.getElementById('jsonpath-safe-eval').checked;
+
+      if (!input || !expression) {
+        errorEl.textContent = 'Please provide both JSON input and a JSONPath expression';
+        outputEl.value = '';
+        return;
+      }
+
+      try {
+        const json = JSON.parse(input);
+        const evaluator = await loadJSONPathLib();
+
+        const result = evaluator({
+          path: expression,
+          json,
+          wrap: true,
+          resultType: outputPaths ? 'path' : 'value',
+          preventEval: safeEval
+        });
+
+        outputEl.value = JSON.stringify(result, null, 2);
+        errorEl.textContent = `Matched ${result.length} item(s)`;
+      } catch (e) {
+        outputEl.value = '';
+        errorEl.textContent = 'JSONPath evaluation failed: ' + e.message;
+      }
+    }
+
+    function clearJSONPath() {
+      document.getElementById('jsonpath-input').value = '';
+      document.getElementById('jsonpath-expression').value = '';
+      document.getElementById('jsonpath-output').value = '';
+      document.getElementById('jsonpath-error').textContent = '';
+      document.getElementById('jsonpath-output-paths').checked = false;
+      document.getElementById('jsonpath-safe-eval').checked = true;
     }
 
     // ==================== JWT Parser ====================

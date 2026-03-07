@@ -217,13 +217,13 @@
             </div>
 
             <!-- Developer Toolbox -->
-            <div class="card tool-card" data-categories="productivity">
+            <div class="card tool-card" data-categories="productivity" data-keywords="jsonpath, json query, regex, hash, encoding, base64, timestamp">
               <div class="tool-card-header">
                 <div class="tool-card-icon">🧰</div>
                 <div class="card-title">Developer Toolbox</div>
               </div>
               <div class="card-description">
-                Integrated developer toolbox with 15+ utilities including encoding, JSON formatting, regex testing, hashing, and more. Pure front-end, your data stays secure.
+                Integrated developer toolbox with 16+ utilities including encoding, JSON/JSONPath queries, regex testing, hashing, and more. Pure front-end, your data stays secure.
               </div>
               <div style="margin: 0.5rem 0;">
                 <span class="tag-outline">Dev Tools</span>
@@ -337,9 +337,10 @@
         const categories = card.dataset.categories.split(',');
         const title = card.querySelector('.card-title').textContent.toLowerCase();
         const description = card.querySelector('.card-description').textContent.toLowerCase();
+        const keywords = (card.dataset.keywords || '').toLowerCase();
 
         const matchesCategory = category === 'all' || categories.includes(category);
-        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm) || keywords.includes(searchTerm);
 
         if (matchesCategory && matchesSearch) {
           card.style.display = '';
