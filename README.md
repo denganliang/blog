@@ -55,6 +55,8 @@ git clone https://github.com/denganliang/denganliang.com.git
 cd blog
 ```
 
+多仓库上游维护指南： [github gist](https://gist.github.com/denganliang/058cdb9f51b1754d7848f1cada8c5416)
+
 2. 启动本地服务器：
 ```bash
 # 使用Python
