@@ -750,8 +750,9 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body>
+<body class="tool-scope">
   <!-- 导航栏 -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -1164,6 +1165,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/tools-ui.js"></script>
 
   <script>
     // ==================== Single Threaded FFmpeg Workaround ====================
@@ -1258,7 +1260,7 @@
       const newFiles = Array.from(files).filter(file => file.type.startsWith('audio/'));
 
       if (newFiles.length === 0) {
-        alert('请选择有效的音频文件');
+        ToolUI.alert('请选择有效的音频文件');
         return;
       }
 
@@ -3227,17 +3229,17 @@
       const apiUrl = urlInput.value.replace(/\/$/, '');
 
       if (!apiUrl) {
-        alert('请输入 TTS 服务器地址');
+        ToolUI.alert('请输入 TTS 服务器地址');
         return;
       }
 
       if (!refAudioFile) {
-        alert('请上传参考音频');
+        ToolUI.alert('请上传参考音频');
         return;
       }
 
       if (srtSegments.length === 0) {
-        alert('请上传有效的 SRT 字幕文件');
+        ToolUI.alert('请上传有效的 SRT 字幕文件');
         return;
       }
 

@@ -4,10 +4,14 @@ import re
 import sys
 
 ROOT = pathlib.Path('.')
-HTML_FILES = sorted(ROOT.rglob('*.html'))
 BASE = 'https://denganliang.com'
 SCAN_FILE_SUFFIXES = {'.html', '.js', '.css'}
-SCAN_EXCLUDE_PREFIXES = ('assets/vendor/',)
+# 非发布目录：本地 vendored 依赖，以及 .codebuddy 下的项目数据/设计评审稿
+SCAN_EXCLUDE_PREFIXES = ('assets/vendor/', '.codebuddy/')
+HTML_FILES = sorted(
+    p for p in ROOT.rglob('*.html')
+    if not any(p.as_posix().startswith(prefix) for prefix in SCAN_EXCLUDE_PREFIXES)
+)
 BLOCKED_CDN_RULES = (
     ('cdn.jsdelivr.net', re.compile(r'(?:https?:)?//(?:[^/]+\.)?cdn\.jsdelivr\.net', re.IGNORECASE)),
     ('unpkg.com', re.compile(r'(?:https?:)?//(?:[^/]+\.)?unpkg\.com', re.IGNORECASE)),

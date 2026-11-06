@@ -447,8 +447,9 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body>
+<body class="tool-scope">
   <!-- Navigation -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -931,6 +932,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/tools-ui.js"></script>
 
   <script>
     // ==================== Single Threaded FFmpeg Workaround ====================
@@ -1418,7 +1420,7 @@
 
       const file = files[0];
       if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+        ToolUI.alert('Please select a valid image file');
         return;
       }
 
@@ -1467,7 +1469,7 @@
 
       const targetSizeKB = parseFloat(document.getElementById('target-size').value);
       if (!targetSizeKB || targetSizeKB <= 0) {
-        alert('Please enter a valid target size');
+        ToolUI.alert('Please enter a valid target size');
         return;
       }
 
@@ -1697,7 +1699,7 @@
 
       const file = files[0];
       if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+        ToolUI.alert('Please select a valid image file');
         return;
       }
 
@@ -2119,7 +2121,7 @@
 
       const file = files[0];
       if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+        ToolUI.alert('Please select a valid image file');
         return;
       }
 
@@ -2612,7 +2614,7 @@
 
       const file = files[0];
       if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+        ToolUI.alert('Please select a valid image file');
         return;
       }
 
@@ -2716,7 +2718,7 @@
 
       const file = files[0];
       if (!file.type.startsWith('video/')) {
-        alert('Please select a valid video file');
+        ToolUI.alert('Please select a valid video file');
         return;
       }
 
@@ -2861,7 +2863,7 @@
 
       } catch (e) {
         console.error(e);
-        alert('Generation failed: ' + e.message);
+        ToolUI.alert('Generation failed: ' + e.message);
         btn.disabled = false;
         btn.textContent = 'Generate GIF';
       }
@@ -2926,7 +2928,7 @@
       if (files.length === 0) return;
       const file = files[0];
       if (!file.type.startsWith('video/')) {
-        alert('Please select a valid video file');
+        ToolUI.alert('Please select a valid video file');
         return;
       }
       vcFile = file;

@@ -526,7 +526,7 @@ async function handleDownload(includeWatermark) {
         link.click();
     } catch (err) {
         console.error('Export failed:', err);
-        alert('导出失败,请重试');
+        ToolUI.alert(err && err.message ? err.message : ToolUI.t('error'));
     } finally {
         // Restore watermark state
         if (wasWatermarkActive) {

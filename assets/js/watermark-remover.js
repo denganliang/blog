@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             resultSection.scrollIntoView({ behavior: 'smooth' });
         } catch (err) {
             console.error('Processing failed:', err);
-            alert('处理失败，请重试');
+            ToolUI.alert(err && err.message ? err.message : ToolUI.t('error'));
         } finally {
             loadingOverlay.style.display = 'none';
         }

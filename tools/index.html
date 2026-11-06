@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="实用在线工具集合 - 番茄钟、世界时钟、Gemini 水印抹除等">
-  <meta name="keywords" content="在线工具,番茄钟,世界时钟,Gemini 水印抹除,图片处理">
+  <meta name="description" content="实用在线工具集合：图片压缩与格式转换、音视频处理、开发工具箱、Markdown 编辑器、番茄钟与世界时钟，全部免费、无需注册。">
+  <meta name="keywords" content="在线工具,图片压缩,图片工具箱,音频工具箱,开发工具箱,Markdown 编辑器,番茄钟,世界时钟,纯前端处理">
   <title>在线工具</title>
 
   <!-- Favicon -->
@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/assets/css/components.css">
   <link rel="stylesheet" href="/assets/css/utilities.css">
   <link rel="stylesheet" href="/assets/css/tools-layout.css">
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://denganliang.com/tools/">
@@ -24,7 +25,7 @@
   <link rel="alternate" hreflang="en" href="/en/tools/">
   <link rel="alternate" hreflang="x-default" href="/tools/">
 </head>
-<body>
+<body class="tool-scope">
   <!-- 导航栏 -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -34,7 +35,7 @@
         <li><a href="/">首页</a></li>
         <li><a href="/about/">关于我</a></li>
         <li><a href="/projects/">项目</a></li>
-        <li><a href="/tools/">工具</a></li>
+        <li><a href="/tools/" aria-current="page">工具</a></li>
         <li><a href="/blog/">博客</a></li>
       </ul>
 
@@ -47,240 +48,201 @@
 
   <!-- 主要内容 -->
   <main class="main-content">
-    <div class="container">
-      <div class="tools-layout">
-        <!-- 侧边栏 -->
-        <aside class="tools-sidebar">
-          <div class="sidebar-section">
-            <div class="sidebar-title">分类</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a href="#all" class="sidebar-menu-link active" data-category="all">所有工具</a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a href="#image" class="sidebar-menu-link" data-category="image">图片工具</a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a href="#productivity" class="sidebar-menu-link" data-category="productivity">生产力</a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a href="#time" class="sidebar-menu-link" data-category="time">时间管理</a>
-              </li>
-            </ul>
-          </div>
-        </aside>
+    <div class="container tool-catalog">
+      <!-- Hero -->
+      <section class="tool-hero">
+        <div class="tool-hero-inner">
+          <div>
+            <span class="tool-hero-eyebrow">TOOLS / 工具库</span>
+            <h1>把常用小工具，放在一个地方</h1>
+            <p class="tool-hero-sub">图片、音视频、开发、写作与时间管理。打开即用，所有文件都在你的浏览器里处理，不上传服务器。</p>
 
-        <!-- 内容区 -->
-        <div class="tools-content">
-          <div class="tools-header">
-            <h1>在线工具</h1>
-            <div class="tools-search search-box">
-              <input type="text" class="search-input" placeholder="搜索工具..." id="tool-search">
-              <span class="search-icon">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-              </span>
+            <div class="tool-search" role="search">
+              <svg class="tool-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+              </svg>
+              <input type="text" id="tool-search" placeholder="搜索工具、功能或关键词…" autocomplete="off" spellcheck="false" aria-label="搜索工具">
+              <span class="tool-search-kbd" aria-hidden="true"><span class="tool-kbd">/</span></span>
+              <button type="button" class="tool-search-clear" id="tool-search-clear" aria-label="清除搜索" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+            </div>
+
+            <div class="tool-hero-meta">
+              <span class="tool-meta-pill" data-inline-icon="shield">本地处理 · 数据不上传</span>
+              <span class="tool-meta-pill">免费 · 无需注册</span>
+              <span>按 <span class="tool-kbd">/</span> 快速搜索</span>
             </div>
           </div>
 
-          <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-            精心打造的实用在线工具，完全免费，无需注册。
-          </p>
-
-          <div class="grid grid-3" id="tools-grid">
-            <!-- NanoBanana -->
-            <div class="card tool-card" data-categories="image">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🍌</div>
-                <div class="card-title">NanoBanana</div>
-              </div>
-              <div class="card-description">
-                上传图片，施展 AI 魔法，创造精美手办风格或深夜食堂氛围图。支持多种预设风格和自定义提示词。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">AI 绘图</span>
-                <span class="tag-outline">图片生成</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/nano-banana.html" class="btn btn-primary">开始使用</a>
-              </div>
+          <div class="tool-hero-stats" aria-label="工具库概览">
+            <div class="tool-stat">
+              <span class="tool-stat-icon" data-stat-icon="grid"></span>
+              <span class="tool-stat-body"><span class="tool-stat-value">9</span><span class="tool-stat-label">个在线工具，覆盖 5 个类别</span></span>
             </div>
-
-            <!-- PhotoSign 照片署名 -->
-            <div class="card tool-card" data-categories="image">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">📷</div>
-                <div class="card-title">PhotoSign 照片署名</div>
-              </div>
-              <div class="card-description">
-                为照片添加专业的相机水印，展示拍摄设备和参数信息。支持自动识别主流相机品牌 EXIF 信息，纯前端处理。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">图片工具</span>
-                <span class="tag-outline">相机水印</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/photosign.html" class="btn btn-primary">开始使用</a>
-              </div>
+            <div class="tool-stat">
+              <span class="tool-stat-icon" data-stat-icon="shield"></span>
+              <span class="tool-stat-body"><span class="tool-stat-value">100%</span><span class="tool-stat-label">浏览器内处理，文件不上传</span></span>
             </div>
-
-            <!-- 图片工具箱 -->
-            <div class="card tool-card" data-categories="image" data-keywords="压缩, 格式转换, 九宫格拆分, 宫格切图, 视频转GIF, 视频压缩, 裁剪, 旋转, 水印">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🖼️</div>
-                <div class="card-title">图片工具箱</div>
-              </div>
-              <div class="card-description">
-                集成智能图片压缩、格式转换、九宫格/宫格拆分等实用功能。支持指定目标大小压缩，纯前端处理，无需上传服务器。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">图片工具</span>
-                <span class="tag-outline">图片压缩</span>
-                <span class="tag-outline">九宫格拆分</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/image-toolbox.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-
-            <!-- 音频工具箱 -->
-            <div class="card tool-card" data-categories="image,productivity" data-keywords="音频合并, mp3合并, 音频剪辑">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🎵</div>
-                <div class="card-title">音频工具箱</div>
-              </div>
-              <div class="card-description">
-                集成音频合并等实用功能。支持批量上传合并，纯前端处理，保护隐私。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">音频工具</span>
-                <span class="tag-outline">音频合并</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/audio-toolbox.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-
-            <!-- Gemini 水印抹除 -->
-            <div class="card tool-card" data-categories="image">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">✨</div>
-                <div class="card-title">Gemini 水印抹除</div>
-              </div>
-              <div class="card-description">
-                基于逆向 Alpha 混合算法，一键完美去除 Gemini 生成图片右下角的水印。纯前端处理，保护隐私。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">图片工具</span>
-                <span class="tag-outline">AI 工具</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/gemini-watermark-remover.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-
-            <!-- 番茄钟 -->
-            <div class="card tool-card" data-categories="productivity,time">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🍅</div>
-                <div class="card-title">番茄钟</div>
-              </div>
-              <div class="card-description">
-                基于番茄工作法的时间管理工具。设定25分钟专注时间，搭配5分钟短休息，提高工作效率。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">时间管理</span>
-                <span class="tag-outline">效率工具</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/pomodoro.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-
-            <!-- 世界时钟 -->
-            <div class="card tool-card" data-categories="time">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🌍</div>
-                <div class="card-title">世界时钟</div>
-              </div>
-              <div class="card-description">
-                实时显示全球主要城市的当前时间。支持添加自定义城市，方便跨时区协作。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">时区转换</span>
-                <span class="tag-outline">协作工具</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/world-clock.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-
-            <!-- 开发工具箱 -->
-            <div class="card tool-card" data-categories="productivity" data-keywords="编码转换, JSON, JSONPath, 正则表达式, 哈希, MD5, SHA, Base64, URL编码, 时间戳, UUID, 二维码, 颜色转换">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🧰</div>
-                <div class="card-title">开发工具箱</div>
-              </div>
-              <div class="card-description">
-                集成16+常用开发工具的在线工具箱，包含编码转换、JSON/JSONPath、正则表达式测试、哈希生成等。纯前端实现，数据安全不上传。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">开发工具</span>
-                <span class="tag-outline">编码转换</span>
-                <span class="tag-outline">正则表达式</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/dev-toolbox.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-            <!-- Markdown 编辑器 -->
-            <div class="card tool-card" data-categories="productivity">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">📝</div>
-                <div class="card-title">Markdown 编辑器</div>
-              </div>
-              <div class="card-description">
-                功能强大的在线 Markdown 编辑器，支持实时预览、导出 PDF 和 Word 文档。自动保存，无需担心数据丢失。
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">生产力</span>
-                <span class="tag-outline">写作工具</span>
-              </div>
-              <div class="card-footer">
-                <a href="/tools/markdown-editor.html" class="btn btn-primary">开始使用</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- 即将推出 -->
-          <div style="margin-top: 4rem;">
-            <h2 style="margin-bottom: 2rem;">即将推出</h2>
-            <div class="grid grid-3">
-              <div class="card" style="opacity: 0.7;">
-                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎨</div>
-                <div class="card-title">
-                  颜色工具
-                  <span class="badge" style="background: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.7rem;">即将来临</span>
-                </div>
-                <div class="card-description">
-                  颜色选择器、配色方案生成器、颜色转换工具。
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 建议新工具 -->
-          <div style="margin-top: 4rem; padding: 2rem; background: var(--bg-secondary); border-radius: 12px; text-align: center;">
-            <h3 style="margin-bottom: 1rem;">有工具建议？</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-              如果你有任何工具建议或功能需求，欢迎联系我。
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-              <a href="https://github.com/denganliang" class="btn btn-primary" target="_blank" rel="noopener">在 GitHub 提建议</a>
+            <div class="tool-stat">
+              <span class="tool-stat-icon" data-stat-icon="bolt"></span>
+              <span class="tool-stat-body"><span class="tool-stat-value">0</span><span class="tool-stat-label">安装步骤，打开即可使用</span></span>
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- 分类筛选 -->
+      <div class="tool-filter-bar">
+        <div class="tool-filter-chips" role="group" aria-label="工具分类">
+          <button type="button" class="tool-filter-chip" data-category="all" data-label="所有工具" aria-pressed="true">所有工具 <span class="tool-filter-count">9</span></button>
+          <button type="button" class="tool-filter-chip" data-category="image" data-label="图片工具" aria-pressed="false">图片工具 <span class="tool-filter-count">4</span></button>
+          <button type="button" class="tool-filter-chip" data-category="productivity" data-label="生产力" aria-pressed="false">生产力 <span class="tool-filter-count">4</span></button>
+          <button type="button" class="tool-filter-chip" data-category="dev" data-label="开发工具" aria-pressed="false">开发工具 <span class="tool-filter-count">2</span></button>
+          <button type="button" class="tool-filter-chip" data-category="time" data-label="时间管理" aria-pressed="false">时间管理 <span class="tool-filter-count">2</span></button>
+        </div>
+      </div>
+
+      <!-- 结果条 -->
+      <div class="tool-result-bar">
+        <div>
+          <span id="tool-result-count" aria-live="polite" aria-atomic="true">共 9 个工具</span>
+          <span id="tool-filter-label" hidden></span>
+        </div>
+        <div class="tool-result-actions">
+          <button type="button" class="tool-reset" id="tool-order-reset" hidden>恢复默认顺序</button>
+          <button type="button" class="tool-reset" id="tool-reset" hidden>清除筛选</button>
+        </div>
+      </div>
+
+      <!-- 工具卡片 -->
+      <div class="tool-grid-cards" id="tools-grid">
+        <a class="card tool-card" href="/tools/dev-toolbox.html" data-categories="productivity,dev" data-keywords="编码转换, JSON, JSONPath, 正则表达式, 哈希, MD5, SHA, Base64, URL编码, 时间戳, UUID, 二维码, 颜色转换, JWT" data-icon="code">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">开发工具箱</span>
+          </div>
+          <p class="card-description">16+ 常用开发工具：编码转换、JSON / JSONPath、正则测试、哈希生成、JWT 解析与二维码处理。</p>
+          <div class="tool-card-tags"><span class="tool-chip">编码转换</span><span class="tool-chip">JSON</span><span class="tool-chip">正则表达式</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/markdown-editor.html" data-categories="productivity,dev" data-keywords="Markdown, 实时预览, 导出 PDF, 导出 Word, 自动保存, 写作" data-icon="markdown">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Markdown 编辑器</span>
+          </div>
+          <p class="card-description">支持实时预览、自动保存与导出 PDF / Word 的在线编辑器，写作过程不离开浏览器。</p>
+          <div class="tool-card-tags"><span class="tool-chip">写作工具</span><span class="tool-chip">实时预览</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/image-toolbox.html" data-categories="image" data-keywords="压缩, 格式转换, 九宫格拆分, 宫格切图, 视频转GIF, 视频压缩, 裁剪, 旋转, 水印, 背景去除" data-icon="image">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">图片工具箱</span>
+          </div>
+          <p class="card-description">集成智能压缩、格式转换、九宫格拆分、尺寸裁剪、背景去除与视频转 GIF，全部在浏览器内完成。</p>
+          <div class="tool-card-tags"><span class="tool-chip">图片压缩</span><span class="tool-chip">格式转换</span><span class="tool-chip">九宫格拆分</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/world-clock.html" data-categories="time" data-keywords="时区, 世界时间, 跨时区协作, 城市时间" data-icon="globe">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">世界时钟</span>
+          </div>
+          <p class="card-description">实时显示全球主要城市的当前时间，支持添加自定义城市，方便跨时区协作与会议安排。</p>
+          <div class="tool-card-tags"><span class="tool-chip">时区转换</span><span class="tool-chip">协作工具</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/pomodoro.html" data-categories="productivity,time" data-keywords="番茄工作法, 专注, 计时器, 休息提醒" data-icon="timer">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">番茄钟</span>
+          </div>
+          <p class="card-description">基于番茄工作法的时间管理工具。25 分钟专注搭配 5 分钟短休息，支持自定义时长与快捷键。</p>
+          <div class="tool-card-tags"><span class="tool-chip">时间管理</span><span class="tool-chip">效率工具</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/audio-toolbox.html" data-categories="productivity" data-keywords="音频合并, mp3合并, 音频剪辑, 音频压缩, SRT 转语音" data-icon="audio">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">音频工具箱</span>
+          </div>
+          <p class="card-description">集成音频合并、压缩、打点剪辑与字幕转语音。支持批量上传，处理过程完全在本地完成。</p>
+          <div class="tool-card-tags"><span class="tool-chip">音频合并</span><span class="tool-chip">音频压缩</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/gemini-watermark-remover.html" data-categories="image" data-keywords="水印去除, Alpha 混合, Gemini, AI 图片" data-icon="eraser">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Gemini 水印抹除</span>
+          </div>
+          <p class="card-description">基于逆向 Alpha 混合算法，一键去除 Gemini 生成图片右下角的水印。无需上传原图，保护隐私。</p>
+          <div class="tool-card-tags"><span class="tool-chip">图片工具</span><span class="tool-chip">AI 工具</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/nano-banana.html" data-categories="image" data-keywords="AI 绘图, 手办风格, 图片生成, 提示词" data-icon="sparkles">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">NanoBanana</span>
+          </div>
+          <p class="card-description">上传图片，施展 AI 魔法，创造精美手办风格或深夜食堂氛围图。支持多种预设风格和自定义提示词。</p>
+          <div class="tool-card-tags"><span class="tool-chip">AI 绘图</span><span class="tool-chip">图片生成</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/tools/photosign.html" data-categories="image" data-keywords="EXIF, 相机水印, 照片署名, 参数" data-icon="camera">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">PhotoSign 照片署名</span>
+          </div>
+          <p class="card-description">为照片添加专业的相机水印，展示拍摄设备和参数信息。自动识别主流相机品牌 EXIF 信息，纯前端处理。</p>
+          <div class="tool-card-tags"><span class="tool-chip">图片工具</span><span class="tool-chip">相机水印</span></div>
+          <div class="card-footer"><span class="tool-card-cta">开始使用 <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <!-- 无结果空状态 -->
+        <div class="tool-empty" id="tool-empty" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 13h4l2 3h4l2-3h4"/><path d="M5 5h14l2 8v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5l2-8z"/>
+          </svg>
+          <h3>没有找到匹配的工具</h3>
+          <p>试试更短的关键词，或清除筛选条件</p>
+          <div class="tool-empty-suggestions" id="tool-suggestions">
+            <span>试试：</span>
+            <button type="button" class="tool-chip" data-suggest="压缩">压缩</button>
+            <button type="button" class="tool-chip" data-suggest="JSON">JSON</button>
+            <button type="button" class="tool-chip" data-suggest="时间">时间</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 即将推出 -->
+      <h2 class="tool-section-title">即将推出</h2>
+      <div class="tool-upcoming-grid">
+        <div class="card tool-muted-card tool-upcoming-inline">
+          <span class="tool-card-icon" data-inline-icon="palette" aria-hidden="true"></span>
+          <div>
+            <div class="card-title">颜色工具</div>
+            <p class="card-description">颜色选择器、配色方案生成器、颜色格式转换。</p>
+          </div>
+          <span class="tool-upcoming-badge">即将来临</span>
+        </div>
+      </div>
+
+      <!-- 建议新工具 -->
+      <div class="tool-cta-band">
+        <div>
+          <h3>有工具建议？</h3>
+          <p>如果你有任何工具建议或功能需求，欢迎在 GitHub 提出。</p>
+        </div>
+        <a class="btn" href="https://github.com/denganliang" target="_blank" rel="noopener">在 GitHub 提建议</a>
       </div>
     </div>
   </main>
@@ -290,17 +252,17 @@
     <div class="container">
       <div class="footer-social">
         <a href="mailto:i@denganliang.com" aria-label="Email">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
           </svg>
         </a>
         <a href="https://github.com/denganliang" target="_blank" rel="noopener" aria-label="GitHub">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
           </svg>
         </a>
         <a href="https://twitter.com/denganliang" target="_blank" rel="noopener" aria-label="Twitter">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
           </svg>
         </a>
@@ -313,7 +275,7 @@
         <li><a href="/tools/">工具</a></li>
       </ul>
 
-      <p style="margin-bottom: 0.5rem;">联系方式: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
+      <p class="footer-contact">联系方式: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
       <p>&copy; 2026 在线工具. 保留所有权利.</p>
     </div>
   </footer>
@@ -322,44 +284,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script>
-    // 侧边栏分类过滤
-    const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
-    const toolCards = document.querySelectorAll('.tool-card');
-    const toolSearch = document.getElementById('tool-search');
-
-    function filterTools() {
-      const activeLink = document.querySelector('.sidebar-menu-link.active');
-      const category = activeLink.dataset.category;
-      const searchTerm = toolSearch.value.toLowerCase();
-
-      toolCards.forEach(card => {
-        const categories = card.dataset.categories.split(',');
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        const description = card.querySelector('.card-description').textContent.toLowerCase();
-        const keywords = (card.dataset.keywords || '').toLowerCase();
-
-        const matchesCategory = category === 'all' || categories.includes(category);
-        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm) || keywords.includes(searchTerm);
-
-        if (matchesCategory && matchesSearch) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        sidebarLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        filterTools();
-      });
-    });
-
-    toolSearch.addEventListener('input', filterTools);
-  </script>
+  <script src="/assets/js/tools-ui.js"></script>
+  <script src="/assets/js/tools-index.js"></script>
 </body>
 </html>

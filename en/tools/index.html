@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A collection of useful online tools - Pomodoro, World Clock, Gemini Watermark Remover, etc.">
-  <meta name="keywords" content="Online Tools, Pomodoro, World Clock, Gemini Watermark Remover, Image Processing">
+  <meta name="description" content="A collection of useful online tools: image compression and conversion, audio and video utilities, a developer toolbox, a Markdown editor, a Pomodoro timer and a world clock. Free, no sign-up, processed locally.">
+  <meta name="keywords" content="online tools, image compression, image toolbox, audio toolbox, developer toolbox, Markdown editor, Pomodoro, world clock, local processing">
   <title>Online Tools</title>
 
   <!-- Favicon -->
@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/assets/css/components.css">
   <link rel="stylesheet" href="/assets/css/utilities.css">
   <link rel="stylesheet" href="/assets/css/tools-layout.css">
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://denganliang.com/en/tools/">
@@ -24,7 +25,7 @@
   <link rel="alternate" hreflang="en" href="/en/tools/">
   <link rel="alternate" hreflang="x-default" href="/tools/">
 </head>
-<body>
+<body class="tool-scope">
   <!-- Navigation -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -34,7 +35,7 @@
         <li><a href="/en/">Home</a></li>
         <li><a href="/en/about/">About</a></li>
         <li><a href="/en/projects/">Projects</a></li>
-        <li><a href="/en/tools/">Tools</a></li>
+        <li><a href="/en/tools/" aria-current="page">Tools</a></li>
         <li><a href="/en/blog/">Blog</a></li>
       </ul>
 
@@ -47,240 +48,201 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="container">
-      <div class="tools-layout">
-        <!-- Sidebar -->
-        <aside class="tools-sidebar">
-          <div class="sidebar-section">
-            <div class="sidebar-title">Categories</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a href="#all" class="sidebar-menu-link active" data-category="all">All Tools</a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a href="#image" class="sidebar-menu-link" data-category="image">Image Tools</a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a href="#productivity" class="sidebar-menu-link" data-category="productivity">Productivity</a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a href="#time" class="sidebar-menu-link" data-category="time">Time Management</a>
-              </li>
-            </ul>
-          </div>
-        </aside>
+    <div class="container tool-catalog">
+      <!-- Hero -->
+      <section class="tool-hero">
+        <div class="tool-hero-inner">
+          <div>
+            <span class="tool-hero-eyebrow">TOOLS / LIBRARY</span>
+            <h1>Everyday tools, one quiet workbench</h1>
+            <p class="tool-hero-sub">Images, audio and video, development, writing and time management. Open and use instantly — every file stays in your browser and is never uploaded.</p>
 
-        <!-- Content Area -->
-        <div class="tools-content">
-          <div class="tools-header">
-            <h1>Online Tools</h1>
-            <div class="tools-search search-box">
-              <input type="text" class="search-input" placeholder="Search tools..." id="tool-search">
-              <span class="search-icon">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-              </span>
+            <div class="tool-search" role="search">
+              <svg class="tool-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+              </svg>
+              <input type="text" id="tool-search" placeholder="Search tools, features or keywords…" autocomplete="off" spellcheck="false" aria-label="Search tools">
+              <span class="tool-search-kbd" aria-hidden="true"><span class="tool-kbd">/</span></span>
+              <button type="button" class="tool-search-clear" id="tool-search-clear" aria-label="Clear search" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+            </div>
+
+            <div class="tool-hero-meta">
+              <span class="tool-meta-pill" data-inline-icon="shield">Runs locally · Files stay on your device</span>
+              <span class="tool-meta-pill">Free · No sign-up</span>
+              <span>Press <span class="tool-kbd">/</span> to search</span>
             </div>
           </div>
 
-          <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-            A collection of useful online tools, completely free and no registration required.
-          </p>
-
-          <div class="grid grid-3" id="tools-grid">
-            <!-- NanoBanana -->
-            <div class="card tool-card" data-categories="image" data-keywords="compression, converter, grid splitter, image grid split, video to GIF, video compression">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🍌</div>
-                <div class="card-title">NanoBanana</div>
-              </div>
-              <div class="card-description">
-                Upload your images, apply AI magic, and create stunning figurines or cinematic scenes. Supports various preset styles.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">AI Image</span>
-                <span class="tag-outline">Generation</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/nano-banana.html" class="btn btn-primary">Start Using</a>
-              </div>
+          <div class="tool-hero-stats" aria-label="Library overview">
+            <div class="tool-stat">
+              <span class="tool-stat-icon" data-stat-icon="grid"></span>
+              <span class="tool-stat-body"><span class="tool-stat-value">9</span><span class="tool-stat-label">online tools across 5 categories</span></span>
             </div>
-
-            <!-- PhotoSign - Photo Signature -->
-            <div class="card tool-card" data-categories="image">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">📷</div>
-                <div class="card-title">PhotoSign - Photo Signature</div>
-              </div>
-              <div class="card-description">
-                Add professional camera watermarks to your photos with device and parameter information. Automatically parses EXIF data from major camera brands.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Image Tools</span>
-                <span class="tag-outline">Camera Watermark</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/photosign.html" class="btn btn-primary">Start Using</a>
-              </div>
+            <div class="tool-stat">
+              <span class="tool-stat-icon" data-stat-icon="shield"></span>
+              <span class="tool-stat-body"><span class="tool-stat-value">100%</span><span class="tool-stat-label">processed in your browser, never uploaded</span></span>
             </div>
-
-            <!-- Image Toolbox -->
-            <div class="card tool-card" data-categories="image">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🖼️</div>
-                <div class="card-title">Image Toolbox</div>
-              </div>
-              <div class="card-description">
-                Integrated image compression, format conversion, and grid image splitting tools. Supports target size compression. Pure frontend processing for privacy.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Image Tools</span>
-                <span class="tag-outline">Compression</span>
-                <span class="tag-outline">Grid Splitter</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/image-toolbox.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-
-            <!-- Audio Toolbox -->
-            <div class="card tool-card" data-categories="image,productivity">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🎵</div>
-                <div class="card-title">Audio Toolbox</div>
-              </div>
-              <div class="card-description">
-                Integrated audio merger tool. Supports batch upload and merge. Pure frontend processing for privacy.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Audio Tools</span>
-                <span class="tag-outline">Audio Merger</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/audio-toolbox.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-
-            <!-- Gemini Watermark Remover -->
-            <div class="card tool-card" data-categories="image">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">✨</div>
-                <div class="card-title">Gemini Watermark Remover</div>
-              </div>
-              <div class="card-description">
-                Perfectly remove the watermark from Gemini-generated images based on reverse alpha blending. Pure frontend processing for privacy.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Image Tools</span>
-                <span class="tag-outline">AI Tools</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/gemini-watermark-remover.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-
-            <!-- Pomodoro Timer -->
-            <div class="card tool-card" data-categories="productivity,time">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🍅</div>
-                <div class="card-title">Pomodoro Timer</div>
-              </div>
-              <div class="card-description">
-                A time management tool based on the Pomodoro Technique. Set a 25-minute focus session followed by a 5-minute break.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Time Management</span>
-                <span class="tag-outline">Productivity</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/pomodoro.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-
-            <!-- World Clock -->
-            <div class="card tool-card" data-categories="time">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🌍</div>
-                <div class="card-title">World Clock</div>
-              </div>
-              <div class="card-description">
-                Real-time current time for major cities worldwide. Add custom cities for easy cross-timezone collaboration.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Timezone</span>
-                <span class="tag-outline">Collaboration</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/world-clock.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-
-            <!-- Developer Toolbox -->
-            <div class="card tool-card" data-categories="productivity" data-keywords="jsonpath, json query, regex, hash, encoding, base64, timestamp">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">🧰</div>
-                <div class="card-title">Developer Toolbox</div>
-              </div>
-              <div class="card-description">
-                Integrated developer toolbox with 16+ utilities including encoding, JSON/JSONPath queries, regex testing, hashing, and more. Pure front-end, your data stays secure.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Dev Tools</span>
-                <span class="tag-outline">Encoding</span>
-                <span class="tag-outline">Regex</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/dev-toolbox.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-            <!-- Markdown Editor -->
-            <div class="card tool-card" data-categories="productivity">
-              <div class="tool-card-header">
-                <div class="tool-card-icon">📝</div>
-                <div class="card-title">Markdown Editor</div>
-              </div>
-              <div class="card-description">
-                Powerful online Markdown editor with live preview, supporting PDF and Word export. Auto-saves your work so you never lose data.
-              </div>
-              <div style="margin: 0.5rem 0;">
-                <span class="tag-outline">Productivity</span>
-                <span class="tag-outline">Writing</span>
-              </div>
-              <div class="card-footer">
-                <a href="/en/tools/markdown-editor.html" class="btn btn-primary">Start Using</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Coming Soon -->
-          <div style="margin-top: 4rem;">
-            <h2 style="margin-bottom: 2rem;">Coming Soon</h2>
-            <div class="grid grid-3">
-              <div class="card" style="opacity: 0.7;">
-                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎨</div>
-                <div class="card-title">
-                  Color Tools
-                  <span class="badge" style="background: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.7rem;">Coming Soon</span>
-                </div>
-                <div class="card-description">
-                  Color picker, palette generator, and color conversion tools.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Suggest New Tool -->
-          <div style="margin-top: 4rem; padding: 2rem; background: var(--bg-secondary); border-radius: 12px; text-align: center;">
-            <h3 style="margin-bottom: 1rem;">Have tool suggestions?</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-              If you have any tool suggestions or feature requests, feel free to contact me.
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-              <a href="https://github.com/denganliang" class="btn btn-primary" target="_blank" rel="noopener">Suggest on GitHub</a>
+            <div class="tool-stat">
+              <span class="tool-stat-icon" data-stat-icon="bolt"></span>
+              <span class="tool-stat-body"><span class="tool-stat-value">0</span><span class="tool-stat-label">installation steps — just open and use</span></span>
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- Category filters -->
+      <div class="tool-filter-bar">
+        <div class="tool-filter-chips" role="group" aria-label="Tool categories">
+          <button type="button" class="tool-filter-chip" data-category="all" data-label="All tools" aria-pressed="true">All tools <span class="tool-filter-count">9</span></button>
+          <button type="button" class="tool-filter-chip" data-category="image" data-label="Images" aria-pressed="false">Images <span class="tool-filter-count">4</span></button>
+          <button type="button" class="tool-filter-chip" data-category="productivity" data-label="Productivity" aria-pressed="false">Productivity <span class="tool-filter-count">4</span></button>
+          <button type="button" class="tool-filter-chip" data-category="dev" data-label="Developer" aria-pressed="false">Developer <span class="tool-filter-count">2</span></button>
+          <button type="button" class="tool-filter-chip" data-category="time" data-label="Time" aria-pressed="false">Time <span class="tool-filter-count">2</span></button>
+        </div>
+      </div>
+
+      <!-- Result bar -->
+      <div class="tool-result-bar">
+        <div>
+          <span id="tool-result-count" aria-live="polite" aria-atomic="true">9 tools</span>
+          <span id="tool-filter-label" hidden></span>
+        </div>
+        <div class="tool-result-actions">
+          <button type="button" class="tool-reset" id="tool-order-reset" hidden>Reset order</button>
+          <button type="button" class="tool-reset" id="tool-reset" hidden>Clear filters</button>
+        </div>
+      </div>
+
+      <!-- Tool cards -->
+      <div class="tool-grid-cards" id="tools-grid">
+        <a class="card tool-card" href="/en/tools/dev-toolbox.html" data-categories="productivity,dev" data-keywords="encoding, JSON, JSONPath, regex, hash, MD5, SHA, Base64, URL encode, timestamp, UUID, QR code, color conversion, JWT" data-icon="code">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Developer Toolbox</span>
+          </div>
+          <p class="card-description">16+ everyday developer utilities: encoding, JSON / JSONPath, regex testing, hashing, JWT decoding and QR code tools.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Encoding</span><span class="tool-chip">JSON</span><span class="tool-chip">Regex</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/markdown-editor.html" data-categories="productivity,dev" data-keywords="Markdown, live preview, export PDF, export Word, autosave, writing" data-icon="markdown">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Markdown Editor</span>
+          </div>
+          <p class="card-description">An online editor with live preview, autosave and PDF / Word export — your writing never leaves the browser.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Writing</span><span class="tool-chip">Live preview</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/image-toolbox.html" data-categories="image" data-keywords="compress, format conversion, grid split, video to GIF, video compression, crop, rotate, watermark, background removal" data-icon="image">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Image Toolbox</span>
+          </div>
+          <p class="card-description">Smart compression, format conversion, grid splitting, resizing, background removal and video-to-GIF — all processed locally.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Compress</span><span class="tool-chip">Convert</span><span class="tool-chip">Grid split</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/world-clock.html" data-categories="time" data-keywords="time zone, world time, cross-timezone collaboration, city time" data-icon="globe">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">World Clock</span>
+          </div>
+          <p class="card-description">Live local time for major cities worldwide, with custom city support for planning meetings across time zones.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Time zones</span><span class="tool-chip">Collaboration</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/pomodoro.html" data-categories="productivity,time" data-keywords="Pomodoro, focus, timer, break reminder" data-icon="timer">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Pomodoro Timer</span>
+          </div>
+          <p class="card-description">A focus timer built on the Pomodoro technique: 25 minutes of work followed by a 5-minute break, with custom durations and shortcuts.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Time management</span><span class="tool-chip">Productivity</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/audio-toolbox.html" data-categories="productivity" data-keywords="audio merge, mp3 join, audio trim, audio compression, SRT to speech" data-icon="audio">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Audio Toolbox</span>
+          </div>
+          <p class="card-description">Merge, compress and trim audio, or turn subtitles into speech. Batch upload supported, with all processing kept on your device.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Audio merge</span><span class="tool-chip">Compress</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/gemini-watermark-remover.html" data-categories="image" data-keywords="watermark removal, alpha blending, Gemini, AI image" data-icon="eraser">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">Gemini Watermark Remover</span>
+          </div>
+          <p class="card-description">Remove the corner watermark from Gemini-generated images with inverse alpha blending. Your original image never leaves the browser.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Images</span><span class="tool-chip">AI tools</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/nano-banana.html" data-categories="image" data-keywords="AI art, figurine style, image generation, prompt" data-icon="sparkles">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">NanoBanana</span>
+          </div>
+          <p class="card-description">Upload a photo and turn it into a collectible figurine or a late-night diner scene. Preset styles and custom prompts supported.</p>
+          <div class="tool-card-tags"><span class="tool-chip">AI art</span><span class="tool-chip">Image generation</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <a class="card tool-card" href="/en/tools/photosign.html" data-categories="image" data-keywords="EXIF, camera watermark, photo signature, exposure" data-icon="camera">
+          <div class="tool-card-header">
+            <span class="tool-card-icon" aria-hidden="true"></span>
+            <span class="card-title">PhotoSign</span>
+          </div>
+          <p class="card-description">Add a professional camera watermark with your gear and exposure settings. Reads EXIF from major camera brands, entirely in the browser.</p>
+          <div class="tool-card-tags"><span class="tool-chip">Images</span><span class="tool-chip">Camera watermark</span></div>
+          <div class="card-footer"><span class="tool-card-cta">Open tool <span data-inline-icon="arrowRight"></span></span></div>
+        </a>
+
+        <!-- Empty state -->
+        <div class="tool-empty" id="tool-empty" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 13h4l2 3h4l2-3h4"/><path d="M5 5h14l2 8v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5l2-8z"/>
+          </svg>
+          <h3>No matching tools</h3>
+          <p>Try a shorter keyword or clear the filters</p>
+          <div class="tool-empty-suggestions" id="tool-suggestions">
+            <span>Try:</span>
+            <button type="button" class="tool-chip" data-suggest="compress">compress</button>
+            <button type="button" class="tool-chip" data-suggest="JSON">JSON</button>
+            <button type="button" class="tool-chip" data-suggest="time">time</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coming soon -->
+      <h2 class="tool-section-title">Coming soon</h2>
+      <div class="tool-upcoming-grid">
+        <div class="card tool-muted-card tool-upcoming-inline">
+          <span class="tool-card-icon" data-inline-icon="palette" aria-hidden="true"></span>
+          <div>
+            <div class="card-title">Color Tools</div>
+            <p class="card-description">Color picker, palette generator and color format conversion.</p>
+          </div>
+          <span class="tool-upcoming-badge">Coming soon</span>
+        </div>
+      </div>
+
+      <!-- Suggest a tool -->
+      <div class="tool-cta-band">
+        <div>
+          <h3>Have a tool idea?</h3>
+          <p>Suggestions and feature requests are welcome on GitHub.</p>
+        </div>
+        <a class="btn" href="https://github.com/denganliang" target="_blank" rel="noopener">Suggest on GitHub</a>
       </div>
     </div>
   </main>
@@ -290,18 +252,18 @@
     <div class="container">
       <div class="footer-social">
         <a href="mailto:i@denganliang.com" aria-label="Email">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
           </svg>
         </a>
         <a href="https://github.com/denganliang" target="_blank" rel="noopener" aria-label="GitHub">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
           </svg>
         </a>
         <a href="https://twitter.com/denganliang" target="_blank" rel="noopener" aria-label="Twitter">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057a3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
           </svg>
         </a>
       </div>
@@ -313,7 +275,7 @@
         <li><a href="/en/tools/">Tools</a></li>
       </ul>
 
-      <p style="margin-bottom: 0.5rem;">Contact: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
+      <p class="footer-contact">Contact: <a href="mailto:i@denganliang.com">i@denganliang.com</a></p>
       <p>&copy; 2026 Online Tools. All rights reserved.</p>
     </div>
   </footer>
@@ -322,44 +284,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script>
-    // Sidebar category filtering
-    const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
-    const toolCards = document.querySelectorAll('.tool-card');
-    const toolSearch = document.getElementById('tool-search');
-
-    function filterTools() {
-      const activeLink = document.querySelector('.sidebar-menu-link.active');
-      const category = activeLink.dataset.category;
-      const searchTerm = toolSearch.value.toLowerCase();
-
-      toolCards.forEach(card => {
-        const categories = card.dataset.categories.split(',');
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        const description = card.querySelector('.card-description').textContent.toLowerCase();
-        const keywords = (card.dataset.keywords || '').toLowerCase();
-
-        const matchesCategory = category === 'all' || categories.includes(category);
-        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm) || keywords.includes(searchTerm);
-
-        if (matchesCategory && matchesSearch) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        sidebarLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        filterTools();
-      });
-    });
-
-    toolSearch.addEventListener('input', filterTools);
-  </script>
+  <script src="/assets/js/tools-ui.js"></script>
+  <script src="/assets/js/tools-index.js"></script>
 </body>
 </html>

@@ -396,8 +396,9 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body>
+<body class="tool-scope">
   <!-- 导航栏 -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -807,7 +808,7 @@
         <!-- 二维码解码 -->
         <div class="tool-item" id="qr-decode">
           <h3><span class="icon">📷</span> 二维码解码</h3>
-          <div class="file-upload" onclick="document.getElementById('qr-file').click()">
+          <div class="file-upload" data-tool-drop="auto" onclick="document.getElementById('qr-file').click()">
             <input type="file" id="qr-file" accept="image/*" onchange="decodeQRCode(event)">
             <p>点击或拖拽图片到此处</p>
             <p class="hint">支持 JPG、PNG 格式的二维码图片</p>
@@ -951,6 +952,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/tools-ui.js"></script>
 
   <script>
     // ==================== Tab导航 ====================
@@ -1116,7 +1118,7 @@
         const encoded = btoa(unescape(encodeURIComponent(input)));
         document.getElementById('base64-output').value = encoded;
       } catch (e) {
-        alert('编码失败: ' + e.message);
+        ToolUI.alert('编码失败: ' + e.message);
       }
     }
 
@@ -1126,7 +1128,7 @@
         const decoded = decodeURIComponent(escape(atob(input)));
         document.getElementById('base64-output').value = decoded;
       } catch (e) {
-        alert('解码失败，请确保输入的是有效的Base64字符串');
+        ToolUI.alert('解码失败，请确保输入的是有效的Base64字符串');
       }
     }
 
@@ -1152,7 +1154,7 @@
       try {
         document.getElementById('url-output').value = decodeURIComponent(input);
       } catch (e) {
-        alert('解码失败，请确保输入的是有效的URL编码');
+        ToolUI.alert('解码失败，请确保输入的是有效的URL编码');
       }
     }
 
@@ -1199,7 +1201,7 @@
         );
         document.getElementById('unicode-output').value = result;
       } catch (e) {
-        alert('转换失败，请确保输入的是有效的Unicode编码');
+        ToolUI.alert('转换失败，请确保输入的是有效的Unicode编码');
       }
     }
 
@@ -1860,7 +1862,7 @@
     async function generateQRCode() {
       const text = document.getElementById('qr-text').value;
       if (!text) {
-        alert('请输入要生成二维码的内容');
+        ToolUI.alert('请输入要生成二维码的内容');
         return;
       }
 
@@ -1904,14 +1906,14 @@
         }
       } catch (e) {
         console.error('QR Code Error:', e);
-        alert('生成二维码失败: ' + (e.message || String(e)));
+        ToolUI.alert('生成二维码失败: ' + (e.message || String(e)));
       }
     }
 
     function downloadQR() {
       const canvas = document.getElementById('qr-canvas');
       if (!canvas.width) {
-        alert('请先生成二维码');
+        ToolUI.alert('请先生成二维码');
         return;
       }
 
@@ -2206,7 +2208,7 @@
         const rgb = hexToRgb(hex);
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } catch (e) {
-        alert('无效的HEX颜色值');
+        ToolUI.alert('无效的HEX颜色值');
       }
     }
 
@@ -2216,7 +2218,7 @@
       if (match) {
         updateColorDisplay(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
       } else {
-        alert('无效的RGB颜色值，格式: rgb(255, 87, 51)');
+        ToolUI.alert('无效的RGB颜色值，格式: rgb(255, 87, 51)');
       }
     }
 
@@ -2227,7 +2229,7 @@
         const rgb = hslToRgb(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } else {
-        alert('无效的HSL颜色值，格式: hsl(9, 100%, 60%)');
+        ToolUI.alert('无效的HSL颜色值，格式: hsl(9, 100%, 60%)');
       }
     }
 

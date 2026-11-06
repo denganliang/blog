@@ -14,11 +14,7 @@ const LOCAL_FFMPEG_CORE_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.js')
 const LOCAL_FFMPEG_WASM_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.wasm');
 const LOCAL_FFMPEG_CORE_WORKER_URL = resolveAssetUrl('../vendor/ffmpeg/ffmpeg-core.worker.js');
 
-const CDN_FFMPEG_SCRIPT_URL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
-const CDN_FFMPEG_CORE_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js';
-const CDN_FFMPEG_WASM_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.wasm';
-const CDN_FFMPEG_CORE_WORKER_URL = 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.worker.js';
-
+/* 仅使用本地 vendored FFmpeg，不引入任何外部 CDN 依赖 */
 const FFMPEG_SOURCES = [
   {
     name: 'local',
@@ -26,13 +22,6 @@ const FFMPEG_SOURCES = [
     corePath: LOCAL_FFMPEG_CORE_URL,
     wasmPath: LOCAL_FFMPEG_WASM_URL,
     workerPath: LOCAL_FFMPEG_CORE_WORKER_URL
-  },
-  {
-    name: 'cdn',
-    scriptUrl: CDN_FFMPEG_SCRIPT_URL,
-    corePath: CDN_FFMPEG_CORE_URL,
-    wasmPath: CDN_FFMPEG_WASM_URL,
-    workerPath: CDN_FFMPEG_CORE_WORKER_URL
   }
 ];
 

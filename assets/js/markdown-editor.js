@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
       html2pdf().set(opt).from(element).save();
     } else {
       console.error('html2pdf library not loaded');
-      alert(isEn ? 'Error: Export library not loaded.' : '错误：导出库未加载。');
+      ToolUI.alert(isEn ? 'Error: Export library not loaded.' : '错误：导出库未加载。');
     }
   }
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
       downloadBlob(converted, 'document.docx');
     } else {
       console.error('html-docx-js library not loaded');
-      alert(isEn ? 'Error: Export library not loaded.' : '错误：导出库未加载。');
+      ToolUI.alert(isEn ? 'Error: Export library not loaded.' : '错误：导出库未加载。');
     }
   }
 

@@ -396,8 +396,9 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body>
+<body class="tool-scope">
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -807,7 +808,7 @@
         <!-- QR Code Decoder -->
         <div class="tool-item" id="qr-decode">
           <h3><span class="icon">📷</span> QR Code Decoder</h3>
-          <div class="file-upload" onclick="document.getElementById('qr-file').click()">
+          <div class="file-upload" data-tool-drop="auto" onclick="document.getElementById('qr-file').click()">
             <input type="file" id="qr-file" accept="image/*" onchange="decodeQRCode(event)">
             <p>Click or drag image here</p>
             <p class="hint">Supports JPG, PNG format QR code images</p>
@@ -951,6 +952,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/tools-ui.js"></script>
 
   <script>
     // Same JavaScript code as Chinese version (using same IDs and logic)
@@ -1112,7 +1114,7 @@
         const encoded = btoa(unescape(encodeURIComponent(input)));
         document.getElementById('base64-output').value = encoded;
       } catch (e) {
-        alert('Encoding failed: ' + e.message);
+        ToolUI.alert('Encoding failed: ' + e.message);
       }
     }
 
@@ -1122,7 +1124,7 @@
         const decoded = decodeURIComponent(escape(atob(input)));
         document.getElementById('base64-output').value = decoded;
       } catch (e) {
-        alert('Decoding failed, please ensure the input is valid Base64');
+        ToolUI.alert('Decoding failed, please ensure the input is valid Base64');
       }
     }
 
@@ -1148,7 +1150,7 @@
       try {
         document.getElementById('url-output').value = decodeURIComponent(input);
       } catch (e) {
-        alert('Decoding failed, please ensure the input is valid URL encoding');
+        ToolUI.alert('Decoding failed, please ensure the input is valid URL encoding');
       }
     }
 
@@ -1195,7 +1197,7 @@
         );
         document.getElementById('unicode-output').value = result;
       } catch (e) {
-        alert('Conversion failed, please ensure the input is valid Unicode');
+        ToolUI.alert('Conversion failed, please ensure the input is valid Unicode');
       }
     }
 
@@ -1855,7 +1857,7 @@
     async function generateQRCode() {
       const text = document.getElementById('qr-text').value;
       if (!text) {
-        alert('Please enter content to generate QR code');
+        ToolUI.alert('Please enter content to generate QR code');
         return;
       }
 
@@ -1899,14 +1901,14 @@
         }
       } catch (e) {
         console.error('QR Code Error:', e);
-        alert('QR code generation failed: ' + (e.message || String(e)));
+        ToolUI.alert('QR code generation failed: ' + (e.message || String(e)));
       }
     }
 
     function downloadQR() {
       const canvas = document.getElementById('qr-canvas');
       if (!canvas.width) {
-        alert('Please generate QR code first');
+        ToolUI.alert('Please generate QR code first');
         return;
       }
 
@@ -2201,7 +2203,7 @@
         const rgb = hexToRgb(hex);
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } catch (e) {
-        alert('Invalid HEX color value');
+        ToolUI.alert('Invalid HEX color value');
       }
     }
 
@@ -2211,7 +2213,7 @@
       if (match) {
         updateColorDisplay(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
       } else {
-        alert('Invalid RGB color value, format: rgb(255, 87, 51)');
+        ToolUI.alert('Invalid RGB color value, format: rgb(255, 87, 51)');
       }
     }
 
@@ -2222,7 +2224,7 @@
         const rgb = hslToRgb(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } else {
-        alert('Invalid HSL color value, format: hsl(9, 100%, 60%)');
+        ToolUI.alert('Invalid HSL color value, format: hsl(9, 100%, 60%)');
       }
     }
 

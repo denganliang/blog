@@ -750,8 +750,9 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body>
+<body class="tool-scope">
   <!-- Navbar -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -1164,6 +1165,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/tools-ui.js"></script>
 
   <script>
     // ==================== Single Threaded FFmpeg Workaround ====================
@@ -1258,7 +1260,7 @@
       const newFiles = Array.from(files).filter(file => file.type.startsWith('audio/'));
 
       if (newFiles.length === 0) {
-        alert('Please select valid audio files');
+        ToolUI.alert('Please select valid audio files');
         return;
       }
 
@@ -3225,17 +3227,17 @@
       const apiUrl = urlInput.value.replace(/\/$/, '');
 
       if (!apiUrl) {
-        alert('Please enter TTS Server URL');
+        ToolUI.alert('Please enter TTS Server URL');
         return;
       }
 
       if (!refAudioFile) {
-        alert('Please upload reference audio');
+        ToolUI.alert('Please upload reference audio');
         return;
       }
 
       if (srtSegments.length === 0) {
-        alert('Please upload a valid SRT file');
+        ToolUI.alert('Please upload a valid SRT file');
         return;
       }
 

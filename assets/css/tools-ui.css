@@ -1,0 +1,1712 @@
+/* ==============================================================
+   Quiet Workbench · 在线工具板块共享设计层
+   --------------------------------------------------------------
+   作用域：仅 body.tool-scope（tools/ 与 en/tools/ 下的页面）
+   原则：不修改任何全局样式；所有选择器带 body.tool-scope 前缀，
+        以更高 specificity 覆盖各页面内联 <style> 的旧规则。
+   依赖：themes.css / main.css / components.css（先于本文件加载）
+   ============================================================== */
+
+/* ---------- 1. 设计令牌 ---------- */
+body.tool-scope {
+  --tool-bg: #f8fafc;
+  --tool-surface: #ffffff;
+  --tool-surface-2: #f1f4f8;
+  --tool-surface-3: #e9eef5;
+  --tool-border: #e3e8ef;
+  --tool-border-strong: #cbd5e1;
+  --tool-text: #101828;
+  --tool-text-2: #475467;
+  --tool-text-3: #8a94a6;
+  --tool-primary: #2563eb;
+  --tool-primary-hover: #1d4ed8;
+  --tool-primary-soft: #eff4ff;
+  --tool-primary-ink: #1e40af;
+  --tool-success: #12b76a;
+  --tool-success-soft: #e9f9f0;
+  --tool-error: #f04438;
+  --tool-error-soft: #fef0ee;
+  --tool-warning: #f79009;
+  --tool-warning-soft: #fff6e8;
+  --tool-info-soft: #eff4ff;
+  --tool-shadow-xs: 0 1px 2px rgba(16, 24, 40, .05);
+  --tool-shadow-sm: 0 1px 3px rgba(16, 24, 40, .06), 0 6px 16px rgba(16, 24, 40, .04);
+  --tool-shadow-md: 0 2px 6px rgba(16, 24, 40, .07), 0 14px 32px rgba(16, 24, 40, .08);
+  --tool-r-sm: 8px;
+  --tool-r-md: 12px;
+  --tool-r-lg: 16px;
+  --tool-r-pill: 999px;
+  --tool-space: 8px;
+  --tool-monospace: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --tool-sans: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html[data-theme="dark"] body.tool-scope {
+  --tool-bg: #0b1220;
+  --tool-surface: #151c27;
+  --tool-surface-2: #1b2431;
+  --tool-surface-3: #232e3d;
+  --tool-border: #26303f;
+  --tool-border-strong: #3a4759;
+  --tool-text: #e7ecf3;
+  --tool-text-2: #a8b3c4;
+  --tool-text-3: #7c8798;
+  --tool-primary: #5b8def;
+  --tool-primary-hover: #7aa4f5;
+  --tool-primary-soft: #16243d;
+  --tool-primary-ink: #a9c4ff;
+  --tool-success: #3ccb87;
+  --tool-success-soft: #123226;
+  --tool-error: #f97066;
+  --tool-error-soft: #3a1d1d;
+  --tool-warning: #fdb643;
+  --tool-warning-soft: #3a2c16;
+  --tool-info-soft: #16243d;
+  --tool-shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+  --tool-shadow-sm: 0 1px 3px rgba(0, 0, 0, .32), 0 6px 16px rgba(0, 0, 0, .24);
+  --tool-shadow-md: 0 2px 6px rgba(0, 0, 0, .36), 0 14px 32px rgba(0, 0, 0, .34);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) body.tool-scope {
+    --tool-bg: #0b1220;
+    --tool-surface: #151c27;
+    --tool-surface-2: #1b2431;
+    --tool-border: #26303f;
+    --tool-text: #e7ecf3;
+    --tool-text-2: #a8b3c4;
+    --tool-text-3: #7c8798;
+    --tool-primary: #5b8def;
+    --tool-primary-soft: #16243d;
+  }
+}
+
+/* ---------- 2. 基础层 ---------- */
+body.tool-scope {
+  background: var(--tool-bg);
+  color: var(--tool-text);
+  font-family: var(--tool-sans);
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body.tool-scope *,
+body.tool-scope *::before,
+body.tool-scope *::after {
+  box-sizing: border-box;
+  transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+  transition-duration: .18s;
+  transition-timing-function: cubic-bezier(.2, .7, .3, 1);
+}
+
+body.tool-scope .container,
+body.tool-scope .container-wide,
+body.tool-scope .container-narrow {
+  max-width: 1200px;
+}
+
+body.tool-scope .main-content {
+  min-height: 62vh;
+}
+
+body.tool-scope h1,
+body.tool-scope h2,
+body.tool-scope h3,
+body.tool-scope h4 {
+  color: var(--tool-text);
+  letter-spacing: -.015em;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+body.tool-scope h1 {
+  font-size: clamp(26px, 3vw, 32px);
+  margin-bottom: 12px;
+}
+
+body.tool-scope h2 {
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+
+body.tool-scope h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+body.tool-scope p {
+  color: var(--tool-text-2);
+}
+
+body.tool-scope a {
+  color: var(--tool-primary);
+  text-decoration: none;
+}
+
+body.tool-scope a:hover {
+  color: var(--tool-primary-hover);
+}
+
+body.tool-scope :focus-visible {
+  outline: 2px solid var(--tool-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+body.tool-scope ::selection {
+  background: var(--tool-primary-soft);
+  color: var(--tool-primary-ink);
+}
+
+body.tool-scope ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body.tool-scope ::-webkit-scrollbar-thumb {
+  background: var(--tool-border-strong);
+  border-radius: var(--tool-r-pill);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+body.tool-scope [hidden] {
+  display: none !important;
+}
+
+/* ---------- 3. 导航与页脚 ---------- */
+body.tool-scope .navbar {
+  height: 64px;
+  background: color-mix(in srgb, var(--tool-surface) 86%, transparent);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid var(--tool-border);
+  box-shadow: none;
+}
+
+body.tool-scope .navbar-content {
+  max-width: 1200px;
+  height: 100%;
+}
+
+body.tool-scope .navbar-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 680;
+  letter-spacing: -.02em;
+  color: var(--tool-text);
+}
+
+body.tool-scope .navbar-logo::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: linear-gradient(140deg, var(--tool-primary), #6b9cf6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28);
+  flex: none;
+}
+
+body.tool-scope .navbar-menu a {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--tool-text-2);
+  border-radius: var(--tool-r-sm);
+  padding: 7px 13px;
+}
+
+body.tool-scope .navbar-menu a:hover {
+  background: var(--tool-surface-2);
+  color: var(--tool-text);
+}
+
+body.tool-scope .navbar-menu a[aria-current="page"] {
+  background: var(--tool-primary-soft);
+  color: var(--tool-primary-ink);
+  font-weight: 620;
+}
+
+body.tool-scope .theme-toggle,
+body.tool-scope .lang-toggle {
+  border: 1px solid var(--tool-border);
+  background: var(--tool-surface);
+  color: var(--tool-text-2);
+  border-radius: var(--tool-r-sm);
+  min-width: 36px;
+  height: 36px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+body.tool-scope .theme-toggle:hover,
+body.tool-scope .lang-toggle:hover {
+  border-color: var(--tool-border-strong);
+  color: var(--tool-text);
+  background: var(--tool-surface-2);
+}
+
+body.tool-scope .footer {
+  border-top: 1px solid var(--tool-border);
+  background: var(--tool-surface);
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .footer a {
+  color: var(--tool-text-2);
+}
+
+/* ---------- 4. 通用控件 ---------- */
+body.tool-scope .btn,
+body.tool-scope .tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 16px;
+  border-radius: var(--tool-r-sm);
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--tool-surface);
+  color: var(--tool-text);
+  border-color: var(--tool-border-strong);
+}
+
+body.tool-scope .btn:hover,
+body.tool-scope .tool-btn:hover {
+  background: var(--tool-surface-2);
+  border-color: var(--tool-text-3);
+  color: var(--tool-text);
+  transform: translateY(-1px);
+}
+
+body.tool-scope .btn-primary,
+body.tool-scope .tool-btn--primary {
+  background: var(--tool-primary);
+  border-color: var(--tool-primary);
+  color: #fff;
+  box-shadow: var(--tool-shadow-xs);
+}
+
+body.tool-scope .btn-primary:hover,
+body.tool-scope .tool-btn--primary:hover {
+  background: var(--tool-primary-hover);
+  border-color: var(--tool-primary-hover);
+  color: #fff;
+  box-shadow: var(--tool-shadow-sm);
+}
+
+body.tool-scope .btn-secondary,
+body.tool-scope .tool-btn--secondary {
+  background: var(--tool-surface);
+  border-color: var(--tool-border-strong);
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-btn--ghost:hover {
+  background: var(--tool-surface-2);
+  border-color: transparent;
+}
+
+body.tool-scope .tool-btn--danger {
+  background: var(--tool-error-soft);
+  border-color: transparent;
+  color: var(--tool-error);
+}
+
+body.tool-scope .tool-btn--sm {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+body.tool-scope .btn:disabled,
+body.tool-scope .tool-btn:disabled,
+body.tool-scope button:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+body.tool-scope .btn:active:not(:disabled),
+body.tool-scope .tool-btn:active:not(:disabled) {
+  transform: scale(.985);
+}
+
+body.tool-scope input[type="text"],
+body.tool-scope input[type="number"],
+body.tool-scope input[type="search"],
+body.tool-scope input[type="url"],
+body.tool-scope input[type="password"],
+body.tool-scope input[type="email"],
+body.tool-scope input[type="date"],
+body.tool-scope input[type="time"],
+body.tool-scope select,
+body.tool-scope textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 11px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--tool-text);
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border-strong);
+  border-radius: var(--tool-r-sm);
+  box-shadow: var(--tool-shadow-xs);
+}
+
+body.tool-scope textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+body.tool-scope input:hover,
+body.tool-scope select:hover,
+body.tool-scope textarea:hover {
+  border-color: var(--tool-text-3);
+}
+
+body.tool-scope input:focus,
+body.tool-scope select:focus,
+body.tool-scope textarea:focus {
+  outline: none;
+  border-color: var(--tool-primary);
+  box-shadow: 0 0 0 3px var(--tool-primary-soft);
+}
+
+body.tool-scope input::placeholder,
+body.tool-scope textarea::placeholder {
+  color: var(--tool-text-3);
+}
+
+body.tool-scope input[type="range"] {
+  accent-color: var(--tool-primary);
+}
+
+body.tool-scope input[type="checkbox"],
+body.tool-scope input[type="radio"] {
+  accent-color: var(--tool-primary);
+  width: 16px;
+  height: 16px;
+}
+
+body.tool-scope label {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--tool-text-2);
+}
+
+body.tool-scope code,
+body.tool-scope pre,
+body.tool-scope .tool-mono {
+  font-family: var(--tool-monospace);
+  font-size: 12.5px;
+}
+
+body.tool-scope code {
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+
+body.tool-scope .tag-outline,
+body.tool-scope .tool-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: var(--tool-text-2);
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-pill);
+}
+
+body.tool-scope .tool-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  font: 11px/1 var(--tool-monospace);
+  color: var(--tool-text-3);
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
+body.tool-scope button.tool-chip {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+body.tool-scope button.tool-chip:hover {
+  border-color: var(--tool-primary);
+  color: var(--tool-primary-ink);
+}
+
+body.tool-scope .tool-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: var(--tool-r-sm);
+  background: var(--tool-primary-soft);
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-card-cta > span[data-inline-icon] {
+  display: inline-flex;
+  align-items: center;
+}
+
+body.tool-scope .footer-contact {
+  margin-bottom: .5rem;
+}
+
+/* ---------- 5. 工作台框架 ---------- */
+body.tool-scope .tool-workbench {
+  margin: 4px 0 24px;
+}
+
+body.tool-scope .tool-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 34px;
+  font-size: 12px;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-breadcrumb a {
+  color: var(--tool-text-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body.tool-scope .tool-breadcrumb a:hover {
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-breadcrumb svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+body.tool-scope .tool-breadcrumb .tool-crumb-sep {
+  color: var(--tool-border-strong);
+}
+
+body.tool-scope .tool-trust {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--tool-primary-ink);
+  background: var(--tool-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--tool-primary) 20%, transparent);
+  border-radius: var(--tool-r-pill);
+}
+
+body.tool-scope .tool-trust svg {
+  width: 13px;
+  height: 13px;
+}
+
+body.tool-scope .tool-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 22px;
+  margin-bottom: 22px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-xs);
+}
+
+body.tool-scope .tool-page-head h1 {
+  margin: 0 0 4px;
+  font-size: clamp(22px, 2.6vw, 28px);
+}
+
+body.tool-scope .tool-page-head p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-page-head .tool-back {
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 分段切换 / 二级导航 */
+body.tool-scope .tool-segmented,
+body.tool-scope .tab-container,
+body.tool-scope .tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-md);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+body.tool-scope .tab-btn,
+body.tool-scope .tool-segmented > button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 7px 15px;
+  font-size: 13px;
+  font-weight: 570;
+  color: var(--tool-text-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+body.tool-scope .tab-btn:hover,
+body.tool-scope .tool-segmented > button:hover {
+  color: var(--tool-text);
+  background: color-mix(in srgb, var(--tool-surface) 70%, transparent);
+}
+
+body.tool-scope .tab-btn.active,
+body.tool-scope .tab-btn[aria-selected="true"],
+body.tool-scope .tool-segmented > button[aria-selected="true"] {
+  background: var(--tool-surface);
+  border-color: var(--tool-border);
+  color: var(--tool-text);
+  font-weight: 640;
+  box-shadow: var(--tool-shadow-xs);
+}
+
+body.tool-scope .sub-nav,
+body.tool-scope .tool-subnav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--tool-border);
+}
+
+body.tool-scope .sub-nav-item {
+  flex: 0 0 auto;
+  padding: 6px 12px 10px;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--tool-text-2);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+body.tool-scope .sub-nav-item:hover {
+  color: var(--tool-text);
+}
+
+body.tool-scope .sub-nav-item.active,
+body.tool-scope .sub-nav-item[aria-current="true"] {
+  color: var(--tool-primary);
+  border-bottom-color: var(--tool-primary);
+  font-weight: 650;
+}
+
+/* ---------- 6. 卡片、面板与投放区 ---------- */
+body.tool-scope .card,
+body.tool-scope .tool-item,
+body.tool-scope .tool-card,
+body.tool-scope .tool-box {
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-xs);
+}
+
+/* .tool-panel 只是显隐容器，避免把整页内容包成大卡片 */
+body.tool-scope .tool-panel {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+body.tool-scope .card,
+body.tool-scope .tool-item {
+  padding: 20px 22px;
+}
+
+body.tool-scope .card:hover,
+body.tool-scope .tool-item:hover {
+  border-color: var(--tool-border-strong);
+  box-shadow: var(--tool-shadow-sm);
+}
+
+body.tool-scope .card-title,
+body.tool-scope .tool-item h3 {
+  font-size: 15px;
+  font-weight: 640;
+  color: var(--tool-text);
+  letter-spacing: -.01em;
+}
+
+body.tool-scope .card-description,
+body.tool-scope .tool-item p {
+  font-size: 13px;
+  color: var(--tool-text-2);
+  line-height: 1.65;
+}
+
+body.tool-scope .card-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--tool-border);
+}
+
+body.tool-scope .tool-panel.active {
+  animation: tool-panel-in .22s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+@keyframes tool-panel-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+body.tool-scope .tool-grid,
+body.tool-scope .two-columns {
+  gap: 20px;
+}
+
+body.tool-scope .file-upload,
+body.tool-scope .tool-dropzone,
+body.tool-scope .upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 132px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--tool-text-2);
+  background: var(--tool-surface-2);
+  border: 1.5px dashed var(--tool-border-strong);
+  border-radius: var(--tool-r-md);
+}
+
+body.tool-scope .file-upload:hover,
+body.tool-scope .tool-dropzone:hover,
+body.tool-scope .upload-area:hover {
+  border-color: var(--tool-primary);
+  background: var(--tool-primary-soft);
+  color: var(--tool-primary-ink);
+}
+
+body.tool-scope .file-upload.drag-over,
+body.tool-scope .tool-dropzone.drag-over,
+body.tool-scope .tool-dropzone[data-drag="true"],
+body.tool-scope .upload-area.dragover,
+body.tool-scope .upload-area.drag-over,
+body.tool-scope .upload-area[data-drag="true"] {
+  border-color: var(--tool-primary);
+  background: var(--tool-primary-soft);
+  box-shadow: 0 0 0 3px var(--tool-primary-soft);
+}
+
+body.tool-scope .tool-dropzone-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-dropzone-title {
+  font-size: 13.5px;
+  font-weight: 620;
+  color: var(--tool-text);
+}
+
+body.tool-scope .tool-dropzone-hint {
+  font-size: 12px;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-file-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+body.tool-scope .tool-file-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  color: var(--tool-text-2);
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-sm);
+}
+
+body.tool-scope .tool-file-row .tool-file-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.tool-scope .tool-file-row .tool-file-size {
+  font-family: var(--tool-monospace);
+  font-size: 11.5px;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-file-remove {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--tool-text-3);
+  cursor: pointer;
+}
+
+body.tool-scope .tool-file-remove:hover {
+  color: var(--tool-error);
+  background: var(--tool-error-soft);
+}
+
+body.tool-scope img {
+  max-width: 100%;
+}
+
+/* ---------- 7. 状态反馈 ---------- */
+body.tool-scope .tool-state {
+  display: none;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  margin: 14px 0;
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-md);
+  background: var(--tool-surface);
+  font-size: 13px;
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-state[data-state="loading"],
+body.tool-scope .tool-state[data-state="empty"],
+body.tool-scope .tool-state[data-state="error"],
+body.tool-scope .tool-state[data-state="success"] {
+  display: flex;
+}
+
+body.tool-scope .tool-state[data-state="error"] {
+  border-color: color-mix(in srgb, var(--tool-error) 35%, var(--tool-border));
+  background: var(--tool-error-soft);
+  color: var(--tool-text);
+}
+
+body.tool-scope .tool-state[data-state="success"] {
+  border-color: color-mix(in srgb, var(--tool-success) 35%, var(--tool-border));
+  background: var(--tool-success-soft);
+  color: var(--tool-text);
+}
+
+body.tool-scope .tool-state-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 2px;
+}
+
+body.tool-scope .tool-state[data-state="error"] .tool-state-icon {
+  color: var(--tool-error);
+}
+
+body.tool-scope .tool-state[data-state="success"] .tool-state-icon {
+  color: var(--tool-success);
+}
+
+body.tool-scope .tool-state[data-state="loading"] .tool-state-icon {
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-state-body {
+  flex: 1;
+  min-width: 0;
+}
+
+body.tool-scope .tool-state-title {
+  font-size: 13.5px;
+  font-weight: 640;
+  color: var(--tool-text);
+  margin-bottom: 2px;
+}
+
+body.tool-scope .tool-state-detail {
+  font-size: 12.5px;
+  color: var(--tool-text-2);
+  overflow-wrap: anywhere;
+}
+
+body.tool-scope .tool-state-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+body.tool-scope .tool-skeleton {
+  width: 100%;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--tool-surface-2) 25%, var(--tool-surface-3) 50%, var(--tool-surface-2) 75%);
+  background-size: 200% 100%;
+  animation: tool-shimmer 1.4s linear infinite;
+}
+
+@keyframes tool-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+body.tool-scope .tool-progress {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  background: var(--tool-surface-3);
+  border-radius: var(--tool-r-pill);
+}
+
+body.tool-scope .tool-progress > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--tool-primary);
+}
+
+body.tool-scope .tool-progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-progress-label b {
+  font-family: var(--tool-monospace);
+  font-weight: 600;
+  color: var(--tool-text-2);
+}
+
+/* Toast */
+body.tool-scope .tool-toast-stack {
+  position: fixed;
+  top: 76px;
+  right: 20px;
+  z-index: 1080;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+body.tool-scope .tool-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  pointer-events: auto;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-left: 3px solid var(--tool-primary);
+  border-radius: var(--tool-r-md);
+  box-shadow: var(--tool-shadow-md);
+  font-size: 13px;
+  color: var(--tool-text);
+  animation: tool-toast-in .22s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+body.tool-scope .tool-toast[data-kind="success"] { border-left-color: var(--tool-success); }
+body.tool-scope .tool-toast[data-kind="warn"] { border-left-color: var(--tool-warning); }
+body.tool-scope .tool-toast[data-kind="error"] { border-left-color: var(--tool-error); }
+
+body.tool-scope .tool-toast.is-leaving {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+@keyframes tool-toast-in {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+body.tool-scope .tool-toast-icon {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-toast[data-kind="success"] .tool-toast-icon { color: var(--tool-success); }
+body.tool-scope .tool-toast[data-kind="warn"] .tool-toast-icon { color: var(--tool-warning); }
+body.tool-scope .tool-toast[data-kind="error"] .tool-toast-icon { color: var(--tool-error); }
+
+body.tool-scope .tool-toast-body {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body.tool-scope .tool-toast-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+body.tool-scope .tool-toast-actions button {
+  padding: 3px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--tool-primary);
+  background: var(--tool-primary-soft);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+body.tool-scope .tool-toast-close {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--tool-text-3);
+  cursor: pointer;
+}
+
+body.tool-scope .tool-toast-close:hover {
+  background: var(--tool-surface-2);
+  color: var(--tool-text);
+}
+
+/* 模态 */
+body.tool-scope .tool-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1090;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 18, 32, .55);
+  backdrop-filter: blur(3px);
+}
+
+body.tool-scope .tool-modal {
+  width: min(420px, 100%);
+  padding: 24px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-md);
+}
+
+body.tool-scope .tool-modal h2 { margin-bottom: 8px; }
+
+/* ---------- 8. 目录页组件 ---------- */
+body.tool-scope .tool-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 38px 34px 32px;
+  margin: 8px 0 26px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-sm);
+}
+
+body.tool-scope .tool-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(540px 180px at 88% -20%, color-mix(in srgb, var(--tool-primary) 12%, transparent), transparent 70%),
+    linear-gradient(90deg, color-mix(in srgb, var(--tool-primary) 4%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(0deg, color-mix(in srgb, var(--tool-primary) 4%, transparent) 1px, transparent 1px) 0 0 / 28px 28px;
+  opacity: .7;
+}
+
+body.tool-scope .tool-hero > * {
+  position: relative;
+}
+
+body.tool-scope .tool-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px;
+  margin-bottom: 14px;
+  font-size: 11.5px;
+  font-weight: 620;
+  letter-spacing: .04em;
+  color: var(--tool-primary-ink);
+  background: var(--tool-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--tool-primary) 18%, transparent);
+  border-radius: var(--tool-r-pill);
+}
+
+body.tool-scope .tool-hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 3.6vw, 36px);
+  letter-spacing: -.03em;
+}
+
+body.tool-scope .tool-hero-sub {
+  max-width: 620px;
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-hero-meta .tool-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-pill);
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-hero-meta .tool-meta-pill svg {
+  width: 13px;
+  height: 13px;
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 560px;
+  padding: 4px 6px 4px 14px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border-strong);
+  border-radius: var(--tool-r-md);
+  box-shadow: var(--tool-shadow-sm);
+}
+
+body.tool-scope .tool-search:focus-within {
+  border-color: var(--tool-primary);
+  box-shadow: 0 0 0 3px var(--tool-primary-soft);
+}
+
+body.tool-scope .tool-search-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  font-size: 14px;
+}
+
+body.tool-scope .tool-search input:focus {
+  box-shadow: none;
+  border: 0;
+}
+
+body.tool-scope .tool-search-kbd {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+body.tool-scope .tool-search-clear {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 7px;
+  color: var(--tool-text-3);
+  cursor: pointer;
+}
+
+body.tool-scope .tool-search-clear:hover {
+  background: var(--tool-surface-2);
+  color: var(--tool-text);
+}
+
+body.tool-scope .tool-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+body.tool-scope .tool-filter-chips {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+body.tool-scope .tool-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 560;
+  color: var(--tool-text-2);
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-pill);
+  cursor: pointer;
+}
+
+body.tool-scope .tool-filter-chip:hover {
+  border-color: var(--tool-border-strong);
+  color: var(--tool-text);
+}
+
+body.tool-scope .tool-filter-chip[aria-pressed="true"] {
+  background: var(--tool-primary-soft);
+  border-color: color-mix(in srgb, var(--tool-primary) 35%, transparent);
+  color: var(--tool-primary-ink);
+  font-weight: 640;
+}
+
+body.tool-scope .tool-filter-count {
+  font: 11px/1 var(--tool-monospace);
+  padding: 2px 6px;
+  border-radius: var(--tool-r-pill);
+  background: var(--tool-surface-2);
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-filter-chip[aria-pressed="true"] .tool-filter-count {
+  background: color-mix(in srgb, var(--tool-primary) 14%, transparent);
+  color: var(--tool-primary-ink);
+}
+
+body.tool-scope .tool-result-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 2px 14px;
+  font-size: 12.5px;
+  color: var(--tool-text-3);
+  border-bottom: 1px solid var(--tool-border);
+  margin-bottom: 20px;
+}
+
+body.tool-scope .tool-result-bar b {
+  color: var(--tool-text);
+  font-family: var(--tool-monospace);
+  font-weight: 650;
+}
+
+body.tool-scope .tool-result-bar[data-updated] {
+  background: var(--tool-primary-soft);
+  border-radius: var(--tool-r-sm);
+}
+
+body.tool-scope .tool-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body.tool-scope .tool-reset {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tool-primary);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+body.tool-scope .tool-reset[hidden] { display: none; }
+
+body.tool-scope .tool-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body.tool-scope .tool-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 218px;
+  padding: 20px;
+  overflow: hidden;
+  color: inherit;
+  cursor: pointer;
+}
+
+body.tool-scope .tool-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, var(--tool-primary), transparent 72%);
+  opacity: 0;
+}
+
+body.tool-scope .tool-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--tool-primary) 42%, var(--tool-border));
+  box-shadow: var(--tool-shadow-md);
+  color: inherit;
+}
+
+body.tool-scope .tool-card:hover::before { opacity: 1; }
+
+body.tool-scope .tool-card:focus-within {
+  border-color: var(--tool-primary);
+  box-shadow: 0 0 0 3px var(--tool-primary-soft);
+}
+
+body.tool-scope .tool-card-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0;
+}
+
+body.tool-scope .tool-card-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 10px;
+  background: var(--tool-primary-soft);
+  color: var(--tool-primary);
+  font-size: 19px;
+}
+
+body.tool-scope .tool-card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+body.tool-scope .tool-card .card-title {
+  font-size: 14.5px;
+  font-weight: 650;
+  margin: 0;
+}
+
+body.tool-scope .tool-card .card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 42px;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+body.tool-scope .tool-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+body.tool-scope .tool-card .card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+body.tool-scope .tool-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-card:hover .tool-card-cta svg {
+  transform: translateX(3px);
+}
+
+body.tool-scope .tool-card-cta svg {
+  width: 14px;
+  height: 14px;
+}
+
+body.tool-scope .tool-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+body.tool-scope .tool-card-link:focus-visible {
+  outline-offset: -3px;
+}
+
+body.tool-scope .tool-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  background: var(--tool-surface);
+  border: 1px dashed var(--tool-border-strong);
+  border-radius: var(--tool-r-lg);
+}
+
+body.tool-scope .tool-empty svg {
+  width: 34px;
+  height: 34px;
+  color: var(--tool-text-3);
+}
+
+body.tool-scope .tool-empty h3 { margin: 0; font-size: 16px; }
+
+body.tool-scope .tool-empty p { margin: 0; font-size: 13px; }
+
+body.tool-scope .tool-empty-suggestions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+body.tool-scope .tool-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 40px 0 16px;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .tool-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--tool-border);
+}
+
+body.tool-scope .tool-muted-card {
+  opacity: .72;
+  box-shadow: none;
+  background: var(--tool-surface-2);
+}
+
+body.tool-scope .tool-cta-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 22px 24px;
+  margin: 40px 0 8px;
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+}
+
+body.tool-scope .tool-cta-band h3 { margin: 0 0 4px; font-size: 15px; }
+
+body.tool-scope .tool-cta-band p { margin: 0; font-size: 12.5px; }
+
+/* ---------- 8.1 图标升级与遗留弹层 ---------- */
+body.tool-scope .tool-item h3 .icon.tool-item-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+  vertical-align: -6px;
+  font-size: 0;
+  color: var(--tool-primary);
+  background: var(--tool-primary-soft);
+  border-radius: 7px;
+}
+
+body.tool-scope .tool-item h3 .icon.tool-item-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+body.tool-scope .upload-area > .tool-item-icon {
+  font-size: 0;
+  margin-bottom: 4px;
+}
+
+body.tool-scope .modal {
+  z-index: 1090;
+  background: rgba(11, 18, 32, .55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+body.tool-scope .modal-content {
+  background: var(--tool-surface);
+  color: var(--tool-text);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-md);
+}
+
+body.tool-scope .modal-content h2 {
+  font-size: 19px;
+}
+
+/* ---------- 8.2 单功能页模板 ---------- */
+body.tool-scope .clock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+body.tool-scope .clock-grid > * {
+  padding: 18px 20px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-xs);
+}
+
+body.tool-scope .clock-grid > *:hover {
+  border-color: var(--tool-border-strong);
+  box-shadow: var(--tool-shadow-sm);
+}
+
+body.tool-scope .local-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tool-primary-ink);
+  background: var(--tool-primary-soft);
+  border-radius: var(--tool-r-pill);
+}
+
+body.tool-scope .preview-box,
+body.tool-scope .preview-container,
+body.tool-scope .timer-card {
+  padding: 22px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-lg);
+  box-shadow: var(--tool-shadow-sm);
+}
+
+body.tool-scope .timer-display {
+  font-family: var(--tool-monospace);
+  letter-spacing: -.04em;
+  color: var(--tool-text);
+}
+
+body.tool-scope .mode-switch {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-md);
+}
+
+body.tool-scope .mode-btn {
+  min-height: 32px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 570;
+  color: var(--tool-text-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+body.tool-scope .mode-btn.active {
+  color: var(--tool-text);
+  background: var(--tool-surface);
+  border-color: var(--tool-border);
+  box-shadow: var(--tool-shadow-xs);
+  font-weight: 640;
+}
+
+/* Markdown 编辑器（EasyMDE） */
+body.tool-scope .EasyMDEContainer .editor-toolbar {
+  background: var(--tool-surface-2);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-md) var(--tool-r-md) 0 0;
+}
+
+body.tool-scope .editor-toolbar button {
+  color: var(--tool-text-2);
+}
+
+body.tool-scope .editor-toolbar button:hover,
+body.tool-scope .editor-toolbar button.active {
+  background: var(--tool-primary-soft);
+  border-color: transparent;
+  color: var(--tool-primary-ink);
+}
+
+body.tool-scope .CodeMirror,
+body.tool-scope .editor-preview,
+body.tool-scope .editor-preview-side {
+  background: var(--tool-surface);
+  color: var(--tool-text);
+  border-color: var(--tool-border);
+}
+
+body.tool-scope .CodeMirror {
+  font-family: var(--tool-monospace);
+  font-size: 13px;
+  border-radius: 0 0 var(--tool-r-md) var(--tool-r-md);
+}
+
+body.tool-scope .CodeMirror-cursor {
+  border-left-color: var(--tool-primary);
+}
+
+/* ---------- 9. 响应式 ---------- */
+@media (max-width: 1024px) {
+  body.tool-scope .tool-grid-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.tool-scope .tool-grid.two-columns,
+  body.tool-scope .two-columns { grid-template-columns: 1fr; }
+  body.tool-scope .tool-hero { padding: 30px 24px 26px; }
+}
+
+@media (max-width: 768px) {
+  body.tool-scope .navbar { height: 58px; }
+  body.tool-scope .tool-toast-stack { top: 66px; right: 12px; }
+  body.tool-scope .tool-hero { padding: 26px 20px 24px; }
+  body.tool-scope .tool-page-head { padding: 16px 18px; }
+  body.tool-scope .tool-filter-bar { align-items: stretch; }
+  body.tool-scope .tool-search-kbd { display: none; }
+  body.tool-scope .tool-trust { margin-left: 0; }
+  body.tool-scope .btn,
+  body.tool-scope .tool-btn,
+  body.tool-scope .tool-filter-chip,
+  body.tool-scope .tool-file-remove { min-height: 44px; }
+  body.tool-scope .tool-file-remove { width: 44px; }
+}
+
+@media (max-width: 480px) {
+  body.tool-scope .tool-grid-cards { grid-template-columns: 1fr; }
+  body.tool-scope .tool-hero h1 { font-size: 26px; }
+  body.tool-scope .tool-card { min-height: 0; }
+  body.tool-scope .tool-cta-band { flex-direction: column; align-items: flex-start; }
+  body.tool-scope .card,
+  body.tool-scope .tool-item { padding: 16px; }
+}
+
+/* ---------- 10. 动效偏好与打印 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body.tool-scope *,
+  body.tool-scope *::before,
+  body.tool-scope *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body.tool-scope .tool-toast-stack,
+  body.tool-scope .tool-search,
+  body.tool-scope .tool-filter-bar,
+  body.tool-scope .tool-cta-band { display: none !important; }
+}

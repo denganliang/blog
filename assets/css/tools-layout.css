@@ -1,15 +1,147 @@
-/* ========================================
-   工具页面布局 - 侧边栏 + 内容区
-   ======================================== */
+/* ==============================================================
+   工具目录页布局层（仅 /tools/index.html 与 /en/tools/index.html 引用）
+   视觉组件见 tools-ui.css；本文件只负责版式与栅格。
+   ============================================================== */
 
-/* 工具页面容器需要顶部内边距以避开固定导航栏 */
+body.tool-scope .tool-catalog {
+  padding-top: 4px;
+}
+
+body.tool-scope .tool-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(230px, .85fr);
+  align-items: center;
+  gap: 36px;
+}
+
+body.tool-scope .tool-hero-stats {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  background: color-mix(in srgb, var(--tool-surface) 92%, transparent);
+  border: 1px solid var(--tool-border);
+  border-radius: var(--tool-r-md);
+  box-shadow: var(--tool-shadow-xs);
+}
+
+body.tool-scope .tool-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--tool-r-sm);
+  background: var(--tool-surface-2);
+}
+
+body.tool-scope .tool-stat svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--tool-primary);
+}
+
+body.tool-scope .tool-stat-value {
+  font-size: 17px;
+  font-weight: 680;
+  letter-spacing: -.02em;
+  color: var(--tool-text);
+  line-height: 1.2;
+}
+
+body.tool-scope .tool-stat-label {
+  font-size: 11.5px;
+  color: var(--tool-text-3);
+  line-height: 1.4;
+}
+
+body.tool-scope .tool-stat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+body.tool-scope .tool-upcoming-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body.tool-scope .tool-upcoming-grid .card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 128px;
+}
+
+body.tool-scope .tool-upcoming-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
+}
+
+body.tool-scope .tool-upcoming-inline .tool-card-icon {
+  width: 38px;
+  height: 38px;
+}
+
+body.tool-scope .tool-upcoming-inline .tool-upcoming-badge {
+  margin-left: auto;
+}
+
+body.tool-scope .tool-upcoming-badge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 620;
+  padding: 2px 8px;
+  color: var(--tool-text-3);
+  background: var(--tool-surface-3);
+  border-radius: var(--tool-r-pill);
+}
+
+body.tool-scope .tool-cta-band .btn {
+  flex: none;
+}
+
+@media (max-width: 1024px) {
+  body.tool-scope .tool-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  body.tool-scope .tool-hero-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  body.tool-scope .tool-upcoming-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  body.tool-scope .tool-hero-stats {
+    grid-template-columns: 1fr;
+  }
+  body.tool-scope .tool-stat {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  body.tool-scope .tool-upcoming-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==============================================================
+   遗留兼容层 · /games/ 与 /en/games/ 仍在引用本文件并使用下列类名
+   这些规则保持重构前的原样，仅对未加 tool-scope 的页面生效。
+   ============================================================== */
 .tools-layout {
   display: flex;
   gap: 2rem;
   padding-top: 4rem;
 }
 
-/* 侧边栏 */
 .tools-sidebar {
   width: 240px;
   flex-shrink: 0;
@@ -60,7 +192,6 @@
   color: var(--accent-color);
 }
 
-/* 内容区 */
 .tools-content {
   flex-grow: 1;
   min-width: 0;
@@ -79,7 +210,6 @@
   max-width: 400px;
 }
 
-/* 响应式设计 */
 @media (max-width: 1024px) {
   .tools-layout {
     flex-direction: column;

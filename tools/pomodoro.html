@@ -199,8 +199,9 @@
   <link rel="alternate" hreflang="zh" href="/tools/pomodoro.html">
   <link rel="alternate" hreflang="en" href="/en/tools/pomodoro.html">
   <link rel="alternate" hreflang="x-default" href="/tools/pomodoro.html">
+  <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body>
+<body class="tool-scope">
   <nav class="navbar">
     <div class="navbar-content">
       <a href="/" class="navbar-logo">在线工具</a>
@@ -288,7 +289,7 @@
       </p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
         <button class="btn btn-primary" id="nextSessionBtn">开始下一阶段</button>
-        <button class="btn btn-secondary" id="closModalBtn">稍后</button>
+        <button class="btn btn-secondary" id="closeModalBtn">稍后</button>
       </div>
     </div>
   </div>
@@ -296,6 +297,7 @@
   <script src="/assets/js/theme-switcher.js"></script>
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/tools-ui.js"></script>
   <script>
     let timer = null;
     let isRunning = false;
@@ -536,7 +538,7 @@
 
     // 模态框按钮
     const nextSessionBtn = document.getElementById('nextSessionBtn');
-    const closeModalBtn = document.getElementById('closModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
     addClickListener(nextSessionBtn, startNextSession);
     addClickListener(closeModalBtn, closeModal);
 
