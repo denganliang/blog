@@ -1710,3 +1710,161 @@ body.tool-scope .CodeMirror-cursor {
   body.tool-scope .tool-filter-bar,
   body.tool-scope .tool-cta-band { display: none !important; }
 }
+
+/* ---------- 11. 开发工具箱：工具卡片 ----------
+   仅作用于 .tool-item 内的旧类名，收敛页面内联 <style> 与本节之间的冲突。
+   全部使用 --tool-* 令牌，深浅主题自动继承。 */
+body.tool-scope.dev-toolbox-scope .toolbox-container { max-width: 1120px; padding: 28px 16px 56px; }
+body.tool-scope.dev-toolbox-scope .toolbox-header { margin-bottom: 24px; }
+body.tool-scope.dev-toolbox-scope .toolbox-header h1 { font-size: 30px; letter-spacing: -.02em; }
+body.tool-scope.dev-toolbox-scope .toolbox-header p { color: var(--tool-text-2); font-size: 15px; }
+
+/* tab 已是 pill，去掉容器遗留的下划线；子导航改为单行横向滚动 */
+body.tool-scope.dev-toolbox-scope .tab-nav {
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 0;
+  margin-bottom: 16px;
+  padding-bottom: 2px;
+}
+body.tool-scope.dev-toolbox-scope .sub-nav {
+  position: sticky;
+  top: 64px;
+  z-index: 20;
+  padding: 6px;
+  background: var(--tool-surface);
+  border: 1px solid var(--tool-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, .04);
+}
+body.tool-scope.dev-toolbox-scope .sub-nav-list {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+body.tool-scope.dev-toolbox-scope .sub-nav-item {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-bottom: 0;
+  border-radius: 6px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+/* 卡片：标题、说明、表单密度 */
+body.tool-scope.dev-toolbox-scope .tool-item { padding: 20px; margin-bottom: 16px; }
+body.tool-scope.dev-toolbox-scope .tool-item h3 { font-size: 16px; margin-bottom: 6px; }
+body.tool-scope.dev-toolbox-scope .tool-item > .tool-hint {
+  margin: 0 0 16px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--tool-text-3);
+}
+body.tool-scope.dev-toolbox-scope .io-group { gap: 14px; }
+body.tool-scope.dev-toolbox-scope .io-section > label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tool-text-2);
+  margin-bottom: 6px;
+}
+body.tool-scope.dev-toolbox-scope .io-section select,
+body.tool-scope.dev-toolbox-scope .io-section input[type="datetime-local"],
+body.tool-scope.dev-toolbox-scope .io-section input[type="number"],
+body.tool-scope.dev-toolbox-scope .io-section input[type="text"],
+body.tool-scope.dev-toolbox-scope .io-section textarea {
+  font-size: 13px;
+  line-height: 1.55;
+  border-radius: 8px;
+}
+body.tool-scope.dev-toolbox-scope .io-section textarea[readonly] { background: var(--tool-surface-2); }
+body.tool-scope.dev-toolbox-scope .btn-group { gap: 8px; align-items: center; }
+body.tool-scope.dev-toolbox-scope .tool-result-actions { margin-top: 12px; }
+body.tool-scope.dev-toolbox-scope .tool-btn--sm { min-height: 32px; padding: 5px 11px; font-size: 12px; }
+body.tool-scope.dev-toolbox-scope .tool-btn--ghost {
+  background: transparent;
+  color: var(--tool-text-2);
+  border: 1px solid var(--tool-border-strong);
+}
+body.tool-scope.dev-toolbox-scope .tool-btn--ghost:hover { background: var(--tool-surface-2); color: var(--tool-text); }
+
+/* 结果区：动态注入的带内联 style 的 div 统一成结果卡 */
+body.tool-scope.dev-toolbox-scope .tool-item .tool-result-panel > div[style] {
+  background: var(--tool-surface-2) !important;
+  border: 1px solid var(--tool-border) !important;
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+  margin-bottom: 8px !important;
+  color: var(--tool-text) !important;
+  font-family: inherit !important;
+  line-height: 1.65;
+}
+body.tool-scope.dev-toolbox-scope .tool-item .tool-result-panel:empty { display: none; }
+body.tool-scope.dev-toolbox-scope .tool-item .result-box {
+  background: var(--tool-surface-2);
+  border-color: var(--tool-border);
+  font-size: 13px;
+  line-height: 1.6;
+}
+body.tool-scope.dev-toolbox-scope .tool-item .copy-btn {
+  top: 8px;
+  right: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 4px 10px;
+  background: var(--tool-primary);
+}
+body.tool-scope.dev-toolbox-scope .tool-item .error,
+body.tool-scope.dev-toolbox-scope .tool-item .hint {
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+body.tool-scope.dev-toolbox-scope .tool-item .hint { color: var(--tool-text-3); margin-top: 10px; }
+/* 静态 .error 占位已由卡片状态条接管，避免出现两份错误提示 */
+body.tool-scope.dev-toolbox-scope .tool-item > .error { display: none; }
+body.tool-scope.dev-toolbox-scope .tool-item .qr-display { padding: 12px 0 0; }
+body.tool-scope.dev-toolbox-scope .tool-item .color-preview { height: 64px; border-color: var(--tool-border); }
+
+/* 就地状态条：只在有消息时占位 */
+body.tool-scope.dev-toolbox-scope .tool-inline-state {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: 1px solid var(--tool-border);
+  border-radius: 8px;
+  background: var(--tool-surface-2);
+  color: var(--tool-text-2);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+body.tool-scope.dev-toolbox-scope .tool-inline-state[hidden] { display: none; }
+body.tool-scope.dev-toolbox-scope .tool-inline-state[data-state="error"] {
+  background: var(--tool-error-soft);
+  border-color: var(--tool-error);
+  color: var(--tool-error);
+}
+body.tool-scope.dev-toolbox-scope .tool-inline-state[data-state="success"] {
+  background: var(--tool-success-soft);
+  border-color: var(--tool-success);
+  color: var(--tool-success);
+}
+body.tool-scope.dev-toolbox-scope .tool-inline-state[data-state="empty"] {
+  background: var(--tool-warning-soft);
+  border-color: var(--tool-warning);
+  color: var(--tool-warning);
+}
+
+/* 768–1024 保留双列：覆盖第 9 节对 .two-columns 的单列降级 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body.tool-scope.dev-toolbox-scope .io-group.two-columns { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  body.tool-scope.dev-toolbox-scope .sub-nav { top: 58px; }
+  body.tool-scope.dev-toolbox-scope .tab-nav { gap: 6px; }
+  body.tool-scope.dev-toolbox-scope .tool-btn--sm { min-height: 40px; }
+}
+@media (max-width: 480px) {
+  body.tool-scope.dev-toolbox-scope .tool-item { padding: 16px; }
+  body.tool-scope.dev-toolbox-scope .toolbox-header h1 { font-size: 26px; }
+}

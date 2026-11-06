@@ -398,7 +398,7 @@
   </style>
   <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body class="tool-scope">
+<body class="tool-scope dev-toolbox-scope">
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -461,7 +461,7 @@
       <!-- Text Tools Panel -->
       <div class="tool-panel active" id="text-tools">
         <!-- Base64 Encode/Decode -->
-        <div class="tool-item" id="base64">
+        <div class="tool-item" id="base64" data-hint="UTF-8 safe: encode and decode back without losing Chinese text" data-example="Hello Dev Toolbox" data-copy-source="base64-output">
           <h3><span class="icon">🔤</span> Base64 Encode/Decode</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -482,7 +482,7 @@
         </div>
 
         <!-- URL Encode/Decode -->
-        <div class="tool-item" id="url-encode">
+        <div class="tool-item" id="url-encode" data-hint="Escape URL parameters; decoding restores percent-encoded text" data-example="https://example.com/search" data-copy-source="url-output">
           <h3><span class="icon">🔗</span> URL Encode/Decode</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -502,7 +502,7 @@
         </div>
 
         <!-- HTML Entity Conversion -->
-        <div class="tool-item" id="html-entity">
+        <div class="tool-item" id="html-entity" data-hint="Turn &lt; &gt; &amp; into HTML entities and decode them back" data-example="A &lt; B &amp; C &gt; D" data-copy-source="html-output">
           <h3><span class="icon">📝</span> HTML Entity Conversion</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -522,7 +522,7 @@
         </div>
 
         <!-- Unicode Conversion -->
-        <div class="tool-item" id="unicode">
+        <div class="tool-item" id="unicode" data-hint="Convert between text and \uXXXX escapes" data-example="Hello" data-copy-source="unicode-output">
           <h3><span class="icon">🈯</span> Unicode Conversion</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -542,7 +542,7 @@
         </div>
 
         <!-- Text Diff -->
-        <div class="tool-item" id="text-diff">
+        <div class="tool-item" id="text-diff" data-hint="Line-by-line compare: red for removed, green for added" data-copy-source="diff-result">
           <h3><span class="icon">📊</span> Text Diff</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -565,7 +565,7 @@
       <!-- Data Tools Panel -->
       <div class="tool-panel" id="data-tools">
         <!-- JSON Formatter -->
-        <div class="tool-item" id="json">
+        <div class="tool-item" id="json" data-hint="Format or minify JSON; parse failures show the exact reason" data-example="{&quot;name&quot;:&quot;demo&quot;,&quot;count&quot;:2}" data-copy-source="json-output">
           <h3><span class="icon">{ }</span> JSON Formatter</h3>
           <div class="io-group">
             <div class="io-section">
@@ -586,7 +586,7 @@
         </div>
 
         <!-- JSONPath Query -->
-        <div class="tool-item" id="jsonpath">
+        <div class="tool-item" id="jsonpath" data-hint="Supports $.a.b, $..name and filters; safe mode is on by default" data-copy-source="jsonpath-output">
           <h3><span class="icon">🧭</span> JSONPath Query</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -635,7 +635,7 @@
         </div>
 
         <!-- JWT Parser -->
-        <div class="tool-item" id="jwt">
+        <div class="tool-item" id="jwt" data-hint="Decodes header and payload only; no signature check and nothing is uploaded" data-copy-source="jwt-output">
           <h3><span class="icon">🔐</span> JWT Parser</h3>
           <div class="io-group">
             <div class="io-section">
@@ -655,12 +655,12 @@
         </div>
 
         <!-- UUID Generator -->
-        <div class="tool-item" id="uuid">
+        <div class="tool-item" id="uuid" data-hint="Generate up to 100 v4 UUIDs at once" data-copy-source="uuid-output">
           <h3><span class="icon">🆔</span> UUID Generator</h3>
           <div class="io-group">
             <div class="io-section">
               <label>Count</label>
-              <input type="number" id="uuid-count" value="1" min="1" max="100">
+              <input type="number" id="uuid-count" value="1" min="1" max="100" placeholder="1-100">
             </div>
             <div class="io-section">
               <label>Generated UUIDs</label>
@@ -674,7 +674,7 @@
         </div>
 
         <!-- Timestamp Converter -->
-        <div class="tool-item" id="timestamp">
+        <div class="tool-item" id="timestamp" data-hint="Auto-detects 10-digit seconds and 13-digit milliseconds">
           <h3><span class="icon">⏰</span> Timestamp Converter</h3>
 
           <!-- Current Time Display -->
@@ -760,7 +760,7 @@
               <button class="btn" onclick="calculateTimeDiff()">Calculate</button>
               <button class="btn btn-secondary" onclick="clearTimeDiff()">Clear</button>
             </div>
-            <div id="diff-result" style="margin-top: 0.75rem;"></div>
+            <div id="time-diff-result" style="margin-top: 0.75rem;"></div>
           </div>
         </div>
       </div>
@@ -768,7 +768,7 @@
       <!-- Crypto Tools Panel -->
       <div class="tool-panel" id="crypto-tools">
         <!-- Hash Generator -->
-        <div class="tool-item" id="hash">
+        <div class="tool-item" id="hash" data-hint="MD5 runs locally; SHA digests use the browser Web Crypto API">
           <h3><span class="icon">🔒</span> Hash Generator</h3>
           <div class="io-group">
             <div class="io-section">
@@ -787,7 +787,7 @@
         </div>
 
         <!-- QR Code Generator -->
-        <div class="tool-item" id="qr-gen">
+        <div class="tool-item" id="qr-gen" data-hint="Generated in this page only; download as PNG" data-example="https://example.com">
           <h3><span class="icon">📱</span> QR Code Generator</h3>
           <div class="io-group">
             <div class="io-section">
@@ -806,10 +806,10 @@
         </div>
 
         <!-- QR Code Decoder -->
-        <div class="tool-item" id="qr-decode">
+        <div class="tool-item" id="qr-decode" data-hint="Click to pick or drag an image; the image is never uploaded" data-copy-source="qr-decode-result">
           <h3><span class="icon">📷</span> QR Code Decoder</h3>
           <div class="file-upload" data-tool-drop="auto" onclick="document.getElementById('qr-file').click()">
-            <input type="file" id="qr-file" accept="image/*" onchange="decodeQRCode(event)">
+            <input type="file" id="qr-file" accept="image/*" aria-label="Choose a QR code image" onchange="decodeQRCode(event)">
             <p>Click or drag image here</p>
             <p class="hint">Supports JPG, PNG format QR code images</p>
           </div>
@@ -820,7 +820,7 @@
       <!-- Dev Tools Panel -->
       <div class="tool-panel" id="dev-tools">
         <!-- Regular Expression Tester -->
-        <div class="tool-item" id="regex">
+        <div class="tool-item" id="regex" data-hint="Supports g / i / m flags and a built-in preset library" data-copy-source="regex-result">
           <h3><span class="icon">🔍</span> Regular Expression Tester</h3>
           <div class="io-group">
             <div class="io-section">
@@ -864,11 +864,17 @@
               </select>
             </div>
           </div>
+          <div class="io-group" style="margin-top: 1rem;">
+            <div class="io-section">
+              <label for="regex-replacement">Replacement text</label>
+              <input type="text" id="regex-replacement" placeholder="Text to replace with; $1 refers to a capture group">
+            </div>
+          </div>
           <div id="regex-result" style="margin-top: 1rem;"></div>
         </div>
 
         <!-- Color Converter -->
-        <div class="tool-item" id="color">
+        <div class="tool-item" id="color" data-hint="Editing any format updates the other two and the preview" data-example="#2563EB" data-copy-source="color-hex">
           <h3><span class="icon">🎨</span> Color Converter</h3>
           <div class="color-preview" id="color-preview"></div>
           <div class="io-group">
@@ -891,13 +897,13 @@
         </div>
 
         <!-- Base Converter -->
-        <div class="tool-item" id="base-convert">
+        <div class="tool-item" id="base-convert" data-hint="Pick the input base first, then enter a value" data-example="255" data-copy-source="base-results">
           <h3><span class="icon">🔢</span> Base Converter</h3>
           <div class="io-group">
             <div class="io-section">
               <label>Input Number</label>
               <input type="text" id="base-input" placeholder="Enter number">
-              <select id="base-from" style="margin-top: 0.5rem;">
+              <select id="base-from" aria-label="Input base" style="margin-top: 0.5rem;">
                 <option value="10">Decimal</option>
                 <option value="2">Binary</option>
                 <option value="8">Octal</option>
@@ -953,6 +959,7 @@
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
   <script src="/assets/js/tools-ui.js"></script>
+  <script src="/assets/js/dev-toolbox-ui.js"></script>
 
   <script>
     // Same JavaScript code as Chinese version (using same IDs and logic)
@@ -969,7 +976,7 @@
       });
     });
 
-    const savedTab = localStorage.getItem('dev-toolbox-tab');
+    const savedTab = (new URLSearchParams(window.location.search).has('tool') || window.location.hash) ? null : localStorage.getItem('dev-toolbox-tab');
     if (savedTab) {
       const btn = document.querySelector(`[data-tab="${savedTab}"]`);
       if (btn) btn.click();
@@ -993,7 +1000,7 @@
 
           // Scroll to element with offset for sticky headers
           setTimeout(() => {
-            const headerOffset = 140; // Navbar + Subnav height
+            const headerOffset = ToolBox.stickyOffset(); // Navbar + Subnav height
             const elementPosition = targetElement.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
@@ -1008,7 +1015,7 @@
 
     // ==================== Common Copy Function ====================
     const TOOL_URL_QUERY_KEY = 'tool';
-    const TOOL_SCROLL_OFFSET = 140;
+    const TOOL_SCROLL_OFFSET = ToolBox.stickyOffset();
 
     function getToolTokenFromUrl() {
       const params = new URLSearchParams(window.location.search);
@@ -1114,7 +1121,7 @@
         const encoded = btoa(unescape(encodeURIComponent(input)));
         document.getElementById('base64-output').value = encoded;
       } catch (e) {
-        ToolUI.alert('Encoding failed: ' + e.message);
+        ToolBox.alert('Encoding failed: ' + e.message);
       }
     }
 
@@ -1124,7 +1131,7 @@
         const decoded = decodeURIComponent(escape(atob(input)));
         document.getElementById('base64-output').value = decoded;
       } catch (e) {
-        ToolUI.alert('Decoding failed, please ensure the input is valid Base64');
+        ToolBox.alert('Decoding failed, please ensure the input is valid Base64');
       }
     }
 
@@ -1150,7 +1157,7 @@
       try {
         document.getElementById('url-output').value = decodeURIComponent(input);
       } catch (e) {
-        ToolUI.alert('Decoding failed, please ensure the input is valid URL encoding');
+        ToolBox.alert('Decoding failed, please ensure the input is valid URL encoding');
       }
     }
 
@@ -1197,7 +1204,7 @@
         );
         document.getElementById('unicode-output').value = result;
       } catch (e) {
-        ToolUI.alert('Conversion failed, please ensure the input is valid Unicode');
+        ToolBox.alert('Conversion failed, please ensure the input is valid Unicode');
       }
     }
 
@@ -1250,9 +1257,9 @@
       try {
         const obj = JSON.parse(input);
         document.getElementById('json-output').value = JSON.stringify(obj, null, 2);
-        errorDiv.textContent = '';
+        ToolBox.clear(errorDiv);
       } catch (e) {
-        errorDiv.textContent = 'Error: ' + e.message;
+        ToolBox.report(errorDiv, 'error', 'Error: ' + e.message);
       }
     }
 
@@ -1262,16 +1269,16 @@
       try {
         const obj = JSON.parse(input);
         document.getElementById('json-output').value = JSON.stringify(obj);
-        errorDiv.textContent = '';
+        ToolBox.clear(errorDiv);
       } catch (e) {
-        errorDiv.textContent = 'Error: ' + e.message;
+        ToolBox.report(errorDiv, 'error', 'Error: ' + e.message);
       }
     }
 
     function clearJSON() {
       document.getElementById('json-input').value = '';
       document.getElementById('json-output').value = '';
-      document.getElementById('json-error').textContent = '';
+      ToolBox.clear(document.getElementById('json-error'));
     }
 
     // ==================== JSONPath Query ====================
@@ -1316,7 +1323,7 @@
       document.getElementById('jsonpath-input').value = getJSONPathExample();
       document.getElementById('jsonpath-expression').value = '$.tenant';
       document.getElementById('jsonpath-output').value = '';
-      document.getElementById('jsonpath-error').textContent = '';
+      ToolBox.clear(document.getElementById('jsonpath-error'));
       document.getElementById('jsonpath-output-paths').checked = false;
       document.getElementById('jsonpath-safe-eval').checked = true;
     }
@@ -1328,9 +1335,9 @@
       try {
         const parsed = JSON.parse(inputEl.value);
         inputEl.value = JSON.stringify(parsed, null, 2);
-        errorEl.textContent = '';
+        ToolBox.clear(errorEl);
       } catch (e) {
-        errorEl.textContent = 'Invalid JSON: ' + e.message;
+        ToolBox.report(errorEl, 'error', 'Invalid JSON: ' + e.message);
       }
     }
 
@@ -1343,7 +1350,7 @@
       const safeEval = document.getElementById('jsonpath-safe-eval').checked;
 
       if (!input || !expression) {
-        errorEl.textContent = 'Please provide both JSON input and a JSONPath expression';
+        ToolBox.report(errorEl, 'error', 'Please provide both JSON input and a JSONPath expression');
         outputEl.value = '';
         return;
       }
@@ -1361,10 +1368,10 @@
         });
 
         outputEl.value = JSON.stringify(result, null, 2);
-        errorEl.textContent = `Matched ${result.length} item(s)`;
+        ToolBox.report(errorEl, 'success', `Matched ${result.length} item(s)`);
       } catch (e) {
         outputEl.value = '';
-        errorEl.textContent = 'JSONPath evaluation failed: ' + e.message;
+        ToolBox.report(errorEl, 'error', 'JSONPath evaluation failed: ' + e.message);
       }
     }
 
@@ -1372,7 +1379,7 @@
       document.getElementById('jsonpath-input').value = '';
       document.getElementById('jsonpath-expression').value = '';
       document.getElementById('jsonpath-output').value = '';
-      document.getElementById('jsonpath-error').textContent = '';
+      ToolBox.clear(document.getElementById('jsonpath-error'));
       document.getElementById('jsonpath-output-paths').checked = false;
       document.getElementById('jsonpath-safe-eval').checked = true;
     }
@@ -1395,16 +1402,16 @@
         };
 
         document.getElementById('jwt-output').value = JSON.stringify(result, null, 2);
-        errorDiv.textContent = '';
+        ToolBox.clear(errorDiv);
       } catch (e) {
-        errorDiv.textContent = 'Error: ' + e.message;
+        ToolBox.report(errorDiv, 'error', 'Error: ' + e.message);
       }
     }
 
     function clearJWT() {
       document.getElementById('jwt-input').value = '';
       document.getElementById('jwt-output').value = '';
-      document.getElementById('jwt-error').textContent = '';
+      ToolBox.clear(document.getElementById('jwt-error'));
     }
 
     // ==================== UUID Generator ====================
@@ -1476,7 +1483,7 @@
       const result = document.getElementById('timestamp-result');
 
       if (isNaN(timestamp)) {
-        result.innerHTML = '<div class="error">Please enter a valid timestamp</div>';
+        ToolBox.report(result, 'error', 'Please enter a valid timestamp');
         return;
       }
 
@@ -1488,7 +1495,7 @@
       const date = new Date(timestamp);
 
       if (isNaN(date.getTime())) {
-        result.innerHTML = '<div class="error">Invalid timestamp</div>';
+        ToolBox.report(result, 'error', 'Invalid timestamp');
         return;
       }
 
@@ -1516,7 +1523,7 @@
         // Prefer string input
         const date = new Date(datestrInput);
         if (isNaN(date.getTime())) {
-          result.innerHTML = '<div class="error">Invalid date format, please use format like "2024-01-01 12:00:00"</div>';
+          ToolBox.report(result, 'error', 'Invalid date format, please use format like "2024-01-01 12:00:00"');
           return;
         }
         timestamp = date.getTime();
@@ -1524,7 +1531,7 @@
         // Use datetime-local input
         timestamp = new Date(datetimeInput).getTime();
       } else {
-        result.innerHTML = '<div class="error">Please select date time or enter date string</div>';
+        ToolBox.report(result, 'error', 'Please select date time or enter date string');
         return;
       }
 
@@ -1557,7 +1564,7 @@
       const endDate = document.getElementById('diff-end').value;
       let startTs = parseInt(document.getElementById('diff-start-ts').value);
       let endTs = parseInt(document.getElementById('diff-end-ts').value);
-      const result = document.getElementById('diff-result');
+      const result = document.getElementById('time-diff-result');
 
       // Determine start time
       let startTime;
@@ -1568,7 +1575,7 @@
       } else if (startDate) {
         startTime = new Date(startDate).getTime();
       } else {
-        result.innerHTML = '<div class="error">Please enter start time</div>';
+        ToolBox.report(result, 'error', 'Please enter start time');
         return;
       }
 
@@ -1581,7 +1588,7 @@
       } else if (endDate) {
         endTime = new Date(endDate).getTime();
       } else {
-        result.innerHTML = '<div class="error">Please enter end time</div>';
+        ToolBox.report(result, 'error', 'Please enter end time');
         return;
       }
 
@@ -1623,7 +1630,7 @@
       document.getElementById('diff-end').value = '';
       document.getElementById('diff-start-ts').value = '';
       document.getElementById('diff-end-ts').value = '';
-      document.getElementById('diff-result').innerHTML = '';
+      document.getElementById('time-diff-result').innerHTML = '';
     }
 
     // ==================== Hash Generator ====================
@@ -1802,7 +1809,7 @@
       const result = document.getElementById('hash-results');
 
       if (!input) {
-        result.innerHTML = '<div class="error">Please enter text to hash</div>';
+        ToolBox.report(result, 'error', 'Please enter text to hash');
         return;
       }
 
@@ -1827,7 +1834,7 @@
           </div>
         `;
       } catch (e) {
-        result.innerHTML = '<div class="error">Hash generation failed: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', 'Hash generation failed: ' + e.message);
       }
     }
 
@@ -1857,7 +1864,7 @@
     async function generateQRCode() {
       const text = document.getElementById('qr-text').value;
       if (!text) {
-        ToolUI.alert('Please enter content to generate QR code');
+        ToolBox.alert('Please enter content to generate QR code');
         return;
       }
 
@@ -1901,14 +1908,14 @@
         }
       } catch (e) {
         console.error('QR Code Error:', e);
-        ToolUI.alert('QR code generation failed: ' + (e.message || String(e)));
+        ToolBox.alert('QR code generation failed: ' + (e.message || String(e)));
       }
     }
 
     function downloadQR() {
       const canvas = document.getElementById('qr-canvas');
       if (!canvas.width) {
-        ToolUI.alert('Please generate QR code first');
+        ToolBox.alert('Please generate QR code first');
         return;
       }
 
@@ -1974,13 +1981,13 @@
               </div>
             `;
           } else {
-            result.innerHTML = '<div class="error">Could not recognize QR code, please ensure the image is clear and contains a valid QR code</div>';
+            ToolBox.report(result, 'error', 'Could not recognize QR code, please ensure the image is clear and contains a valid QR code');
           }
         };
 
         img.src = URL.createObjectURL(file);
       } catch (e) {
-        result.innerHTML = '<div class="error">Decoding failed: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', 'Decoding failed: ' + e.message);
       }
     }
 
@@ -2013,7 +2020,7 @@
       const result = document.getElementById('regex-result');
 
       if (!pattern) {
-        result.innerHTML = '<div class="error">Please enter a regular expression</div>';
+        ToolBox.report(result, 'error', 'Please enter a regular expression');
         return;
       }
 
@@ -2059,7 +2066,7 @@
 
         result.innerHTML = html;
       } catch (e) {
-        result.innerHTML = '<div class="error">Regex error: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', 'Regex error: ' + e.message);
       }
     }
 
@@ -2069,12 +2076,11 @@
       const result = document.getElementById('regex-result');
 
       if (!pattern) {
-        result.innerHTML = '<div class="error">Please enter a regular expression</div>';
+        ToolBox.report(result, 'error', 'Please enter a regular expression');
         return;
       }
 
-      const replacement = prompt('Enter replacement text:', '');
-      if (replacement === null) return;
+      const replacement = document.getElementById('regex-replacement').value;
 
       try {
         const flags =
@@ -2092,7 +2098,7 @@
           </div>
         `;
       } catch (e) {
-        result.innerHTML = '<div class="error">Regex error: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', 'Regex error: ' + e.message);
       }
     }
 
@@ -2203,7 +2209,7 @@
         const rgb = hexToRgb(hex);
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } catch (e) {
-        ToolUI.alert('Invalid HEX color value');
+        ToolBox.alert('Invalid HEX color value');
       }
     }
 
@@ -2213,7 +2219,7 @@
       if (match) {
         updateColorDisplay(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
       } else {
-        ToolUI.alert('Invalid RGB color value, format: rgb(255, 87, 51)');
+        ToolBox.alert('Invalid RGB color value, format: rgb(255, 87, 51)');
       }
     }
 
@@ -2224,7 +2230,7 @@
         const rgb = hslToRgb(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } else {
-        ToolUI.alert('Invalid HSL color value, format: hsl(9, 100%, 60%)');
+        ToolBox.alert('Invalid HSL color value, format: hsl(9, 100%, 60%)');
       }
     }
 
@@ -2242,7 +2248,7 @@
       const result = document.getElementById('base-results');
 
       if (!input) {
-        result.innerHTML = '<div class="error">Please enter a number</div>';
+        ToolBox.report(result, 'error', 'Please enter a number');
         return;
       }
 
@@ -2250,7 +2256,7 @@
         const decimal = parseInt(input, fromBase);
 
         if (isNaN(decimal)) {
-          result.innerHTML = '<div class="error">Invalid number input</div>';
+          ToolBox.report(result, 'error', 'Invalid number input');
           return;
         }
 
@@ -2263,7 +2269,7 @@
           </div>
         `;
       } catch (e) {
-        result.innerHTML = '<div class="error">Conversion failed: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', 'Conversion failed: ' + e.message);
       }
     }
 

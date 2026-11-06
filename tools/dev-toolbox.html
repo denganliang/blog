@@ -398,7 +398,7 @@
   </style>
   <link rel="stylesheet" href="/assets/css/tools-ui.css">
 </head>
-<body class="tool-scope">
+<body class="tool-scope dev-toolbox-scope">
   <!-- 导航栏 -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -461,7 +461,7 @@
       <!-- 文本工具面板 -->
       <div class="tool-panel active" id="text-tools">
         <!-- Base64 编解码 -->
-        <div class="tool-item" id="base64">
+        <div class="tool-item" id="base64" data-hint="支持中文，编码后可直接解码还原" data-example="Hello 开发工具箱" data-copy-source="base64-output">
           <h3><span class="icon">🔤</span> Base64 编解码</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -482,7 +482,7 @@
         </div>
 
         <!-- URL 编解码 -->
-        <div class="tool-item" id="url-encode">
+        <div class="tool-item" id="url-encode" data-hint="用于 URL 参数转义，解码会自动还原百分号编码" data-example="https://example.com/search" data-copy-source="url-output">
           <h3><span class="icon">🔗</span> URL 编解码</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -502,7 +502,7 @@
         </div>
 
         <!-- HTML 实体转换 -->
-        <div class="tool-item" id="html-entity">
+        <div class="tool-item" id="html-entity" data-hint="把 &lt; &gt; &amp; 等字符转成 HTML 实体，解码可还原" data-example="A &lt; B &amp; C &gt; D" data-copy-source="html-output">
           <h3><span class="icon">📝</span> HTML 实体转换</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -522,7 +522,7 @@
         </div>
 
         <!-- Unicode 转换 -->
-        <div class="tool-item" id="unicode">
+        <div class="tool-item" id="unicode" data-hint="中文与 \uXXXX 编码互转" data-example="你好" data-copy-source="unicode-output">
           <h3><span class="icon">🈯</span> Unicode 转换</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -542,7 +542,7 @@
         </div>
 
         <!-- 文本对比 -->
-        <div class="tool-item" id="text-diff">
+        <div class="tool-item" id="text-diff" data-hint="逐行对比，红色为删除、绿色为新增" data-copy-source="diff-result">
           <h3><span class="icon">📊</span> 文本对比</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -565,7 +565,7 @@
       <!-- 数据工具面板 -->
       <div class="tool-panel" id="data-tools">
         <!-- JSON 格式化 -->
-        <div class="tool-item" id="json">
+        <div class="tool-item" id="json" data-hint="格式化或压缩 JSON，解析失败会给出具体原因" data-example="{&quot;name&quot;:&quot;demo&quot;,&quot;count&quot;:2}" data-copy-source="json-output">
           <h3><span class="icon">{ }</span> JSON 格式化</h3>
           <div class="io-group">
             <div class="io-section">
@@ -586,7 +586,7 @@
         </div>
 
         <!-- JSONPath 查询 -->
-        <div class="tool-item" id="jsonpath">
+        <div class="tool-item" id="jsonpath" data-hint="支持 $.a.b、$..name 与过滤表达式；安全模式默认开启" data-copy-source="jsonpath-output">
           <h3><span class="icon">🧭</span> JSONPath 查询</h3>
           <div class="io-group two-columns">
             <div class="io-section">
@@ -635,7 +635,7 @@
         </div>
 
         <!-- JWT 解析 -->
-        <div class="tool-item" id="jwt">
+        <div class="tool-item" id="jwt" data-hint="仅解析 Header 与 Payload，不校验签名，token 不会上传" data-copy-source="jwt-output">
           <h3><span class="icon">🔐</span> JWT 解析</h3>
           <div class="io-group">
             <div class="io-section">
@@ -655,12 +655,12 @@
         </div>
 
         <!-- UUID 生成 -->
-        <div class="tool-item" id="uuid">
+        <div class="tool-item" id="uuid" data-hint="一次最多生成 100 个 v4 UUID" data-copy-source="uuid-output">
           <h3><span class="icon">🆔</span> UUID 生成器</h3>
           <div class="io-group">
             <div class="io-section">
               <label>生成数量</label>
-              <input type="number" id="uuid-count" value="1" min="1" max="100">
+              <input type="number" id="uuid-count" value="1" min="1" max="100" placeholder="1-100">
             </div>
             <div class="io-section">
               <label>生成的UUID</label>
@@ -674,7 +674,7 @@
         </div>
 
         <!-- 时间戳转换 -->
-        <div class="tool-item" id="timestamp">
+        <div class="tool-item" id="timestamp" data-hint="自动识别 10 位秒级与 13 位毫秒级时间戳">
           <h3><span class="icon">⏰</span> 时间戳转换</h3>
 
           <!-- 当前时间显示 -->
@@ -760,7 +760,7 @@
               <button class="btn" onclick="calculateTimeDiff()">计算差值</button>
               <button class="btn btn-secondary" onclick="clearTimeDiff()">清空</button>
             </div>
-            <div id="diff-result" style="margin-top: 0.75rem;"></div>
+            <div id="time-diff-result" style="margin-top: 0.75rem;"></div>
           </div>
         </div>
       </div>
@@ -768,7 +768,7 @@
       <!-- 加密工具面板 -->
       <div class="tool-panel" id="crypto-tools">
         <!-- 哈希生成 -->
-        <div class="tool-item" id="hash">
+        <div class="tool-item" id="hash" data-hint="MD5 为本地实现，SHA 系列使用浏览器 Web Crypto">
           <h3><span class="icon">🔒</span> 哈希生成</h3>
           <div class="io-group">
             <div class="io-section">
@@ -787,7 +787,7 @@
         </div>
 
         <!-- 二维码生成 -->
-        <div class="tool-item" id="qr-gen">
+        <div class="tool-item" id="qr-gen" data-hint="内容仅在本页生成，可下载为 PNG" data-example="https://example.com">
           <h3><span class="icon">📱</span> 二维码生成</h3>
           <div class="io-group">
             <div class="io-section">
@@ -806,10 +806,10 @@
         </div>
 
         <!-- 二维码解码 -->
-        <div class="tool-item" id="qr-decode">
+        <div class="tool-item" id="qr-decode" data-hint="点击选择或拖拽图片，图片不会上传" data-copy-source="qr-decode-result">
           <h3><span class="icon">📷</span> 二维码解码</h3>
           <div class="file-upload" data-tool-drop="auto" onclick="document.getElementById('qr-file').click()">
-            <input type="file" id="qr-file" accept="image/*" onchange="decodeQRCode(event)">
+            <input type="file" id="qr-file" accept="image/*" aria-label="选择二维码图片" onchange="decodeQRCode(event)">
             <p>点击或拖拽图片到此处</p>
             <p class="hint">支持 JPG、PNG 格式的二维码图片</p>
           </div>
@@ -820,7 +820,7 @@
       <!-- 开发工具面板 -->
       <div class="tool-panel" id="dev-tools">
         <!-- 正则表达式 -->
-        <div class="tool-item" id="regex">
+        <div class="tool-item" id="regex" data-hint="支持 g / i / m 标志，可从常用正则库快速填入" data-copy-source="regex-result">
           <h3><span class="icon">🔍</span> 正则表达式测试</h3>
           <div class="io-group">
             <div class="io-section">
@@ -864,11 +864,17 @@
               </select>
             </div>
           </div>
+          <div class="io-group" style="margin-top: 1rem;">
+            <div class="io-section">
+              <label for="regex-replacement">替换文本</label>
+              <input type="text" id="regex-replacement" placeholder="替换时使用的文本，支持 $1 捕获组">
+            </div>
+          </div>
           <div id="regex-result" style="margin-top: 1rem;"></div>
         </div>
 
         <!-- 颜色转换 -->
-        <div class="tool-item" id="color">
+        <div class="tool-item" id="color" data-hint="修改任一格式，其余格式与预览同步更新" data-example="#2563EB" data-copy-source="color-hex">
           <h3><span class="icon">🎨</span> 颜色转换</h3>
           <div class="color-preview" id="color-preview"></div>
           <div class="io-group">
@@ -891,13 +897,13 @@
         </div>
 
         <!-- 进制转换 -->
-        <div class="tool-item" id="base-convert">
+        <div class="tool-item" id="base-convert" data-hint="先选择输入进制，再输入数值" data-example="255" data-copy-source="base-results">
           <h3><span class="icon">🔢</span> 进制转换</h3>
           <div class="io-group">
             <div class="io-section">
               <label>输入数值</label>
               <input type="text" id="base-input" placeholder="输入数字">
-              <select id="base-from" style="margin-top: 0.5rem;">
+              <select id="base-from" aria-label="输入进制" style="margin-top: 0.5rem;">
                 <option value="10">十进制</option>
                 <option value="2">二进制</option>
                 <option value="8">八进制</option>
@@ -953,6 +959,7 @@
   <script src="/assets/js/i18n.js"></script>
   <script src="/assets/js/main.js"></script>
   <script src="/assets/js/tools-ui.js"></script>
+  <script src="/assets/js/dev-toolbox-ui.js"></script>
 
   <script>
     // ==================== Tab导航 ====================
@@ -972,7 +979,7 @@
     });
 
     // 恢复上次选择的tab
-    const savedTab = localStorage.getItem('dev-toolbox-tab');
+    const savedTab = (new URLSearchParams(window.location.search).has('tool') || window.location.hash) ? null : localStorage.getItem('dev-toolbox-tab');
     if (savedTab) {
       const btn = document.querySelector(`[data-tab="${savedTab}"]`);
       if (btn) btn.click();
@@ -996,7 +1003,7 @@
 
           // 滚动到元素（考虑吸顶导航的高度偏移）
           setTimeout(() => {
-            const headerOffset = 140; // 导航栏 + 子导航的高度
+            const headerOffset = ToolBox.stickyOffset(); // 导航栏 + 子导航的高度
             const elementPosition = targetElement.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
@@ -1011,7 +1018,7 @@
 
     // ==================== 通用复制功能 ====================
     const TOOL_URL_QUERY_KEY = 'tool';
-    const TOOL_SCROLL_OFFSET = 140;
+    const TOOL_SCROLL_OFFSET = ToolBox.stickyOffset();
 
     function getToolTokenFromUrl() {
       const params = new URLSearchParams(window.location.search);
@@ -1118,7 +1125,7 @@
         const encoded = btoa(unescape(encodeURIComponent(input)));
         document.getElementById('base64-output').value = encoded;
       } catch (e) {
-        ToolUI.alert('编码失败: ' + e.message);
+        ToolBox.alert('编码失败: ' + e.message);
       }
     }
 
@@ -1128,7 +1135,7 @@
         const decoded = decodeURIComponent(escape(atob(input)));
         document.getElementById('base64-output').value = decoded;
       } catch (e) {
-        ToolUI.alert('解码失败，请确保输入的是有效的Base64字符串');
+        ToolBox.alert('解码失败，请确保输入的是有效的Base64字符串');
       }
     }
 
@@ -1154,7 +1161,7 @@
       try {
         document.getElementById('url-output').value = decodeURIComponent(input);
       } catch (e) {
-        ToolUI.alert('解码失败，请确保输入的是有效的URL编码');
+        ToolBox.alert('解码失败，请确保输入的是有效的URL编码');
       }
     }
 
@@ -1201,7 +1208,7 @@
         );
         document.getElementById('unicode-output').value = result;
       } catch (e) {
-        ToolUI.alert('转换失败，请确保输入的是有效的Unicode编码');
+        ToolBox.alert('转换失败，请确保输入的是有效的Unicode编码');
       }
     }
 
@@ -1254,9 +1261,9 @@
       try {
         const obj = JSON.parse(input);
         document.getElementById('json-output').value = JSON.stringify(obj, null, 2);
-        errorDiv.textContent = '';
+        ToolBox.clear(errorDiv);
       } catch (e) {
-        errorDiv.textContent = '错误: ' + e.message;
+        ToolBox.report(errorDiv, 'error', '错误: ' + e.message);
       }
     }
 
@@ -1266,16 +1273,16 @@
       try {
         const obj = JSON.parse(input);
         document.getElementById('json-output').value = JSON.stringify(obj);
-        errorDiv.textContent = '';
+        ToolBox.clear(errorDiv);
       } catch (e) {
-        errorDiv.textContent = '错误: ' + e.message;
+        ToolBox.report(errorDiv, 'error', '错误: ' + e.message);
       }
     }
 
     function clearJSON() {
       document.getElementById('json-input').value = '';
       document.getElementById('json-output').value = '';
-      document.getElementById('json-error').textContent = '';
+      ToolBox.clear(document.getElementById('json-error'));
     }
 
     // ==================== JSONPath 查询 ====================
@@ -1320,7 +1327,7 @@
       document.getElementById('jsonpath-input').value = getJSONPathExample();
       document.getElementById('jsonpath-expression').value = '$.tenant';
       document.getElementById('jsonpath-output').value = '';
-      document.getElementById('jsonpath-error').textContent = '';
+      ToolBox.clear(document.getElementById('jsonpath-error'));
       document.getElementById('jsonpath-output-paths').checked = false;
       document.getElementById('jsonpath-safe-eval').checked = true;
     }
@@ -1332,9 +1339,9 @@
       try {
         const parsed = JSON.parse(inputEl.value);
         inputEl.value = JSON.stringify(parsed, null, 2);
-        errorEl.textContent = '';
+        ToolBox.clear(errorEl);
       } catch (e) {
-        errorEl.textContent = 'JSON 格式错误: ' + e.message;
+        ToolBox.report(errorEl, 'error', 'JSON 格式错误: ' + e.message);
       }
     }
 
@@ -1347,7 +1354,7 @@
       const safeEval = document.getElementById('jsonpath-safe-eval').checked;
 
       if (!input || !expression) {
-        errorEl.textContent = '请输入 JSON 文档和 JSONPath 表达式';
+        ToolBox.report(errorEl, 'error', '请输入 JSON 文档和 JSONPath 表达式');
         outputEl.value = '';
         return;
       }
@@ -1365,10 +1372,10 @@
         });
 
         outputEl.value = JSON.stringify(result, null, 2);
-        errorEl.textContent = `匹配到 ${result.length} 项`;
+        ToolBox.report(errorEl, 'success', `匹配到 ${result.length} 项`);
       } catch (e) {
         outputEl.value = '';
-        errorEl.textContent = 'JSONPath 查询失败: ' + e.message;
+        ToolBox.report(errorEl, 'error', 'JSONPath 查询失败: ' + e.message);
       }
     }
 
@@ -1376,7 +1383,7 @@
       document.getElementById('jsonpath-input').value = '';
       document.getElementById('jsonpath-expression').value = '';
       document.getElementById('jsonpath-output').value = '';
-      document.getElementById('jsonpath-error').textContent = '';
+      ToolBox.clear(document.getElementById('jsonpath-error'));
       document.getElementById('jsonpath-output-paths').checked = false;
       document.getElementById('jsonpath-safe-eval').checked = true;
     }
@@ -1399,16 +1406,16 @@
         };
 
         document.getElementById('jwt-output').value = JSON.stringify(result, null, 2);
-        errorDiv.textContent = '';
+        ToolBox.clear(errorDiv);
       } catch (e) {
-        errorDiv.textContent = '错误: ' + e.message;
+        ToolBox.report(errorDiv, 'error', '错误: ' + e.message);
       }
     }
 
     function clearJWT() {
       document.getElementById('jwt-input').value = '';
       document.getElementById('jwt-output').value = '';
-      document.getElementById('jwt-error').textContent = '';
+      ToolBox.clear(document.getElementById('jwt-error'));
     }
 
     // ==================== UUID生成 ====================
@@ -1481,7 +1488,7 @@
       const result = document.getElementById('timestamp-result');
 
       if (isNaN(timestamp)) {
-        result.innerHTML = '<div class="error">请输入有效的时间戳</div>';
+        ToolBox.report(result, 'error', '请输入有效的时间戳');
         return;
       }
 
@@ -1493,7 +1500,7 @@
       const date = new Date(timestamp);
 
       if (isNaN(date.getTime())) {
-        result.innerHTML = '<div class="error">无效的时间戳</div>';
+        ToolBox.report(result, 'error', '无效的时间戳');
         return;
       }
 
@@ -1521,7 +1528,7 @@
         // 优先使用字符串输入
         const date = new Date(datestrInput);
         if (isNaN(date.getTime())) {
-          result.innerHTML = '<div class="error">无效的日期格式，请使用类似 "2024-01-01 12:00:00" 的格式</div>';
+          ToolBox.report(result, 'error', '无效的日期格式，请使用类似 "2024-01-01 12:00:00" 的格式');
           return;
         }
         timestamp = date.getTime();
@@ -1529,7 +1536,7 @@
         // 使用datetime-local输入
         timestamp = new Date(datetimeInput).getTime();
       } else {
-        result.innerHTML = '<div class="error">请选择日期时间或输入日期字符串</div>';
+        ToolBox.report(result, 'error', '请选择日期时间或输入日期字符串');
         return;
       }
 
@@ -1562,7 +1569,7 @@
       const endDate = document.getElementById('diff-end').value;
       let startTs = parseInt(document.getElementById('diff-start-ts').value);
       let endTs = parseInt(document.getElementById('diff-end-ts').value);
-      const result = document.getElementById('diff-result');
+      const result = document.getElementById('time-diff-result');
 
       // 确定开始时间
       let startTime;
@@ -1573,7 +1580,7 @@
       } else if (startDate) {
         startTime = new Date(startDate).getTime();
       } else {
-        result.innerHTML = '<div class="error">请输入开始时间</div>';
+        ToolBox.report(result, 'error', '请输入开始时间');
         return;
       }
 
@@ -1586,7 +1593,7 @@
       } else if (endDate) {
         endTime = new Date(endDate).getTime();
       } else {
-        result.innerHTML = '<div class="error">请输入结束时间</div>';
+        ToolBox.report(result, 'error', '请输入结束时间');
         return;
       }
 
@@ -1628,7 +1635,7 @@
       document.getElementById('diff-end').value = '';
       document.getElementById('diff-start-ts').value = '';
       document.getElementById('diff-end-ts').value = '';
-      document.getElementById('diff-result').innerHTML = '';
+      document.getElementById('time-diff-result').innerHTML = '';
     }
 
     // ==================== 哈希生成 ====================
@@ -1807,7 +1814,7 @@
       const result = document.getElementById('hash-results');
 
       if (!input) {
-        result.innerHTML = '<div class="error">请输入要计算哈希的文本</div>';
+        ToolBox.report(result, 'error', '请输入要计算哈希的文本');
         return;
       }
 
@@ -1832,7 +1839,7 @@
           </div>
         `;
       } catch (e) {
-        result.innerHTML = '<div class="error">生成哈希失败: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', '生成哈希失败: ' + e.message);
       }
     }
 
@@ -1862,7 +1869,7 @@
     async function generateQRCode() {
       const text = document.getElementById('qr-text').value;
       if (!text) {
-        ToolUI.alert('请输入要生成二维码的内容');
+        ToolBox.alert('请输入要生成二维码的内容');
         return;
       }
 
@@ -1906,14 +1913,14 @@
         }
       } catch (e) {
         console.error('QR Code Error:', e);
-        ToolUI.alert('生成二维码失败: ' + (e.message || String(e)));
+        ToolBox.alert('生成二维码失败: ' + (e.message || String(e)));
       }
     }
 
     function downloadQR() {
       const canvas = document.getElementById('qr-canvas');
       if (!canvas.width) {
-        ToolUI.alert('请先生成二维码');
+        ToolBox.alert('请先生成二维码');
         return;
       }
 
@@ -1979,13 +1986,13 @@
               </div>
             `;
           } else {
-            result.innerHTML = '<div class="error">未能识别二维码，请确保图片清晰且包含有效的二维码</div>';
+            ToolBox.report(result, 'error', '未能识别二维码，请确保图片清晰且包含有效的二维码');
           }
         };
 
         img.src = URL.createObjectURL(file);
       } catch (e) {
-        result.innerHTML = '<div class="error">解码失败: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', '解码失败: ' + e.message);
       }
     }
 
@@ -2018,7 +2025,7 @@
       const result = document.getElementById('regex-result');
 
       if (!pattern) {
-        result.innerHTML = '<div class="error">请输入正则表达式</div>';
+        ToolBox.report(result, 'error', '请输入正则表达式');
         return;
       }
 
@@ -2064,7 +2071,7 @@
 
         result.innerHTML = html;
       } catch (e) {
-        result.innerHTML = '<div class="error">正则表达式错误: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', '正则表达式错误: ' + e.message);
       }
     }
 
@@ -2074,12 +2081,11 @@
       const result = document.getElementById('regex-result');
 
       if (!pattern) {
-        result.innerHTML = '<div class="error">请输入正则表达式</div>';
+        ToolBox.report(result, 'error', '请输入正则表达式');
         return;
       }
 
-      const replacement = prompt('输入替换文本:', '');
-      if (replacement === null) return;
+      const replacement = document.getElementById('regex-replacement').value;
 
       try {
         const flags =
@@ -2097,7 +2103,7 @@
           </div>
         `;
       } catch (e) {
-        result.innerHTML = '<div class="error">正则表达式错误: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', '正则表达式错误: ' + e.message);
       }
     }
 
@@ -2208,7 +2214,7 @@
         const rgb = hexToRgb(hex);
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } catch (e) {
-        ToolUI.alert('无效的HEX颜色值');
+        ToolBox.alert('无效的HEX颜色值');
       }
     }
 
@@ -2218,7 +2224,7 @@
       if (match) {
         updateColorDisplay(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
       } else {
-        ToolUI.alert('无效的RGB颜色值，格式: rgb(255, 87, 51)');
+        ToolBox.alert('无效的RGB颜色值，格式: rgb(255, 87, 51)');
       }
     }
 
@@ -2229,7 +2235,7 @@
         const rgb = hslToRgb(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
         updateColorDisplay(rgb.r, rgb.g, rgb.b);
       } else {
-        ToolUI.alert('无效的HSL颜色值，格式: hsl(9, 100%, 60%)');
+        ToolBox.alert('无效的HSL颜色值，格式: hsl(9, 100%, 60%)');
       }
     }
 
@@ -2247,7 +2253,7 @@
       const result = document.getElementById('base-results');
 
       if (!input) {
-        result.innerHTML = '<div class="error">请输入数字</div>';
+        ToolBox.report(result, 'error', '请输入数字');
         return;
       }
 
@@ -2255,7 +2261,7 @@
         const decimal = parseInt(input, fromBase);
 
         if (isNaN(decimal)) {
-          result.innerHTML = '<div class="error">输入的数字无效</div>';
+          ToolBox.report(result, 'error', '输入的数字无效');
           return;
         }
 
@@ -2268,7 +2274,7 @@
           </div>
         `;
       } catch (e) {
-        result.innerHTML = '<div class="error">转换失败: ' + e.message + '</div>';
+        ToolBox.report(result, 'error', '转换失败: ' + e.message);
       }
     }
 

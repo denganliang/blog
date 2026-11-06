@@ -174,6 +174,45 @@
 
 排序契约、阻尼规则与恢复入口见「3. 页面模板 → 工具目录的排序规则」。
 
-## 9. 不改动清单
+## 9. 开发工具箱工具卡片（dev-toolbox 特例）
+
+`tools/dev-toolbox.html` 与 `en/tools/dev-toolbox.html` 是 4 个主 Tab + 16 个工具的复合页，样式与业务脚本内联，属于模板 A–E 之外的特例。两页 `<body>` 额外带 `dev-toolbox-scope`，并在 `tools-ui.js` 之后加载 `assets/js/dev-toolbox-ui.js`（`window.ToolBox`）。卡片级样式集中在 `tools-ui.css` 第 11 节，选择器统一为 `body.tool-scope.dev-toolbox-scope ...`，避免波及其他 tools 页面。
+
+### 卡片契约
+
+每张 `.tool-item[id]` 用 `data-*` 声明能力，`ToolBox.enhance()` 在 `DOMContentLoaded` 时按声明注入 UI：
+
+| 属性 | 作用 |
+| --- | --- |
+| `data-hint` | 标题下的一行说明，中英各一份 |
+| `data-example` | 注入「填入示例」按钮，填入卡片内第一个可编辑输入框 |
+| `data-copy-source` | 注入「复制结果」按钮，取该 id 的 `value` 或去掉按钮后的 `textContent` |
+
+运行时自动完成：`<label>` 与控件的 `for` / `id` 关联、结果容器挂 `.tool-result-panel`、每张卡片末尾插入 `.tool-inline-state`（`role="status"` / `aria-live="polite"`，仅有消息时占位）、为缺少清空入口的卡片注入通用「清空」、原生清空按钮点击后同步收起状态条。
+
+### 反馈与状态
+
+错误不再用 `innerHTML` 注入红字，也不再使用 `ToolUI.alert`：
+
+- `ToolBox.report(target, kind, message)`：`kind` 为 `error | success | empty`；`target` 可为结果元素或工具 id，会清空旧结果并在卡片内就地显示状态。
+- `ToolBox.clear(target)`：清空 `.error` 占位并收起状态条。
+- `ToolBox.alert(message)`：从 `document.activeElement` 反查卡片，错误就地显示；找不到卡片时退化为 `ToolUI.notify.error`。
+- `ToolBox.copyResult(button)`：复用 `ToolUI.copy` 完成剪贴板写入与成功反馈。
+- 成功信息（如 JSONPath 的「匹配到 N 项」）使用 `success`，不再写进红色 `.error`。
+
+工具内不再出现原生 `prompt()`；正则替换改为卡片内的 `#regex-replacement` 输入框。
+
+### 导航与布局
+
+- 滚动偏移由 `ToolBox.stickyOffset()` 按 `.navbar` + `.sub-nav` 实际高度计算，取代写死的 `140`。
+- URL 中带 `?tool=` 或 hash 时优先定位工具，不再被 `localStorage` 中的上次 Tab 覆盖。
+- `.sub-nav` 改为单行横向滚动并与 navbar 高度对齐；768–1024 保留 `.two-columns` 双列。
+- 文本对比与时间差值不再共用 `diff-result`，后者改用 `time-diff-result`。
+
+### 维护注意
+
+两页结构、class、id、data 属性与脚本函数必须逐行对应；修改任一工具 UI 时中英两版同步，并运行 `python3 scripts/check_site.py`。两页含混合 CRLF/LF 行尾，批量改动需逐行保留原 EOL，避免产生全文件 diff。
+
+## 10. 不改动清单
 
 `assets/css/{themes,main,components,utilities}.css` 的全局规则、`assets/js/{main,i18n,theme-switcher,search}.js`、`assets/vendor/`、`.codebuddy/`（项目数据，保留但不参与站点校验）。`scripts/check_site.py` 仅在文件收集层排除 `assets/vendor/` 与 `.codebuddy/` 这两个非发布目录，校验规则本身不变。新样式全部限域在 `body.tool-scope` 内，保证对非 tools 页面零影响。
